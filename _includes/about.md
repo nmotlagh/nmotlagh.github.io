@@ -3,5 +3,8 @@
   <img src="/assets/images/headshot.jpg" alt="A picture of me." width="200"/>
 </div>
 
-I am a Ph.D. student at Ohio State University, specializing in machine learning and computer vision. My research interests revolve around the development of uncertainty-aware models.  
+I am a Ph.D. student in the Computer Vision Lab at Ohio State University, advised by Dr. [Jim Davis](http://web.cse.ohio-state.edu/~davis.1719/jwdavis.html). My research interests lie in machine learning and computer vision. Specifically, I am interested in developing uncertainty-aware models for various modalities.
+
+**This webpage is currently under construction.**
+
 <br/>
