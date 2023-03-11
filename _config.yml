@@ -1,0 +1,5 @@
+remote_theme: mmistakes/minimal-mistakes
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
