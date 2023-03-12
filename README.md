@@ -1,2 +1,2 @@
 # nmotlagh.github.io
-Personal Website 2
+Personal Website
