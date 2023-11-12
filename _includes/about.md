@@ -3,6 +3,8 @@
   <img src="/assets/images/headshot.jpg" alt="A picture of me." width="200"/>
 </div>
 
-I am a 2nd year Ph.D. student in the Computer Vision Lab at Ohio State University, advised by Dr. [Jim Davis](http://web.cse.ohio-state.edu/~davis.1719/jwdavis.html). My research interests lie in machine learning and computer vision. Specifically, I am interested in developing uncertainty-aware models for various modalities.
+Currently in my third year as a Ph.D. student at Ohio State University's Computer Vision Lab, I have the privilege of being mentored by Dr. [Jim Davis](http://web.cse.ohio-state.edu/~davis.1719/jwdavis.html). My academic journey is rooted in machine learning and computer vision, where I've dedicated my efforts to enhancing model reliability through confident predictions in uncalibrated models. Recently, my focus has expanded to exploring the integration of these confidence-driven methodologies within new realms, notably machine translation.
+
+[Download my Resume](assets/resume.pdf)
 
 **This webpage is currently under construction.**
