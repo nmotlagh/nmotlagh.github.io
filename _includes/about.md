@@ -3,12 +3,12 @@
   <img src="/assets/images/headshot.jpg" alt="A picture of me." width="200"/>
 </div>
 
-I am a third-year Ph.D. student in Computer Science, majoring in AI at Ohio State University’s Computer Vision Lab. Under the guidance of [Dr. Jim Davis](http://web.cse.ohio-state.edu/~davis.1719/jwdavis.html), my research primarily focuses on the integration of multiple data modalities to enhance the reliability of artificial intelligence models, with a particular emphasis on vision and language models.
+I am a fourth-year Ph.D. candidate in Computer Science at Ohio State University’s Computer Vision Lab, working under the guidance of Dr. Jim Davis. My research centers on evaluating and mitigating uncertainty in multimodal deep learning models, with a particular emphasis on vision-language models.
 
-My work to date has involved the exploration and application of Reject Option Classification as a method to improve model robustness in unimodal settings. This experience has laid the foundation for my current research direction, which is centered on multi-modal modeling. This transition represents an effort to bridge the gap between disparate data sources and modeling techniques, aiming to achieve more resilient and accurate AI systems.
+I have developed and applied Reject Option Classification methods to enhance user confidence in unimodal n-way classification models, which established a foundation for my current focus on understanding uncertainty in multimodal vision-language modeling. Additionally, I have conducted research in Machine Translation, proposing new metrics to assess the effectiveness of multimodal translation models in visual disambiguation.
 
-In parallel with my academic pursuits, I am seeking opportunities for a research internship. My goal is to apply my interdisciplinary skills in a practical setting, contributing to innovative projects in the field of artificial intelligence while expanding my own research capabilities.
+I am actively seeking a research internship to leverage my interdisciplinary skills in a practical setting, aiming to contribute to innovative AI projects while expanding my research expertise.
 
-I hold an undergraduate degree in Computer Science from Ohio State University, complemented by a minor in Mathematics. This background has provided me with a solid foundation in both theoretical and applied aspects of computer science, informing my current research and future aspirations in the field.
+I hold a B.S. in Computer Science from Ohio State University with a minor in Mathematics, which has provided a strong foundation in theoretical and applied computer science, driving my research and future aspirations in the field.
 
 ## [Resume](assets/resume.pdf)
