@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404" description="The page you’re looking for doesn’t exist.">
+  <section class="site-shell section">
+    <div class="surface surface--muted stack" style="padding: clamp(2rem, 4vw, 3rem)">
+      <span class="tag">404</span>
+      <h1 class="hero__heading" style="font-size: clamp(2rem, 1.8rem + 1vw, 2.6rem);">
+        That page wandered off.
+      </h1>
+      <p class="prose" style="max-width: 48ch;">
+        Try heading back to the homepage or contact me if you think something’s broken.
+      </p>
+      <div class="hero__actions">
+        <a class="button" href={import.meta.env.BASE_URL}>Return home</a>
+        <a class="button button--ghost" href="mailto:motlagh.4@osu.edu">Email me</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+

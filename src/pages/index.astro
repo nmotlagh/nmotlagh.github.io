@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { getCollection, getEntry } from 'astro:content';
+import headshot from '../assets/headshot.jpg';
+
+const about = await getEntry('pages', 'about');
+const experience = await getEntry('pages', 'experience');
+const aboutRendered = await about.render();
+const experienceItems = experience.data.items ?? [];
+
+const publicationEntries = await getCollection('publications');
+const publications = await Promise.all(
+  publicationEntries
+    .sort((a, b) => b.data.year - a.data.year)
+    .map(async (entry) => {
+      const rendered = await entry.render();
+      return { ...entry, rendered };
+    }),
+);
+
+const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const siteOrigin = Astro.site?.href ?? 'https://nmotlagh.github.io';
+const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Nick Kashani Motlagh',
+  url: siteOrigin,
+  jobTitle: 'Machine Learning Engineer & Ph.D. Candidate',
+  worksFor: {
+    '@type': 'CollegeOrUniversity',
+    name: 'The Ohio State University',
+  },
+  email: 'mailto:motlagh.4@osu.edu',
+  image: headshotUrl,
+  sameAs: ['https://github.com/nmotlagh'],
+  knowsAbout: [
+    'Vision-language models',
+    'Uncertainty quantification',
+    'Computer vision',
+    'Multimodal machine learning',
+  ],
+};
+
+const publicationSchemas = publications.map((pub) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  name: pub.data.title,
+  url: pub.data.external ?? pub.data.pdf ?? `${siteOrigin}#publications`,
+  datePublished: String(pub.data.year),
+  isPartOf: pub.data.venue
+    ? {
+        '@type': 'PublicationIssue',
+        name: pub.data.venue,
+      }
+    : undefined,
+  author: pub.data.authors.map((author) => ({
+    '@type': 'Person',
+    name: author,
+  })),
+}));
+
+const structuredData = [personSchema, ...publicationSchemas];
+---
+
+<BaseLayout
+  title="Home"
+  description="Nick Kashani Motlagh is a machine learning engineer and Ph.D. candidate advancing production-ready, uncertainty-aware multimodal systems at The Ohio State University."
+  structuredData={structuredData}
+>
+  <Hero
+    eyebrow="Selective Prediction · Responsible LLMs"
+    title="Researching dependable multimodal intelligence."
+    description="I’m Nick Kashani Motlagh, a machine learning engineer and aspiring research scientist at The Ohio State University. My current work blends selective prediction, abstention policies, and LLM-centric evaluation so frontier models stay calibrated when the stakes are high."
+    actions={[
+      { label: 'Download resume', href: resumeHref, external: true },
+      { label: 'Email me', href: 'mailto:motlagh.4@osu.edu', variant: 'ghost' },
+    ]}
+    meta={[
+      'Selective prediction & abstention research',
+      'Columbus, Ohio',
+      'Exploring 2025 research scientist and ML engineering roles',
+    ]}
+    stats={[
+      { label: 'Focus', value: 'Selective prediction & LLM eval' },
+      { label: 'Current role', value: 'Ph.D. candidate · OSU CVL' },
+      { label: 'Status', value: 'Research scientist track for 2025' },
+    ]}
+    image={{ src: headshot, alt: 'Portrait of Nick Kashani Motlagh' }}
+  />
+
+  <section id="about" class="site-shell section">
+    <SectionHeading eyebrow="Profile" title="About" />
+    <div class="prose">
+      <aboutRendered.Content />
+    </div>
+  </section>
+
+  <section id="experience" class="site-shell section">
+    <SectionHeading
+      eyebrow="Background"
+      title="Experience"
+      description="Delivery-focused research, teaching, and internships where I translated multimodal ML into rigorously evaluated systems."
+    />
+    <div class="timeline">
+      {experienceItems.map((item) => (
+        <article class="timeline__item">
+          <h3 class="timeline__title">{item.role}</h3>
+          <div class="timeline__meta">
+            <span>{item.organization}</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>{item.timeframe}</span>
+          </div>
+          <p class="timeline__body">{item.summary}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="publications" class="site-shell section">
+    <SectionHeading
+      eyebrow="Research"
+      title="Selected Publications"
+      description="Peer-reviewed work informing calibration, evaluation infrastructure, and change-detection pipelines for operational ML teams."
+    />
+    <div class="stack">
+      {publications.map((pub) => {
+        const { Content } = pub.rendered;
+        const links: { href: string; label: string }[] = [];
+        if (pub.data.pdf) {
+          links.push({ href: pub.data.pdf, label: 'Read paper' });
+        }
+        if (pub.data.external && pub.data.external !== pub.data.pdf) {
+          links.push({ href: pub.data.external, label: 'Project page' });
+        }
+        return (
+          <article class="publication-card">
+            <h3 class="publication-card__title">{pub.data.title}</h3>
+            <div class="publication-card__meta">
+              {pub.data.venue && <span>{pub.data.venue}</span>}
+              <span>{pub.data.year}</span>
+              <span>{pub.data.authors.join(', ')}</span>
+            </div>
+            <div class="prose">
+              <Content />
+            </div>
+            {links.length > 0 && (
+              <div class="publication-card__links">
+                {links.map((link) => (
+                  <a class="button button--ghost" href={link.href} target="_blank" rel="noopener noreferrer">
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </article>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Action {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'ghost';
+  external?: boolean;
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description: string;
+  actions?: Action[];
+  meta?: string[];
+  stats?: { label: string; value: string }[];
+  image?: {
+    src: ImageMetadata;
+    alt: string;
+  };
+}
+
+const { eyebrow, title, description, actions = [], meta = [], stats = [], image }: Props = Astro.props;
+---
+
+<section class="site-shell hero">
+  <div class="stack hero__content">
+    {eyebrow && <span class="tag hero__eyebrow">{eyebrow}</span>}
+    <h1 class="hero__heading">{title}</h1>
+    <p class="hero__subheading">{description}</p>
+    {actions.length > 0 && (
+      <div class="hero__actions">
+        {actions.map((action) => (
+          <a
+            class={`button${action.variant === 'ghost' ? ' button--ghost' : ''}`}
+            href={action.href}
+            target={action.external ? '_blank' : undefined}
+            rel={action.external ? 'noopener noreferrer' : undefined}
+          >
+            {action.label}
+          </a>
+        ))}
+      </div>
+    )}
+    {meta.length > 0 && (
+      <ul class="hero__meta" role="list">
+        {meta.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+  {image && (
+    <aside class="hero__profile" aria-label="Featured portrait">
+      <div class="hero__media">
+        <div class="hero__image-frame">
+          <Image
+            src={image.src}
+            alt={image.alt}
+            widths={[220, 280, 360]}
+            sizes="(max-width: 960px) 220px, 320px"
+            class="hero__image"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+        {stats.length > 0 && (
+          <dl class="hero__stats">
+            {stats.map((stat) => (
+              <div class="hero__stat">
+                <dt>{stat.label}</dt>
+                <dd>{stat.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
+    </aside>
+  )}
+</section>

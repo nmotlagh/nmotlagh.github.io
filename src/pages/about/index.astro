@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const target = `${import.meta.env.BASE_URL}#about`;
+---
+
+<BaseLayout title="About" description="Redirecting to the About section.">
+  <Fragment slot="head">
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+  </Fragment>
+  <section class="site-shell section">
+    <div class="stack">
+      <h1 class="hero__heading" style="font-size: clamp(2rem, 1.8rem + 1vw, 2.6rem);">
+        Redirecting to About
+      </h1>
+      <p class="prose" style="max-width: 52ch;">
+        The About section now lives on the homepage. If you are not redirected automatically, follow the link below.
+      </p>
+      <div class="hero__actions">
+        <a class="button" href={target}>Go to About</a>
+      </div>
+    </div>
+  </section>
+  <script is:inline>
+    window.requestAnimationFrame(() => window.location.replace(target));
+  </script>
+</BaseLayout>
+
