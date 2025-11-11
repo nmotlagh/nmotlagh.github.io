@@ -2,7 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
+import NewsStrip from '../components/NewsStrip.astro';
+import HighlightsRow from '../components/HighlightsRow.astro';
+import PublicationCard from '../components/PublicationCard.astro';
 import { getCollection, getEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import headshot from '../assets/headshot.jpg';
 
 const about = await getEntry('pages', 'about');
@@ -11,16 +15,27 @@ const aboutRendered = await about.render();
 const experienceItems = experience.data.items ?? [];
 
 const publicationEntries = await getCollection('publications');
-const publications = await Promise.all(
-  publicationEntries
-    .sort((a, b) => b.data.year - a.data.year)
-    .map(async (entry) => {
-      const rendered = await entry.render();
-      return { ...entry, rendered };
-    }),
-);
+const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
+
+const artifactEntries = await getCollection('artifacts');
+const artifactMap = new Map<string, CollectionEntry<'artifacts'>[]>();
+artifactEntries.forEach((artifact) => {
+  artifact.data.tiesTo.forEach((slug) => {
+    if (!artifactMap.has(slug)) {
+      artifactMap.set(slug, []);
+    }
+    artifactMap.get(slug)?.push(artifact);
+  });
+});
+const featuredArtifacts = [...artifactEntries]
+  .sort((a, b) => a.data.name.localeCompare(b.data.name))
+  .slice(0, 3);
 
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const scholarHref = 'https://scholar.google.com/citations?user=REPLACE_ME';
+const githubHref = 'https://github.com/nmotlagh';
+const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh/';
+const emailHref = 'mailto:motlagh.4@osu.edu';
 const siteOrigin = Astro.site?.href ?? 'https://nmotlagh.github.io';
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
@@ -29,41 +44,50 @@ const personSchema = {
   '@type': 'Person',
   name: 'Nick Kashani Motlagh',
   url: siteOrigin,
-  jobTitle: 'Machine Learning Engineer & Ph.D. Candidate',
-  worksFor: {
+  jobTitle: 'Ph.D. Candidate; Research Scientist track 2025',
+  affiliation: {
     '@type': 'CollegeOrUniversity',
     name: 'The Ohio State University',
   },
-  email: 'mailto:motlagh.4@osu.edu',
+  email: emailHref,
   image: headshotUrl,
-  sameAs: ['https://github.com/nmotlagh'],
+  sameAs: [githubHref, linkedInHref, scholarHref],
   knowsAbout: [
     'Vision-language models',
     'Uncertainty quantification',
     'Computer vision',
     'Multimodal machine learning',
+    'Large language models',
   ],
 };
 
-const publicationSchemas = publications.map((pub) => ({
-  '@context': 'https://schema.org',
-  '@type': 'ScholarlyArticle',
-  name: pub.data.title,
-  url: pub.data.external ?? pub.data.pdf ?? `${siteOrigin}#publications`,
-  datePublished: String(pub.data.year),
-  isPartOf: pub.data.venue
-    ? {
-        '@type': 'PublicationIssue',
-        name: pub.data.venue,
-      }
-    : undefined,
-  author: pub.data.authors.map((author) => ({
-    '@type': 'Person',
-    name: author,
-  })),
-}));
+const publicationSchemas = publications.map((pub) => {
+  const isBasedOn = [pub.data.code, pub.data.data].filter(Boolean).map((url) => ({
+    '@type': 'CreativeWork',
+    url,
+  }));
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    name: pub.data.title,
+    url: `${siteOrigin}publications/${pub.slug}/`,
+    datePublished: pub.data.datePublished ?? String(pub.data.year),
+    publisher: pub.data.venue
+      ? {
+          '@type': 'Organization',
+          name: pub.data.venue,
+        }
+      : undefined,
+    author: pub.data.authors.map((author) => ({
+      '@type': 'Person',
+      name: author,
+    })),
+    isBasedOn: isBasedOn.length > 0 ? isBasedOn : undefined,
+  };
+});
 
 const structuredData = [personSchema, ...publicationSchemas];
+const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry.data.title]));
 ---
 
 <BaseLayout
@@ -72,25 +96,30 @@ const structuredData = [personSchema, ...publicationSchemas];
   structuredData={structuredData}
 >
   <Hero
-    eyebrow="Selective Prediction · Responsible LLMs"
-    title="Researching dependable multimodal intelligence."
-    description="I’m Nick Kashani Motlagh, a machine learning engineer and aspiring research scientist at The Ohio State University. My current work blends selective prediction, abstention policies, and LLM-centric evaluation so frontier models stay calibrated when the stakes are high."
+    eyebrow="Open research · Evaluation harnesses"
+    title="Building dependable multimodal & LLM systems."
+    description="Selective prediction, abstention, and evaluation tooling so multimodal models stay calibrated when shipping to production."
     actions={[
-      { label: 'Download resume', href: resumeHref, external: true },
-      { label: 'Email me', href: 'mailto:motlagh.4@osu.edu', variant: 'ghost' },
+      { label: 'Resume', href: resumeHref, external: true, analyticsEvent: 'hero_resume_click' },
+      { label: 'Scholar', href: scholarHref, external: true, analyticsEvent: 'hero_scholar_click' },
+      { label: 'GitHub', href: githubHref, external: true, analyticsEvent: 'hero_github_click' },
+      { label: 'Email', href: emailHref, variant: 'ghost', analyticsEvent: 'hero_email_click' },
     ]}
     meta={[
-      'Selective prediction & abstention research',
-      'Columbus, Ohio',
-      'Exploring 2025 research scientist and ML engineering roles',
+      'Selective prediction · Abstention policies · Calibration',
+      'Open artifacts: code, data, eval harnesses',
+      'Columbus, Ohio · Research scientist track 2025',
     ]}
     stats={[
-      { label: 'Focus', value: 'Selective prediction & LLM eval' },
+      { label: 'Focus', value: 'Selective prediction & LLM ops' },
       { label: 'Current role', value: 'Ph.D. candidate · OSU CVL' },
-      { label: 'Status', value: 'Research scientist track for 2025' },
+      { label: 'Impact', value: '+8× OOD utility · +1.3% coverage' },
     ]}
     image={{ src: headshot, alt: 'Portrait of Nick Kashani Motlagh' }}
   />
+
+  <NewsStrip />
+  <HighlightsRow />
 
   <section id="about" class="site-shell section">
     <SectionHeading eyebrow="Profile" title="About" />
@@ -123,42 +152,65 @@ const structuredData = [personSchema, ...publicationSchemas];
   <section id="publications" class="site-shell section">
     <SectionHeading
       eyebrow="Research"
-      title="Selected Publications"
-      description="Peer-reviewed work informing calibration, evaluation infrastructure, and change-detection pipelines for operational ML teams."
+      title="Publications & articles"
+      description="Peer-reviewed work spanning selective vision models, multimodal MT, and LLM abstention policies — with reproducible artifacts."
     />
-    <div class="stack">
-      {publications.map((pub) => {
-        const { Content } = pub.rendered;
-        const links: { href: string; label: string }[] = [];
-        if (pub.data.pdf) {
-          links.push({ href: pub.data.pdf, label: 'Read paper' });
-        }
-        if (pub.data.external && pub.data.external !== pub.data.pdf) {
-          links.push({ href: pub.data.external, label: 'Project page' });
-        }
-        return (
-          <article class="publication-card">
-            <h3 class="publication-card__title">{pub.data.title}</h3>
-            <div class="publication-card__meta">
-              {pub.data.venue && <span>{pub.data.venue}</span>}
-              <span>{pub.data.year}</span>
-              <span>{pub.data.authors.join(', ')}</span>
-            </div>
-            <div class="prose">
-              <Content />
-            </div>
-            {links.length > 0 && (
-              <div class="publication-card__links">
-                {links.map((link) => (
-                  <a class="button button--ghost" href={link.href} target="_blank" rel="noopener noreferrer">
-                    {link.label}
-                  </a>
-                ))}
-              </div>
+    <div class="publication-grid">
+      {publications.map((pub) => (
+        <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+      ))}
+    </div>
+    <div class="section__cta">
+      <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>Browse publication archive</a>
+    </div>
+  </section>
+
+  <section id="artifacts" class="site-shell section">
+    <SectionHeading
+      eyebrow="Open source"
+      title="Artifacts you can fork today"
+      description="Pipelines, eval harnesses, and datasets that pair every paper with runnable code and reproducibility notes."
+    />
+    <div class="artifact-grid">
+      {featuredArtifacts.map((artifact) => (
+        <article class="artifact-card">
+          <div class="artifact-card__header">
+            <h3>
+              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                {artifact.data.name}
+              </a>
+            </h3>
+            {artifact.data.repo && (
+              <a class="badge badge--link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                GitHub
+              </a>
             )}
-          </article>
-        );
-      })}
+          </div>
+          <p>{artifact.data.summary}</p>
+          <ul>
+            {artifact.data.reproduce.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+          {artifact.data.tiesTo.length > 0 && (
+            <p class="artifact-card__ties">
+              Supports:&nbsp;
+              {artifact.data.tiesTo
+                .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
+                .filter((item): item is { slug: string; title: string } => Boolean(item.title))
+                .map((item, index, arr) => (
+                  <span>
+                    <a href={`${import.meta.env.BASE_URL}publications/${item.slug}/`}>{item.title}</a>
+                    {index < arr.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+            </p>
+          )}
+        </article>
+      ))}
+    </div>
+    <div class="section__cta">
+      <a class="button" href={`${import.meta.env.BASE_URL}artifacts/`}>View all artifacts</a>
     </div>
   </section>
 </BaseLayout>

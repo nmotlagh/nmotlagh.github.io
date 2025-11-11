@@ -1,0 +1,14 @@
+{
+  "name": "calibration",
+  "repo": "https://github.com/nmotlagh/calibration",
+  "summary": "Evaluation harness for multimodal MT, selective LLM routing, and visual-text calibration experiments.",
+  "reproduce": [
+    "Run imagery-aware contrastive probes against WMT-style checkpoints.",
+    "Benchmark LLM reject-option heads on held-out OOD prompts.",
+    "Log structured reports (HTML/Markdown) for rapid model comparisons."
+  ],
+  "tiesTo": [
+    "assessing-imagery-in-multimodal-mt",
+    "llm-reject-option-training"
+  ]
+}

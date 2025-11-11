@@ -1,0 +1,19 @@
+---
+title: "Selective LLM Training with Reject Options"
+year: 2025
+venue: "AFRL Technical Report"
+authors:
+  - "N. Kashani Motlagh"
+  - "T. Anderson"
+  - "M. Scherreik"
+tldr: "Instruction-tuned LLMs equipped with abstention heads deliver 8× utility on out-of-distribution tasks."
+highlight: true
+metric: "8× OOD utility"
+datePublished: "2025-05-01"
+code: "https://github.com/nmotlagh/calibration"
+highlights:
+  - "Reject-option heads act as a triage layer for routing prompts to humans or fallback chains."
+  - "Curriculum mixes synthetic outliers with frontier eval suites to maintain calibrated abstentions."
+---
+
+We extend our selective prediction research to large language models by training an abstention head alongside the base instruction-tuned transformer. The approach injects curriculum-learned outlier prompts and policy gradients so that routing decisions stay calibrated, improving downstream analyst-facing utility by **8×** on held-out OOD evaluations. The report shares the evaluation harness and discusses how to wire the policy into production command-and-control systems.

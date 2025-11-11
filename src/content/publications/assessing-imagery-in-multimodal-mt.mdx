@@ -1,0 +1,23 @@
+---
+title: "Assessing the Role of Imagery in Multimodal Machine Translation"
+year: 2024
+venue: "WMT 2024"
+authors:
+  - "N. Kashani Motlagh"
+  - "J. Davis"
+  - "T. Anderson"
+  - "J. Gwinnup"
+  - "G. Erdmann"
+tldr: "Contrastive evaluation shows SOTA multimodal MT models leverage pixels beyond a regularization effect."
+highlight: true
+metric: "+7% image-grounding score"
+datePublished: "2024-11-15"
+pdf: "https://aclanthology.org/2024.wmt-1.62"
+code: "https://github.com/nmotlagh/calibration"
+data: "https://github.com/nmotlagh/calibration/tree/main/data"
+highlights:
+  - "Introduced imagery-aware contrastive probes that isolate whether translations truly reference the paired visual context."
+  - "Benchmarked nine multimodal MT systems and showed genuine visual grounding across high-variance evaluation splits."
+---
+
+We design imagery-sensitive contrastive metrics for multimodal machine translation and apply them to state-of-the-art architectures used at WMT 2024. The study shows that translations degrade when the paired image contradicts the caption, indicating that the models depend on visual evidence instead of treating images as mere regularizers. We release the evaluation harness and curated counterfactual splits to help teams audit multimodal MT deployments.

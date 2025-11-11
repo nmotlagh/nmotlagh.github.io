@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+
+const highlightEntries = (await getCollection('publications'))
+  .filter((entry) => entry.data.highlight)
+  .sort((a, b) => b.data.year - a.data.year)
+  .slice(0, 3);
+---
+
+{highlightEntries.length > 0 && (
+  <section class="site-shell highlights">
+    <div class="highlights__header">
+      <p class="tag">Research highlights</p>
+      <h2>Impact, artifacts, and reproducibility</h2>
+      <p>
+        Above-the-fold visibility into the latest selective prediction, multimodal MT, and LLM abstention work with
+        links to the code, data, and slides recruiters ask for first.
+      </p>
+    </div>
+    <div class="highlights__grid">
+      {highlightEntries.map((entry) => {
+        const detailHref = `${import.meta.env.BASE_URL}publications/${entry.slug}/`;
+        const badges = [
+          { label: 'Paper', href: entry.data.pdf ?? entry.data.external ?? detailHref },
+          { label: 'Code', href: entry.data.code },
+          { label: 'Data', href: entry.data.data },
+          { label: 'Slides', href: entry.data.slides },
+        ];
+        return (
+          <article class="highlight-card">
+            <div class="highlight-card__eyebrow">
+              <span>{entry.data.venue}</span>
+              <span aria-hidden="true">·</span>
+              <span>{entry.data.year}</span>
+            </div>
+            <a class="highlight-card__title" href={detailHref}>
+              {entry.data.title}
+            </a>
+            <p class="highlight-card__body">{entry.data.tldr}</p>
+            {entry.data.metric && <span class="metric-chip">{entry.data.metric}</span>}
+            <div class="highlight-card__badges">
+              {badges.map(
+                (badge) =>
+                  badge.href && (
+                    <a class="badge badge--link" href={badge.href} target="_blank" rel="noopener noreferrer">
+                      {badge.label}
+                    </a>
+                  ),
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+)}

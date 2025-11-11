@@ -20,6 +20,7 @@ const pageTitle = title ? `${title} · ${siteName}` : siteName;
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
 const faviconHref = `${import.meta.env.BASE_URL}favicon.svg`;
+const rssHref = `${import.meta.env.BASE_URL}rss.xml`;
 const structured = Array.isArray(structuredData)
   ? structuredData.filter(Boolean)
   : structuredData
@@ -50,10 +51,14 @@ const ogImageUrl =
     <meta property="og:description" content={description} />
     {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
-    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    <meta name="twitter:site" content="@NickMotlagh" />
+    <meta name="twitter:creator" content="@NickMotlagh" />
+    <link rel="alternate" type="application/rss+xml" title="News · Nick Kashani Motlagh" href={rssHref} />
+    <script defer data-domain="nmotlagh.github.io" src="https://plausible.io/js/script.js"></script>
     <script is:inline>
       (function () {
         const storageKey = 'theme-preference';
@@ -125,10 +130,18 @@ const ogImageUrl =
       <div class="site-shell site-header__inner">
         <a class="site-brand" href={import.meta.env.BASE_URL}>{siteName}</a>
         <nav class="site-nav" aria-label="Primary navigation">
-          <a href={`${import.meta.env.BASE_URL}#about`}>About</a>
-          <a href={`${import.meta.env.BASE_URL}#experience`}>Experience</a>
-          <a href={`${import.meta.env.BASE_URL}#publications`}>Publications</a>
-          <a class="site-nav__cta" href={resumeHref} target="_blank" rel="noopener noreferrer">
+          <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#about`}>About</a>
+          <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#experience`}>Experience</a>
+          <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#publications`}>Publications</a>
+          <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#artifacts`}>Artifacts</a>
+          <a data-astro-prefetch href={`${import.meta.env.BASE_URL}news/`}>News</a>
+          <a
+            class="site-nav__cta"
+            href={resumeHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-analytics-event="nav_resume_click"
+          >
             Resume
           </a>
         </nav>
@@ -147,5 +160,15 @@ const ogImageUrl =
         </div>
       </div>
     </footer>
+    <script is:inline>
+      window.addEventListener('DOMContentLoaded', () => {
+        if (typeof window.plausible !== 'function') return;
+        document.querySelectorAll('[data-analytics-event]').forEach((element) => {
+          element.addEventListener('click', () => {
+            window.plausible(element.getAttribute('data-analytics-event'));
+          });
+        });
+      });
+    </script>
   </body>
 </html>

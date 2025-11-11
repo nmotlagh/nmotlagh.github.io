@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const publications = await getCollection('publications');
+  return publications.map((pub) => ({
+    params: { slug: pub.slug },
+    props: { pub },
+  }));
+}
+
+const { pub } = Astro.props;
+const rendered = await pub.render();
+const artifacts = await getCollection('artifacts');
+const relatedArtifacts = artifacts.filter((artifact) => artifact.data.tiesTo.includes(pub.slug));
+const badges = [
+  { label: 'Paper', href: pub.data.pdf ?? pub.data.external },
+  { label: 'arXiv', href: pub.data.arxiv },
+  { label: 'Code', href: pub.data.code },
+  { label: 'Data', href: pub.data.data },
+  { label: 'Slides', href: pub.data.slides },
+];
+const siteOrigin = Astro.site?.href ?? 'https://nmotlagh.github.io';
+const isBasedOn = [pub.data.code, pub.data.data].filter(Boolean).map((url) => ({
+  '@type': 'CreativeWork',
+  url,
+}));
+const publicationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  name: pub.data.title,
+  url: `${siteOrigin}publications/${pub.slug}/`,
+  datePublished: pub.data.datePublished ?? String(pub.data.year),
+  publisher: {
+    '@type': 'Organization',
+    name: pub.data.venue,
+  },
+  author: pub.data.authors.map((author) => ({
+    '@type': 'Person',
+    name: author,
+  })),
+  isBasedOn: isBasedOn.length > 0 ? isBasedOn : undefined,
+};
+---
+
+<BaseLayout title={pub.data.title} description={pub.data.tldr} structuredData={publicationSchema}>
+  <article class="site-shell publication-detail">
+    <a class="backlink" href={`${import.meta.env.BASE_URL}publications/`}>
+      ← Publications
+    </a>
+    <header class="publication-detail__header">
+      <p class="publication-card__eyebrow">
+        {pub.data.venue} · {pub.data.year}
+      </p>
+      <h1>{pub.data.title}</h1>
+      <p class="publication-card__authors">{pub.data.authors.join(', ')}</p>
+      {pub.data.metric && <span class="metric-chip">{pub.data.metric}</span>}
+      {badges.some((badge) => Boolean(badge.href)) && (
+        <div class="publication-card__badges">
+          {badges.map(
+            (badge) =>
+              badge.href && (
+                <a class="badge badge--link" href={badge.href} target="_blank" rel="noopener noreferrer">
+                  {badge.label}
+                </a>
+              ),
+          )}
+        </div>
+      )}
+    </header>
+
+    <section class="publication-detail__body prose">
+      <rendered.Content />
+    </section>
+
+    {pub.data.highlights && pub.data.highlights.length > 0 && (
+      <section class="publication-detail__highlights">
+        <h2>Highlights</h2>
+        <ul>
+          {pub.data.highlights.map((highlight) => (
+            <li>{highlight}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {relatedArtifacts.length > 0 && (
+      <section class="publication-detail__artifacts">
+        <h2>Artifacts & reproduction</h2>
+        <div class="artifact-grid">
+          {relatedArtifacts.map((artifact) => (
+            <article class="artifact-card">
+              <div class="artifact-card__header">
+                <h3>
+                  <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                    {artifact.data.name}
+                  </a>
+                </h3>
+                <a class="badge badge--link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                  GitHub
+                </a>
+              </div>
+              <p>{artifact.data.summary}</p>
+              <ul>
+                {artifact.data.reproduce.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>

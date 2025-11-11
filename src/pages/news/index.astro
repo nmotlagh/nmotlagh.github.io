@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import { getCollection } from 'astro:content';
+
+const newsItems = (await getCollection('news')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+
+<BaseLayout title="News" description="Latest publications, releases, and results across selective prediction and multimodal ML.">
+  <section class="site-shell section">
+    <SectionHeading
+      eyebrow="Updates"
+      title="News & announcements"
+      description="Quick hits for recruiters and collaborators who need to verify freshness in seconds. Subscribe via RSS to keep up."
+    />
+    <ol class="news-archive">
+      {newsItems.map((item) => (
+        <li>
+          <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+          {item.data.link ? (
+            <a href={item.data.link} target="_blank" rel="noopener noreferrer">
+              {item.data.title}
+            </a>
+          ) : (
+            <span>{item.data.title}</span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </section>
+</BaseLayout>
