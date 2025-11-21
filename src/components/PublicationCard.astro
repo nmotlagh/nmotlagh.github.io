@@ -32,6 +32,14 @@ const badges: { label: string; href?: string }[] = [
     {data.metric && <span class="metric-chip">{data.metric}</span>}
   </div>
 
+  {Array.isArray(data.tags) && data.tags.length > 0 && (
+    <div class="publication-card__tags">
+      {data.tags.map((tag) => (
+        <span class="tag-pill">{tag}</span>
+      ))}
+    </div>
+  )}
+
   <p class="publication-card__tldr">{data.tldr}</p>
 
   <slot name="body">

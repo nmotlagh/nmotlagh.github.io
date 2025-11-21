@@ -11,11 +11,14 @@ highlight: true
 metric: "8× OOD utility"
 datePublished: "2025-05-01"
 code: "https://github.com/nmotlagh/calibration"
+tags:
+  - "LLMs"
+  - "selective prediction"
+  - "abstention"
+  - "analyst tools"
 highlights:
   - "Reject-option heads act as a triage layer for routing prompts to humans or fallback chains."
   - "Curriculum mixes synthetic outliers with frontier eval suites to maintain calibrated abstentions."
 ---
-
-> **Heads up:** This site is still under construction, so details may change as we continue building.
 
 We extend our selective prediction research to large language models by training an abstention head alongside the base instruction-tuned transformer. The approach injects curriculum-learned outlier prompts and policy gradients so that routing decisions stay calibrated, improving downstream analyst-facing utility by **8×** on held-out OOD evaluations. The report shares the evaluation harness and discusses how to wire the policy into production command-and-control systems.

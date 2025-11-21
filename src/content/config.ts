@@ -4,13 +4,16 @@ const pages = defineCollection({
   schema: z.object({
     title: z.string(),
     updated: z.string().optional(),
+    intro: z.string().optional(),
     items: z
       .array(
         z.object({
           role: z.string(),
-          organization: z.string(),
+          location: z.string().optional(),
           timeframe: z.string(),
-          summary: z.string(),
+          bullets: z.array(z.string()).optional(),
+          organization: z.string().optional(),
+          summary: z.string().optional(),
         }),
       )
       .optional(),
@@ -41,6 +44,7 @@ const publications = defineCollection({
       })
       .optional(),
     highlights: z.array(z.string()).optional(),
+    tags: z.array(z.string()).optional(),
   }),
 });
 

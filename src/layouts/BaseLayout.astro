@@ -19,6 +19,10 @@ const { title, description = defaultDescription, ogImage, structuredData }: Layo
 const pageTitle = title ? `${title} · ${siteName}` : siteName;
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const scholarHref = 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en';
+const githubHref = 'https://github.com/nmotlagh';
+const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
+const emailHref = 'mailto:kashanimotlagh.1@osu.edu';
 const faviconHref = `${import.meta.env.BASE_URL}favicon.svg`;
 const rssHref = `${import.meta.env.BASE_URL}rss.xml`;
 const structured = Array.isArray(structuredData)
@@ -126,20 +130,13 @@ const ogImageUrl =
   </head>
   <body>
     <a class="skip-link" href="#page-content">Skip to content</a>
-    <div class="site-alert" role="status">
-      <div class="site-shell site-alert__inner">
-        <span class="site-alert__label">Under construction</span>
-        <span class="site-alert__text">
-          This site is being built; default AI-generated text is currently used as a placeholder in many locations.
-        </span>
-      </div>
-    </div>
     <header class="site-header">
       <div class="site-shell site-header__inner">
         <a class="site-brand" href={import.meta.env.BASE_URL}>{siteName}</a>
         <nav class="site-nav" aria-label="Primary navigation">
           <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#about`}>About</a>
           <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#experience`}>Experience</a>
+          <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#skills`}>Skills</a>
           <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#publications`}>Publications</a>
           <a data-astro-prefetch href={`${import.meta.env.BASE_URL}#artifacts`}>Artifacts</a>
           <a data-astro-prefetch href={`${import.meta.env.BASE_URL}news/`}>News</a>
@@ -153,6 +150,13 @@ const ogImageUrl =
             Resume
           </a>
         </nav>
+        <div class="site-header__links" aria-label="Contact links">
+          <a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a>
+          <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
+          <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href={emailHref}>Email</a>
+        </div>
         <ThemeToggle />
       </div>
     </header>
@@ -161,6 +165,17 @@ const ogImageUrl =
     </main>
     <footer class="site-footer">
       <div class="site-shell site-footer__inner">
+        <div class="site-footer__contact">
+          <span>Email: <a href={emailHref}>kashanimotlagh.1@osu.edu</a></span>
+          <span aria-hidden="true">·</span>
+          <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
+          <span aria-hidden="true">·</span>
+          <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
+          <span aria-hidden="true">·</span>
+          <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <span aria-hidden="true">·</span>
+          <span>U.S. citizen</span>
+        </div>
         <div>© {new Date().getFullYear()} {siteName}</div>
         <div>
           Built with <a href="https://astro.build" target="_blank" rel="noreferrer">Astro</a>. Deployed on

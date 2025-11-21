@@ -5,7 +5,8 @@
   "reproduce": [
     "Generate OpenStreetMap-guided scrape manifests for temporal imagery.",
     "Label construction phases with the included lightweight annotation app.",
-    "Export train/val/test splits for change-detection baselines."
+    "Export train/val/test splits for change-detection baselines.",
+    "Demonstrates end-to-end dataset design, labeling tooling, and export pipelines for remote sensing change detection."
   ],
   "tiesTo": [
     "framework-for-semi-automatic-collection"

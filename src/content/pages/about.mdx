@@ -3,12 +3,14 @@ title: "About"
 updated: "2025-11-09"
 ---
 
-I’m a machine learning engineer and Ph.D. candidate in Computer Science at The Ohio State University’s Computer Vision Lab, where I collaborate with Dr. Jim Davis on uncertainty-aware multimodal systems that operate in analyst-facing settings. I focus on the messy middle between research demos and production deployment: building selective prediction policies, LLM evaluation harnesses, and monitoring stacks that explain when a model should speak, abstain, or call for human review.
+I'm a machine learning engineer and Ph.D. candidate in Computer Science and Engineering at The Ohio State University's Computer Vision Lab, advised by Prof. Jim Davis. I work on the boundary between research prototypes and production deployment for LLM and multimodal systems used in analyst-facing settings.
 
-I operate across three domains that keep multimodal and language models dependable:
+I design selective prediction policies, abstention heads, and evaluation harnesses so models know when to answer, when to abstain, and when to escalate to humans. Recent projects include:
 
-- **Production-aligned uncertainty quantification** that couples per-class calibration, abstention policies, and selective routing so classifiers and LLM agents know when to say “I don’t know.”
-- **Vision-language and LLM evaluation tooling** that stress-tests captioning, retrieval, reasoning, and tool-augmented chains to surface brittleness before analysts or end users encounter it.
-- **Multimodal ML infrastructure** that delivers data pipelines, benchmarking harnesses, and lightweight services integrating vision, language, and tabular signals into existing workflows.
+- LLM reject-option training that delivers **8× higher utility** on out-of-distribution analyst tasks for defense partners.
+- Binomial per-class reject-option training that improves selective accuracy and coverage of vision transformers on **ImageNet, remote sensing, and long-tailed datasets**.
+- Imagery-aware evaluation for multimodal machine translation (WMT 2024), showing that state-of-the-art systems genuinely use pixels rather than treating images as regularizers.
 
-Day to day I partner with analysts, product leads, and fellow engineers to align model behavior with mission-critical requirements—bridging the lab’s computer vision heritage with the latest LLM-centric methods. I’m currently exploring 2025 research scientist and machine learning engineering roles where I can deepen this work on multimodal, trustworthy AI systems.
+On the engineering side, I work primarily in **Python and PyTorch** with **vision-language models**, **HuggingFace**, and **distributed training on Slurm/Singularity clusters**. I like building data pipelines, benchmarking harnesses, and lightweight services that plug into existing analyst tools.
+
+I'm currently exploring **2025 research scientist and machine learning engineering roles** focused on LLMs, multimodal learning, and model reliability. I'm a **U.S. citizen** with experience working with controlled unclassified information (CUI) for DoD partners.

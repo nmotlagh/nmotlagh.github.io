@@ -5,7 +5,8 @@
   "reproduce": [
     "Run imagery-aware contrastive probes against WMT-style checkpoints.",
     "Benchmark LLM reject-option heads on held-out OOD prompts.",
-    "Log structured reports (HTML/Markdown) for rapid model comparisons."
+    "Log structured reports (HTML/Markdown) for rapid model comparisons.",
+    "Used to benchmark LLM reject-option heads and multimodal MT models for AFRL and academic deployments."
   ],
   "tiesTo": [
     "assessing-imagery-in-multimodal-mt",

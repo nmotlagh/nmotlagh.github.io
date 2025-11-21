@@ -5,7 +5,8 @@
   "reproduce": [
     "Tune per-class thresholds on ImageNet, iNat, or custom datasets with one command.",
     "Export coverage/accuracy curves and selective accuracy plots for reports.",
-    "Integrate abstention policies into existing Torch models via lightweight hooks."
+    "Integrate abstention policies into existing Torch models via lightweight hooks.",
+    "Production-ready toolkit that underpins selective prediction guardrails across multiple domains (vision, text, and 2-D data)."
   ],
   "tiesTo": [
     "learning-when-to-say-i-dont-know",
