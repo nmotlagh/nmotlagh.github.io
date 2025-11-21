@@ -15,6 +15,7 @@ interface Props {
   title: string;
   description: string;
   actions?: Action[];
+  links?: { label: string; href: string; external?: boolean }[];
   meta?: string[];
   stats?: { label: string; value: string }[];
   image?: {
@@ -23,7 +24,7 @@ interface Props {
   };
 }
 
-const { eyebrow, title, description, actions = [], meta = [], stats = [], image }: Props = Astro.props;
+const { eyebrow, title, description, actions = [], links = [], meta = [], stats = [], image }: Props = Astro.props;
 ---
 
 <section class="site-shell hero">
@@ -43,6 +44,23 @@ const { eyebrow, title, description, actions = [], meta = [], stats = [], image 
           >
             {action.label}
           </a>
+        ))}
+      </div>
+    )}
+    {links.length > 0 && (
+      <div class="hero__links">
+        {links.map((link, index) => (
+          <Fragment>
+            <a
+              class="hero__link"
+              href={link.href}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener noreferrer' : undefined}
+            >
+              {link.label}
+            </a>
+            {index < links.length - 1 && <span aria-hidden="true">·</span>}
+          </Fragment>
         ))}
       </div>
     )}

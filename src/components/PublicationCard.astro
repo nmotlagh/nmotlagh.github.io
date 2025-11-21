@@ -20,7 +20,7 @@ const badges: { label: string; href?: string }[] = [
 ];
 ---
 
-<article class="publication-card">
+<article class="publication-card card">
   <div class="publication-card__header">
     <div>
       <p class="publication-card__eyebrow">{data.venue} · {data.year}</p>
@@ -33,11 +33,11 @@ const badges: { label: string; href?: string }[] = [
   </div>
 
   {Array.isArray(data.tags) && data.tags.length > 0 && (
-    <div class="publication-card__tags">
+    <ul class="tag-list">
       {data.tags.map((tag) => (
-        <span class="tag-pill">{tag}</span>
+        <li>{tag}</li>
       ))}
-    </div>
+    </ul>
   )}
 
   <p class="publication-card__tldr">{data.tldr}</p>

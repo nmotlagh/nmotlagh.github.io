@@ -104,15 +104,11 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
     actions={[
       { label: 'Resume', href: resumeHref, external: true, analyticsEvent: 'hero_resume_click' },
       { label: 'Email', href: emailHref, variant: 'ghost', analyticsEvent: 'hero_email_click' },
-      { label: 'Scholar', href: scholarHref, external: true, variant: 'ghost', analyticsEvent: 'hero_scholar_click' },
-      { label: 'GitHub', href: githubHref, external: true, variant: 'ghost', analyticsEvent: 'hero_github_click' },
-      {
-        label: 'LinkedIn',
-        href: linkedInHref,
-        external: true,
-        variant: 'ghost',
-        analyticsEvent: 'hero_linkedin_click',
-      },
+    ]}
+    links={[
+      { label: 'Scholar', href: scholarHref, external: true },
+      { label: 'GitHub', href: githubHref, external: true },
+      { label: 'LinkedIn', href: linkedInHref, external: true },
     ]}
     meta={[
       'Focus: selective prediction, abstention policies, and calibration for LLMs and multimodal models',
@@ -242,7 +238,7 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
     />
     <div class="artifact-grid">
       {featuredArtifacts.map((artifact) => (
-        <article class="artifact-card">
+        <article class="artifact-card card">
           <div class="artifact-card__header">
             <h3>
               <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">

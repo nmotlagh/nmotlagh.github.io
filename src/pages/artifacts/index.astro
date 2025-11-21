@@ -23,7 +23,7 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
           .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
           .filter((item): item is { slug: string; title: string } => Boolean(item.title));
         return (
-          <article class="artifact-card">
+          <article class="artifact-card card">
             <div class="artifact-card__header">
               <h3>
                 <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
