@@ -103,10 +103,16 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
     description="Selective prediction, abstention, and evaluation tooling so models know when to answer, when to say “I don’t know,” and when to hand off to humans."
     actions={[
       { label: 'Resume', href: resumeHref, external: true, analyticsEvent: 'hero_resume_click' },
-      { label: 'Scholar', href: scholarHref, external: true, analyticsEvent: 'hero_scholar_click' },
-      { label: 'GitHub', href: githubHref, external: true, analyticsEvent: 'hero_github_click' },
-      { label: 'LinkedIn', href: linkedInHref, external: true, analyticsEvent: 'hero_linkedin_click' },
       { label: 'Email', href: emailHref, variant: 'ghost', analyticsEvent: 'hero_email_click' },
+      { label: 'Scholar', href: scholarHref, external: true, variant: 'ghost', analyticsEvent: 'hero_scholar_click' },
+      { label: 'GitHub', href: githubHref, external: true, variant: 'ghost', analyticsEvent: 'hero_github_click' },
+      {
+        label: 'LinkedIn',
+        href: linkedInHref,
+        external: true,
+        variant: 'ghost',
+        analyticsEvent: 'hero_linkedin_click',
+      },
     ]}
     meta={[
       'Focus: selective prediction, abstention policies, and calibration for LLMs and multimodal models',
