@@ -10,25 +10,29 @@ const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeri
 ---
 
 <BaseLayout title="News" description="Latest publications, releases, and results across selective prediction and multimodal ML.">
-  <section class="site-shell section">
-    <SectionHeading
-      eyebrow="Updates"
-      title="News & announcements"
-      description="Quick hits for recruiters and collaborators who need to verify freshness in seconds. Subscribe via RSS to keep up."
-    />
-    <ol class="news-archive">
-      {newsItems.map((item) => (
-        <li>
-          <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
-          {item.data.link ? (
-            <a href={item.data.link} target="_blank" rel="noopener noreferrer">
-              {item.data.title}
-            </a>
-          ) : (
-            <span>{item.data.title}</span>
-          )}
-        </li>
-      ))}
-    </ol>
+  <section class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading
+        eyebrow="Updates"
+        title="News & announcements"
+        description="Quick hits for recruiters and collaborators who need to verify freshness in seconds. Subscribe via RSS to keep up."
+      />
+    </div>
+    <div class="section__body">
+      <ol class="news-archive">
+        {newsItems.map((item) => (
+          <li>
+            <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+            {item.data.link ? (
+              <a href={item.data.link} target="_blank" rel="noopener noreferrer">
+                {item.data.title}
+              </a>
+            ) : (
+              <span>{item.data.title}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
   </section>
 </BaseLayout>

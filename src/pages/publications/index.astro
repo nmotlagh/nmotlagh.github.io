@@ -19,16 +19,20 @@ artifactEntries.forEach((artifact) => {
 ---
 
 <BaseLayout title="Publications" description="Research spanning selective prediction, multimodal machine translation, and dependable LLM systems.">
-  <section class="site-shell section">
-    <SectionHeading
-      eyebrow="Research archive"
-      title="Publications & Scholarly Articles"
-      description="Every paper includes badges linking to the paper, arXiv, code, datasets, and slides where available. Keyboard-friendly navigation keeps the grid accessible."
-    />
-    <div class="publication-grid">
-      {publications.map((pub) => (
-        <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
-      ))}
+  <section class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading
+        eyebrow="Research archive"
+        title="Publications & Scholarly Articles"
+        description="Every paper includes badges linking to the paper, arXiv, code, datasets, and slides where available. Keyboard-friendly navigation keeps the grid accessible."
+      />
+    </div>
+    <div class="section__body">
+      <div class="publication-grid">
+        {publications.map((pub) => (
+          <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+        ))}
+      </div>
     </div>
   </section>
 </BaseLayout>

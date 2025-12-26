@@ -1,4 +1,4 @@
-<button class="theme-toggle" type="button" aria-label="Toggle theme" data-theme-toggle>
+<button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false" data-theme-toggle>
   <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="4" />
@@ -37,12 +37,22 @@
   };
 
   const button = document.currentScript?.previousElementSibling;
+  const updatePressed = () => {
+    if (!button) return;
+    const isDark = root.dataset.theme === 'dark';
+    button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  };
+
   if (button) {
+    updatePressed();
+    const observer = new MutationObserver(updatePressed);
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
     button.addEventListener('click', () => {
       const current = root.dataset.theme === 'dark' ? 'dark' : 'light';
       const next = current === 'dark' ? 'light' : 'dark';
       setTheme(next);
+      updatePressed();
     });
   }
 </script>
-

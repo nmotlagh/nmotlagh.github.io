@@ -45,6 +45,8 @@ const ogImageUrl =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
@@ -171,7 +173,7 @@ const ogImageUrl =
         </div>
         <div>© {new Date().getFullYear()} {siteName}</div>
         <div>
-          Built with <a href="https://astro.build" target="_blank" rel="noreferrer">Astro</a>. Deployed on
+          Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>. Deployed on
           GitHub Pages.
         </div>
       </div>

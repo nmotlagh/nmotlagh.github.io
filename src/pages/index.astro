@@ -127,155 +127,181 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
   <NewsStrip />
   <HighlightsRow />
 
-  <section id="about" class="site-shell section">
-    <SectionHeading eyebrow="Profile" title="About" />
-    <div class="prose">
-      <aboutRendered.Content />
+  <section id="about" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading eyebrow="Profile" title="About" />
+    </div>
+    <div class="section__body">
+      <div class="prose">
+        <aboutRendered.Content />
+      </div>
     </div>
   </section>
 
-  <section id="experience" class="site-shell section">
-    <SectionHeading
-      eyebrow="Background"
-      title="Experience"
-      description={experienceIntro}
-    />
-    <div class="experience-list">
-      {experienceItems.map((item) => (
-        <article class="card experience-card">
-          <div class="experience-card__header">
-            <h3>{item.role}</h3>
-            <p class="experience-card__meta">
+  <section id="experience" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading
+        eyebrow="Background"
+        title="Experience"
+        description={experienceIntro}
+      />
+    </div>
+    <div class="section__body">
+      <div class="timeline">
+        {experienceItems.map((item) => (
+          <article class="timeline__item">
+            <h3 class="timeline__title">{item.role}</h3>
+            <p class="timeline__meta">
               {item.location}
               <span aria-hidden="true"> · </span>
               {item.timeframe}
             </p>
-          </div>
-          {item.bullets && item.bullets.length > 0 && (
-            <ul class="experience-card__list">
-              {item.bullets.map((bullet) => (
-                <li set:html={bullet} />
+            {item.bullets && item.bullets.length > 0 && (
+              <ul class="timeline__body">
+                {item.bullets.map((bullet) => (
+                  <li set:html={bullet} />
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="education" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading eyebrow="Academics" title="Education" />
+    </div>
+    <div class="section__body">
+      <div class="prose">
+        <h3>Ohio State University — Columbus, OH</h3>
+        <p>
+          <strong>Ph.D. in Computer Science and Engineering</strong> — Aug 2021 – May 2026 (Expected)<br />
+          <strong>M.S. in Computer Science and Engineering</strong> — Aug 2021 – May 2025<br />
+          Advisor: Prof. Jim Davis · Minors: Mathematics and High-Performance Computing · GPA: 3.70
+        </p>
+        <p>
+          <strong>B.S. in Computer Science and Engineering with Honors</strong> — Aug 2017 – May 2021<br />
+          Minor: Mathematics · Scholarships: Maximus, Ten-Hai Lai, Ansel, Name and Seal · GPA: 3.86
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading eyebrow="Toolkit" title="Skills" />
+    </div>
+    <div class="section__body">
+      <div class="prose skills-list">
+        <p><strong>Machine learning &amp; modeling</strong></p>
+        <ul>
+          <li>Selective prediction and abstention policies for vision, multimodal MT, and LLMs</li>
+          <li>Vision transformers, vision-language models, multimodal EO/SAR representation learning</li>
+          <li>Evaluation harness design, calibration metrics, and selective accuracy analysis</li>
+        </ul>
+
+        <p><strong>Tools &amp; infrastructure</strong></p>
+        <ul>
+          <li>Python, PyTorch, HuggingFace, Git</li>
+          <li>Slurm, Singularity, Linux HPC clusters</li>
+          <li>Experiment tracking, report generation (HTML/Markdown), LaTeX</li>
+        </ul>
+
+        <p><strong>Domains</strong></p>
+        <ul>
+          <li>Analyst-facing tooling, defense and remote sensing applications</li>
+          <li>Multimodal machine translation and imagery-aware evaluation</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="service" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading eyebrow="Community" title="Professional service" />
+    </div>
+    <div class="section__body">
+      <div class="prose">
+        <ul>
+          <li>Reviewer: CVPR 2022–2023, ICCV 2023, ECCV 2022</li>
+          <li>Volunteer: HackOHI/O 2023</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading
+        eyebrow="Research"
+        title="Publications & articles"
+        description="Peer-reviewed work spanning selective vision models, multimodal MT, and LLM abstention policies — with reproducible artifacts."
+      />
+    </div>
+    <div class="section__body">
+      <div class="publication-grid">
+        {publications.map((pub) => (
+          <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+        ))}
+      </div>
+      <div class="section__cta">
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>Browse publication archive</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="artifacts" class="site-shell section section--split">
+    <div class="section__lead">
+      <SectionHeading
+        eyebrow="Open source"
+        title="Artifacts you can fork today"
+        description="Pipelines, eval harnesses, and datasets that pair every paper with runnable code and reproducibility notes."
+      />
+    </div>
+    <div class="section__body">
+      <div class="artifact-grid">
+        {featuredArtifacts.map((artifact) => (
+          <article class="artifact-card card">
+            <div class="artifact-card__header">
+              <h3>
+                <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                  {artifact.data.name}
+                </a>
+              </h3>
+              {artifact.data.repo && (
+                <a class="badge badge--link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                  GitHub
+                </a>
+              )}
+            </div>
+            <p>{artifact.data.summary}</p>
+            <ul>
+              {artifact.data.reproduce.map((item) => (
+                <li>{item}</li>
               ))}
             </ul>
-          )}
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section id="education" class="site-shell section">
-    <SectionHeading eyebrow="Academics" title="Education" />
-    <div class="prose">
-      <h3>Ohio State University — Columbus, OH</h3>
-      <p>
-        <strong>Ph.D. in Computer Science and Engineering</strong> — Aug 2021 – May 2026 (Expected)<br />
-        <strong>M.S. in Computer Science and Engineering</strong> — Aug 2021 – May 2025<br />
-        Advisor: Prof. Jim Davis · Minors: Mathematics and High-Performance Computing · GPA: 3.70
-      </p>
-      <p>
-        <strong>B.S. in Computer Science and Engineering with Honors</strong> — Aug 2017 – May 2021<br />
-        Minor: Mathematics · Scholarships: Maximus, Ten-Hai Lai, Ansel, Name and Seal · GPA: 3.86
-      </p>
-    </div>
-  </section>
-
-  <section id="skills" class="site-shell section">
-    <SectionHeading eyebrow="Toolkit" title="Skills" />
-    <div class="prose skills-list">
-      <p><strong>Machine learning &amp; modeling</strong></p>
-      <ul>
-        <li>Selective prediction and abstention policies for vision, multimodal MT, and LLMs</li>
-        <li>Vision transformers, vision-language models, multimodal EO/SAR representation learning</li>
-        <li>Evaluation harness design, calibration metrics, and selective accuracy analysis</li>
-      </ul>
-
-      <p><strong>Tools &amp; infrastructure</strong></p>
-      <ul>
-        <li>Python, PyTorch, HuggingFace, Git</li>
-        <li>Slurm, Singularity, Linux HPC clusters</li>
-        <li>Experiment tracking, report generation (HTML/Markdown), LaTeX</li>
-      </ul>
-
-      <p><strong>Domains</strong></p>
-      <ul>
-        <li>Analyst-facing tooling, defense and remote sensing applications</li>
-        <li>Multimodal machine translation and imagery-aware evaluation</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="service" class="site-shell section">
-    <SectionHeading eyebrow="Community" title="Professional service" />
-    <div class="prose">
-      <ul>
-        <li>Reviewer: CVPR 2022–2023, ICCV 2023, ECCV 2022</li>
-        <li>Volunteer: HackOHI/O 2023</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="publications" class="site-shell section">
-    <SectionHeading
-      eyebrow="Research"
-      title="Publications & articles"
-      description="Peer-reviewed work spanning selective vision models, multimodal MT, and LLM abstention policies — with reproducible artifacts."
-    />
-    <div class="publication-grid">
-      {publications.map((pub) => (
-        <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
-      ))}
-    </div>
-    <div class="section__cta">
-      <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>Browse publication archive</a>
-    </div>
-  </section>
-
-  <section id="artifacts" class="site-shell section">
-    <SectionHeading
-      eyebrow="Open source"
-      title="Artifacts you can fork today"
-      description="Pipelines, eval harnesses, and datasets that pair every paper with runnable code and reproducibility notes."
-    />
-    <div class="artifact-grid">
-      {featuredArtifacts.map((artifact) => (
-        <article class="artifact-card card">
-          <div class="artifact-card__header">
-            <h3>
-              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                {artifact.data.name}
-              </a>
-            </h3>
-            {artifact.data.repo && (
-              <a class="badge badge--link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                GitHub
-              </a>
+            {artifact.data.tiesTo.length > 0 && (
+              <p class="artifact-card__ties">
+                Supports:&nbsp;
+                {artifact.data.tiesTo
+                  .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
+                  .filter((item): item is { slug: string; title: string } => Boolean(item.title))
+                  .map((item, index, arr) => (
+                    <span>
+                      <a href={`${import.meta.env.BASE_URL}publications/${item.slug}/`}>{item.title}</a>
+                      {index < arr.length - 1 ? ', ' : ''}
+                    </span>
+                  ))}
+              </p>
             )}
-          </div>
-          <p>{artifact.data.summary}</p>
-          <ul>
-            {artifact.data.reproduce.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-          {artifact.data.tiesTo.length > 0 && (
-            <p class="artifact-card__ties">
-              Supports:&nbsp;
-              {artifact.data.tiesTo
-                .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
-                .filter((item): item is { slug: string; title: string } => Boolean(item.title))
-                .map((item, index, arr) => (
-                  <span>
-                    <a href={`${import.meta.env.BASE_URL}publications/${item.slug}/`}>{item.title}</a>
-                    {index < arr.length - 1 ? ', ' : ''}
-                  </span>
-                ))}
-            </p>
-          )}
-        </article>
-      ))}
-    </div>
-    <div class="section__cta">
-      <a class="button" href={`${import.meta.env.BASE_URL}artifacts/`}>View all artifacts</a>
+          </article>
+        ))}
+      </div>
+      <div class="section__cta">
+        <a class="button" href={`${import.meta.env.BASE_URL}artifacts/`}>View all artifacts</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
