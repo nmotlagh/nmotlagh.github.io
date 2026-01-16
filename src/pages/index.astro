@@ -28,7 +28,44 @@ const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
       })();
     </script>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        overflow: hidden;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      #water-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        cursor: none;
+      }
+      .cursor {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000;
+        transform: translate(-50%, -50%);
+        transition: transform 0.1s ease, width 0.2s, height 0.2s, border-color 0.2s;
+        mix-blend-mode: difference;
+      }
+      .cursor.active {
+        width: 40px;
+        height: 40px;
+        border-color: rgba(255,255,255,0.8);
+      }
       .maintenance {
+        position: relative;
+        z-index: 1;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -36,41 +73,418 @@ const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
         justify-content: center;
         padding: 2rem;
         text-align: center;
+        pointer-events: none;
       }
       .maintenance h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 300;
+        letter-spacing: -0.02em;
         margin-bottom: 0.5rem;
+        color: var(--color-text);
+        text-shadow: 0 4px 30px rgba(0,0,0,0.15);
       }
       .maintenance .tagline {
         color: var(--color-text-secondary);
-        font-size: 1.125rem;
-        margin-bottom: 2rem;
+        font-size: 1.25rem;
+        font-weight: 300;
+        margin-bottom: 2.5rem;
+        opacity: 0.8;
       }
       .maintenance .links {
         display: flex;
-        gap: 1.5rem;
+        gap: 2rem;
         flex-wrap: wrap;
         justify-content: center;
+        pointer-events: auto;
       }
       .maintenance .links a {
-        color: var(--color-accent);
+        color: var(--color-text);
         text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 400;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
       }
       .maintenance .links a:hover {
-        text-decoration: underline;
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      }
+      [data-theme="dark"] .maintenance .links a {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+      }
+      [data-theme="dark"] .maintenance .links a:hover {
+        background: rgba(255,255,255,0.1);
+      }
+      .hint {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--color-text-secondary);
+        font-size: 0.85rem;
+        opacity: 0.5;
+        z-index: 1;
+        pointer-events: none;
       }
     </style>
   </head>
   <body>
+    <div class="cursor" id="cursor"></div>
+    <canvas id="water-canvas"></canvas>
     <main class="maintenance">
       <h1>{siteName}</h1>
       <p class="tagline">Site under construction. Check back soon.</p>
       <div class="links">
         <a href={emailHref}>Email</a>
-        <a href={scholarHref} target="_blank" rel="noopener noreferrer">Google Scholar</a>
+        <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
         <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
         <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </div>
     </main>
+    <p class="hint">Move your mouse to disturb the water</p>
+    <script is:inline>
+      (function() {
+        const canvas = document.getElementById('water-canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const cursor = document.getElementById('cursor');
+
+        if (!gl) {
+          console.warn('WebGL not supported, falling back to 2D');
+          return;
+        }
+
+        let width, height;
+        let mouseX = 0, mouseY = 0;
+        let prevMouseX = 0, prevMouseY = 0;
+        let mouseDown = false;
+        let time = 0;
+
+        // Ripple system
+        const maxRipples = 50;
+        let ripples = [];
+
+        const vertexShaderSource = `
+          attribute vec2 a_position;
+          varying vec2 v_uv;
+          void main() {
+            v_uv = a_position * 0.5 + 0.5;
+            gl_Position = vec4(a_position, 0.0, 1.0);
+          }
+        `;
+
+        const derivativesSupported = !!gl.getExtension('OES_standard_derivatives');
+        const fragmentShaderSource = `
+${derivativesSupported ? '#extension GL_OES_standard_derivatives : enable\n#define HAS_DERIVATIVES 1\n' : '#define HAS_DERIVATIVES 0\n'}precision highp float;
+          varying vec2 v_uv;
+          uniform float u_time;
+          uniform vec2 u_resolution;
+          uniform vec2 u_mouse;
+          uniform float u_isDark;
+          uniform vec4 u_ripples[50];
+          uniform int u_rippleCount;
+
+          // Simplex noise for organic movement
+          vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+          float snoise(vec2 v) {
+            const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                               -0.577350269189626, 0.024390243902439);
+            vec2 i  = floor(v + dot(v, C.yy));
+            vec2 x0 = v - i + dot(i, C.xx);
+            vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+            vec4 x12 = x0.xyxy + C.xxzz;
+            x12.xy -= i1;
+            i = mod(i, 289.0);
+            vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
+                           + i.x + vec3(0.0, i1.x, 1.0));
+            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+                                    dot(x12.zw,x12.zw)), 0.0);
+            m = m*m; m = m*m;
+            vec3 x = 2.0 * fract(p * C.www) - 1.0;
+            vec3 h = abs(x) - 0.5;
+            vec3 ox = floor(x + 0.5);
+            vec3 a0 = x - ox;
+            m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+            vec3 g;
+            g.x = a0.x * x0.x + h.x * x0.y;
+            g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+            return 130.0 * dot(m, g);
+          }
+
+          float calculateRipple(vec2 uv, vec4 ripple) {
+            vec2 pos = ripple.xy;
+            float startTime = ripple.z;
+            float strength = ripple.w;
+
+            float dist = distance(uv, pos);
+            float age = u_time - startTime;
+            float speed = 0.3;
+            float wavelength = 0.03;
+            float decay = exp(-age * 2.0) * exp(-dist * 3.0);
+
+            float wave = sin((dist - age * speed) / wavelength) * decay * strength;
+            return wave;
+          }
+
+          float getDisplacement(vec2 uvAspect, vec2 aspect) {
+            float noise1 = snoise(uvAspect * 3.0 + u_time * 0.1) * 0.02;
+            float noise2 = snoise(uvAspect * 5.0 - u_time * 0.15) * 0.015;
+            float noise3 = snoise(uvAspect * 8.0 + u_time * 0.08) * 0.01;
+            float baseWave = noise1 + noise2 + noise3;
+
+            float rippleEffect = 0.0;
+            for (int i = 0; i < 50; i++) {
+              if (i >= u_rippleCount) break;
+              rippleEffect += calculateRipple(uvAspect, vec4(u_ripples[i].xy * aspect, u_ripples[i].zw));
+            }
+
+            return baseWave + rippleEffect;
+          }
+
+          void main() {
+            vec2 uv = v_uv;
+            vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
+            vec2 uvAspect = uv * aspect;
+
+            // Base water movement
+            float totalDisplacement = getDisplacement(uvAspect, aspect);
+
+            // Calculate normals for lighting
+#if HAS_DERIVATIVES
+            float dx = dFdx(totalDisplacement) * 20.0;
+            float dy = dFdy(totalDisplacement) * 20.0;
+#else
+            float eps = 0.002;
+            float dx = (getDisplacement(uvAspect + vec2(eps, 0.0), aspect) - totalDisplacement) / eps;
+            float dy = (getDisplacement(uvAspect + vec2(0.0, eps), aspect) - totalDisplacement) / eps;
+            dx *= 20.0;
+            dy *= 20.0;
+#endif
+            vec3 normal = normalize(vec3(-dx, -dy, 1.0));
+
+            // Light direction (from top-right)
+            vec3 lightDir = normalize(vec3(0.5, 0.5, 1.0));
+            float diffuse = max(dot(normal, lightDir), 0.0);
+
+            // Specular highlights
+            vec3 viewDir = vec3(0.0, 0.0, 1.0);
+            vec3 reflectDir = reflect(-lightDir, normal);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+
+            // Fresnel effect
+            float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.0);
+
+            // Color based on theme
+            vec3 deepColor, shallowColor, highlightColor;
+            if (u_isDark > 0.5) {
+              deepColor = vec3(0.02, 0.04, 0.08);
+              shallowColor = vec3(0.05, 0.12, 0.2);
+              highlightColor = vec3(0.3, 0.5, 0.7);
+            } else {
+              deepColor = vec3(0.7, 0.82, 0.9);
+              shallowColor = vec3(0.85, 0.92, 0.97);
+              highlightColor = vec3(1.0, 1.0, 1.0);
+            }
+
+            // Mix colors based on depth and lighting
+            vec3 waterColor = mix(deepColor, shallowColor, diffuse * 0.5 + 0.5);
+            waterColor += highlightColor * spec * 0.6;
+            waterColor += highlightColor * fresnel * 0.15;
+
+            // Subtle caustics
+            float caustic = snoise(uvAspect * 15.0 + u_time * 0.2 + totalDisplacement * 10.0);
+            caustic = pow(max(caustic, 0.0), 2.0) * 0.1;
+            waterColor += highlightColor * caustic;
+
+            gl_FragColor = vec4(waterColor, 1.0);
+          }
+        `;
+
+        function createShader(gl, type, source) {
+          const shader = gl.createShader(type);
+          gl.shaderSource(shader, source);
+          gl.compileShader(shader);
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error(gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+          }
+          return shader;
+        }
+
+        function createProgram(gl, vertexShader, fragmentShader) {
+          const program = gl.createProgram();
+          gl.attachShader(program, vertexShader);
+          gl.attachShader(program, fragmentShader);
+          gl.linkProgram(program);
+          if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error(gl.getProgramInfoLog(program));
+            return null;
+          }
+          return program;
+        }
+
+        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+        const program = createProgram(gl, vertexShader, fragmentShader);
+
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+          -1, -1, 1, -1, -1, 1,
+          -1, 1, 1, -1, 1, 1
+        ]), gl.STATIC_DRAW);
+
+        const positionLocation = gl.getAttribLocation(program, 'a_position');
+        const timeLocation = gl.getUniformLocation(program, 'u_time');
+        const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+        const mouseLocation = gl.getUniformLocation(program, 'u_mouse');
+        const isDarkLocation = gl.getUniformLocation(program, 'u_isDark');
+        const ripplesLocation = gl.getUniformLocation(program, 'u_ripples');
+        const rippleCountLocation = gl.getUniformLocation(program, 'u_rippleCount');
+
+        function resize() {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+          gl.viewport(0, 0, width, height);
+        }
+
+        function addRipple(x, y, strength) {
+          const ripple = {
+            x: x / width,
+            y: 1.0 - y / height,
+            time: time,
+            strength: strength
+          };
+          ripples.push(ripple);
+          if (ripples.length > maxRipples) {
+            ripples.shift();
+          }
+        }
+
+        function render(timestamp) {
+          time = timestamp * 0.001;
+
+          // Clean old ripples
+          ripples = ripples.filter(r => time - r.time < 3.0);
+
+          gl.useProgram(program);
+
+          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+          gl.enableVertexAttribArray(positionLocation);
+          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+          gl.uniform1f(timeLocation, time);
+          gl.uniform2f(resolutionLocation, width, height);
+          gl.uniform2f(mouseLocation, mouseX / width, 1.0 - mouseY / height);
+          gl.uniform1f(isDarkLocation, document.documentElement.dataset.theme === 'dark' ? 1.0 : 0.0);
+
+          // Pass ripples to shader
+          const rippleData = new Float32Array(maxRipples * 4);
+          ripples.forEach((r, i) => {
+            rippleData[i * 4] = r.x;
+            rippleData[i * 4 + 1] = r.y;
+            rippleData[i * 4 + 2] = r.time;
+            rippleData[i * 4 + 3] = r.strength;
+          });
+          gl.uniform4fv(ripplesLocation, rippleData);
+          gl.uniform1i(rippleCountLocation, ripples.length);
+
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+          requestAnimationFrame(render);
+        }
+
+        // Mouse tracking with smooth trail
+        let lastRippleTime = 0;
+        document.addEventListener('mousemove', (e) => {
+          prevMouseX = mouseX;
+          prevMouseY = mouseY;
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+
+          cursor.style.left = mouseX + 'px';
+          cursor.style.top = mouseY + 'px';
+
+          // Add ripples based on mouse movement speed
+          const speed = Math.hypot(mouseX - prevMouseX, mouseY - prevMouseY);
+          const now = performance.now();
+
+          if (speed > 2 && now - lastRippleTime > 30) {
+            addRipple(mouseX, mouseY, Math.min(speed * 0.01, 0.5));
+            lastRippleTime = now;
+          }
+        });
+
+        document.addEventListener('mousedown', (e) => {
+          mouseDown = true;
+          cursor.classList.add('active');
+          addRipple(e.clientX, e.clientY, 1.5);
+        });
+
+        document.addEventListener('mouseup', () => {
+          mouseDown = false;
+          cursor.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+          // Big splash on click
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              const angle = (i / 5) * Math.PI * 2;
+              const dist = 30;
+              addRipple(
+                e.clientX + Math.cos(angle) * dist,
+                e.clientY + Math.sin(angle) * dist,
+                0.8
+              );
+            }, i * 50);
+          }
+        });
+
+        // Touch support
+        document.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          mouseX = touch.clientX;
+          mouseY = touch.clientY;
+          addRipple(mouseX, mouseY, 0.6);
+        }, { passive: false });
+
+        document.addEventListener('touchstart', (e) => {
+          const touch = e.touches[0];
+          addRipple(touch.clientX, touch.clientY, 1.2);
+        });
+
+        // Random ambient ripples
+        setInterval(() => {
+          if (Math.random() > 0.6) {
+            addRipple(
+              Math.random() * width,
+              Math.random() * height,
+              0.3 + Math.random() * 0.3
+            );
+          }
+        }, 2000);
+
+        // Hide cursor hint after interaction
+        let hintHidden = false;
+        document.addEventListener('mousemove', () => {
+          if (!hintHidden) {
+            document.querySelector('.hint').style.opacity = '0';
+            hintHidden = true;
+          }
+        }, { once: true });
+
+        window.addEventListener('resize', resize);
+        resize();
+        requestAnimationFrame(render);
+      })();
+    </script>
   </body>
 </html>
