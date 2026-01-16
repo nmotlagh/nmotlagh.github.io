@@ -3,14 +3,16 @@ title: "About"
 updated: "2025-11-09"
 ---
 
-I'm a machine learning engineer and Ph.D. candidate in Computer Science and Engineering at The Ohio State University's Computer Vision Lab, advised by Prof. Jim Davis. I work on the boundary between research prototypes and production deployment for LLM and multimodal systems used in analyst-facing settings.
+I'm finishing my PhD at Ohio State, where I work on one of the quieter problems in ML: getting models to admit when they don't know something.
 
-I design selective prediction policies, abstention heads, and evaluation harnesses so models know when to answer, when to abstain, and when to escalate to humans. Recent projects include:
+Modern AI systems are trained to always give an answer, even when they're guessing. My research develops training methods that teach models when to abstain — to say "I'm not confident" and hand off to a human instead.
 
-- LLM reject-option training that delivers **8× higher utility** on out-of-distribution analyst tasks for defense partners.
-- Binomial per-class reject-option training that improves selective accuracy and coverage of vision transformers on **ImageNet, remote sensing, and long-tailed datasets**.
-- Imagery-aware evaluation for multimodal machine translation (WMT 2024), showing that state-of-the-art systems genuinely use pixels rather than treating images as regularizers.
+Some recent wins:
 
-On the engineering side, I work primarily in **Python and PyTorch** with **vision-language models**, **HuggingFace**, and **distributed training on Slurm/Singularity clusters**. I like building data pipelines, benchmarking harnesses, and lightweight services that plug into existing analyst tools.
+- An LLM training approach that routes uncertain queries to humans, cutting errors dramatically on unfamiliar tasks
+- Per-class rejection thresholds for vision models that improve accuracy without sacrificing coverage
+- Evaluation methods for multimodal translation that show the models actually *use* the images
 
-I'm currently exploring **2025 research scientist and machine learning engineering roles** focused on LLMs, multimodal learning, and model reliability. I'm a **U.S. citizen** with experience working with controlled unclassified information (CUI) for DoD partners.
+Day to day, I write Python and PyTorch, run experiments on HPC clusters, and build the plumbing that makes research usable — data pipelines, benchmarks, reproducible code.
+
+Looking for research scientist or ML engineering roles in 2025. U.S. citizen, comfortable with CUI/DoD work.
