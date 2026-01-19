@@ -13,7 +13,7 @@ const highlightEntries = (await getCollection('publications'))
       <p class="tag">Research highlights</p>
       <h2>Recent work</h2>
       <p>
-        A few projects I'm proud of — each with paper, code, and data.
+        A few projects I'm proud of &mdash; each with paper, code, and data.
       </p>
     </div>
     <div class="highlights__grid">
@@ -37,7 +37,7 @@ const highlightEntries = (await getCollection('publications'))
             </a>
             <p class="highlight-card__body">{entry.data.tldr}</p>
             {entry.data.metric && <span class="metric-chip">{entry.data.metric}</span>}
-            <div class="highlight-card__badges">
+            <div class="highlight-card__badges" role="list">
               {badges.map(
                 (badge) =>
                   badge.href && (

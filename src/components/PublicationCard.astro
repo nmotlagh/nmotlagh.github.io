@@ -33,7 +33,7 @@ const badges: { label: string; href?: string }[] = [
   </div>
 
   {Array.isArray(data.tags) && data.tags.length > 0 && (
-    <ul class="tag-list">
+    <ul class="tag-list" role="list">
       {data.tags.map((tag) => (
         <li>{tag}</li>
       ))}
@@ -47,22 +47,23 @@ const badges: { label: string; href?: string }[] = [
   </slot>
 
   {badges.some((badge) => Boolean(badge.href)) && (
-    <div class="publication-card__badges" role="list">
+    <ul class="publication-card__badges">
       {badges.map(
         (badge) =>
           badge.href && (
-            <a
-              role="listitem"
-              class="badge badge--link"
-              href={badge.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {badge.label}
-            </a>
+            <li>
+              <a
+                class="badge badge--link"
+                href={badge.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {badge.label}
+              </a>
+            </li>
           ),
       )}
-    </div>
+    </ul>
   )}
 
   {artifacts.length > 0 && (
