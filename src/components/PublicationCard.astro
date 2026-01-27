@@ -20,64 +20,91 @@ const badges: { label: string; href?: string }[] = [
 ];
 ---
 
-<article class="publication-card card">
-  <div class="publication-card__header">
-    <div>
-      <p class="publication-card__eyebrow">{data.venue} · {data.year}</p>
-      <h3 class="publication-card__title">
-        <a href={detailHref}>{data.title}</a>
-      </h3>
-      <p class="publication-card__authors">{data.authors.join(', ')}</p>
-    </div>
-    {data.metric && <span class="metric-chip">{data.metric}</span>}
-  </div>
+<article class="card publication-card">
+  <p class="publication-card__eyebrow">{data.venue} · {data.year}</p>
+  <h3 class="publication-card__title">
+    <a href={detailHref}>{data.title}</a>
+  </h3>
+  <p class="publication-card__authors">{data.authors.join(', ')}</p>
 
   {Array.isArray(data.tags) && data.tags.length > 0 && (
-    <ul class="tag-list" role="list">
+    <div class="card__tags">
       {data.tags.map((tag) => (
-        <li>{tag}</li>
+        <span class="card__tag">{tag}</span>
       ))}
-    </ul>
+    </div>
   )}
 
   <p class="publication-card__tldr">{data.tldr}</p>
 
-  <slot name="body">
-    <rendered.Content />
-  </slot>
-
   {badges.some((badge) => Boolean(badge.href)) && (
-    <ul class="publication-card__badges">
+    <div class="card__links">
       {badges.map(
         (badge) =>
           badge.href && (
-            <li>
-              <a
-                class="badge badge--link"
-                href={badge.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {badge.label}
-              </a>
-            </li>
+            <a
+              class="card__link"
+              href={badge.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {badge.label} ↗
+            </a>
           ),
       )}
-    </ul>
+    </div>
   )}
 
   {artifacts.length > 0 && (
-    <div class="publication-card__artifacts">
-      <span class="publication-card__artifacts-label">Artifacts</span>
-      <ul>
-        {artifacts.map((artifact) => (
-          <li>
-            <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-              {artifact.data.name}
-            </a>
-          </li>
-        ))}
-      </ul>
+    <div class="card__links" style="border-top: none; padding-top: 0;">
+      <span class="card__link" style="color: var(--color-text-soft);">
+        Artifacts: {artifacts.map(a => a.data.name).join(', ')}
+      </span>
     </div>
   )}
 </article>
+
+<style>
+  .publication-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  
+  .publication-card__eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-accent);
+    margin: 0;
+  }
+  
+  .publication-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  .publication-card__title a {
+    color: inherit;
+  }
+  
+  .publication-card__title a:hover {
+    color: var(--color-accent);
+  }
+  
+  .publication-card__authors {
+    font-size: 0.8rem;
+    color: var(--color-text-soft);
+    margin: 0;
+  }
+  
+  .publication-card__tldr {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: var(--space-xs) 0 0;
+    line-height: 1.6;
+  }
+</style>

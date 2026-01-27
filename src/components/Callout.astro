@@ -1,0 +1,17 @@
+---
+interface Props {
+  title?: string;
+  icon?: string;
+  variant?: 'default' | 'highlight';
+}
+
+const { title, icon = '💡', variant = 'default' }: Props = Astro.props;
+---
+
+<aside class={`callout ${variant === 'highlight' ? 'callout--highlight' : ''}`}>
+  {icon && <div class="callout__icon">{icon}</div>}
+  {title && <h4 class="callout__title">{title}</h4>}
+  <div class="callout__content">
+    <slot />
+  </div>
+</aside>

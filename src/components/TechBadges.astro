@@ -1,0 +1,33 @@
+---
+interface Badge {
+  label: string;
+  icon?: string;
+}
+
+interface Props {
+  badges?: Badge[];
+}
+
+const { badges = [] }: Props = Astro.props;
+
+const defaultBadges: Badge[] = [
+  { label: 'Python', icon: '🐍' },
+  { label: 'PyTorch', icon: '🔥' },
+  { label: 'Computer Vision', icon: '👁️' },
+  { label: 'ML/AI', icon: '🤖' },
+  { label: 'Uncertainty Quantification', icon: '📊' },
+  { label: 'HuggingFace', icon: '🤗' },
+  { label: 'Linux/HPC', icon: '🐧' },
+];
+
+const items = badges.length > 0 ? badges : defaultBadges;
+---
+
+<div class="tech-badges">
+  {items.map(badge => (
+    <span class="tech-badge">
+      {badge.icon && <span>{badge.icon}</span>}
+      {badge.label}
+    </span>
+  ))}
+</div>

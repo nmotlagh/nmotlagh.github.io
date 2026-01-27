@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
-import SectionHeading from '../components/SectionHeading.astro';
+import TechBadges from '../components/TechBadges.astro';
+import Callout from '../components/Callout.astro';
 import NewsStrip from '../components/NewsStrip.astro';
 import HighlightsRow from '../components/HighlightsRow.astro';
 import PublicationCard from '../components/PublicationCard.astro';
@@ -13,8 +13,6 @@ const about = await getEntry('pages', 'about');
 const experience = await getEntry('pages', 'experience');
 const aboutRendered = await about.render();
 const experienceItems = experience.data.items ?? [];
-const experienceIntro = experience.data.intro ??
-  'Research, teaching, and internships — mostly focused on making ML systems more reliable.';
 
 const publicationEntries = await getCollection('publications');
 const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
@@ -31,7 +29,7 @@ artifactEntries.forEach((artifact) => {
 });
 const featuredArtifacts = [...artifactEntries]
   .sort((a, b) => a.data.name.localeCompare(b.data.name))
-  .slice(0, 3);
+  .slice(0, 6);
 
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
 const scholarHref = 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en';
@@ -96,202 +94,188 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
   description="Nick Kashani Motlagh is a machine learning engineer and Ph.D. candidate advancing production-ready, uncertainty-aware multimodal systems at The Ohio State University."
   structuredData={structuredData}
 >
-  <Hero
-    eyebrow="PhD Candidate · Ohio State"
-    title="I train AI systems to know when they don't know"
-    description="Building AI systems that know their limits — teaching models when to abstain instead of guessing."
-    actions={[
-      { label: 'Resume', href: resumeHref, external: true, analyticsEvent: 'hero_resume_click' },
-      { label: 'Email', href: emailHref, variant: 'ghost', analyticsEvent: 'hero_email_click' },
-    ]}
-    links={[
-      { label: 'Scholar', href: scholarHref, external: true },
-      { label: 'GitHub', href: githubHref, external: true },
-      { label: 'LinkedIn', href: linkedInHref, external: true },
-    ]}
-    stats={[
-      { label: 'Current role', value: 'Graduate Research Associate · OSU Computer Vision Lab' },
-      { label: 'Timeline', value: 'Finishing PhD May 2026 · Seeking 2025 roles' },
-      { label: 'Location', value: 'Columbus, OH · Open to relocation' },
-    ]}
-    image={{ src: headshot, alt: 'Portrait of Nick Kashani Motlagh' }}
-  />
+  <!-- INTRO SECTION -->
+  <div class="hero-intro">
+    <TechBadges />
+    <p class="hero-intro__greeting">Hi, I'm Nick 👋</p>
+    <h2 class="hero-intro__headline">
+      I train AI systems to <span class="accent">know when they don't know</span>
+    </h2>
+    <p class="hero-intro__description">
+      Building AI systems that know their limits — teaching models when to abstain instead of guessing. 
+      Ph.D. candidate at Ohio State researching uncertainty-aware vision-language systems.
+    </p>
+    <div class="hero-intro__actions">
+      <a class="button" href={resumeHref} target="_blank" rel="noopener noreferrer">
+        View Resume
+      </a>
+      <a class="button button--ghost" href={emailHref}>
+        Get in Touch
+      </a>
+    </div>
+  </div>
 
+  <!-- STATUS CALLOUT -->
+  <Callout title="Currently" icon="🎯" variant="highlight">
+    <p><strong>Graduate Research Associate</strong> at OSU Computer Vision Lab. Finishing PhD May 2026 and seeking 2025 research scientist roles. Columbus, OH — open to relocation.</p>
+  </Callout>
+
+  <!-- NEWS STRIP -->
   <NewsStrip />
+
+  <!-- RESEARCH HIGHLIGHTS -->
   <HighlightsRow />
 
-  <section id="about" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading title="About" />
+  <!-- ABOUT SECTION -->
+  <section id="about" class="section">
+    <div class="section__header">
+      <h2 class="section__title">About</h2>
     </div>
-    <div class="section__body">
-      <div class="prose">
-        <aboutRendered.Content />
-      </div>
+    <div class="prose">
+      <aboutRendered.Content />
     </div>
   </section>
 
-  <section id="experience" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading
-        title="Experience"
-        description={experienceIntro}
-      />
+  <!-- EXPERIENCE SECTION -->
+  <section id="experience" class="section">
+    <div class="section__header">
+      <h2 class="section__title">Experience</h2>
+      <span class="section__subtitle">Research & industry</span>
     </div>
-    <div class="section__body">
-      <div class="timeline">
-        {experienceItems.map((item) => (
-          <article class="timeline__item">
-            <h3 class="timeline__title">{item.role}</h3>
-            <p class="timeline__meta">
-              {item.location}
-              <span aria-hidden="true"> · </span>
-              {item.timeframe}
-            </p>
+    <div class="timeline">
+      {experienceItems.map((item) => (
+        <article class="timeline-item">
+          <div class="timeline-item__date">{item.timeframe}</div>
+          <div class="timeline-item__content">
+            <h3 class="timeline-item__title">{item.role}</h3>
+            <p class="timeline-item__location">{item.location}</p>
             {item.bullets && item.bullets.length > 0 && (
-              <ul class="timeline__body">
+              <ul class="timeline-item__bullets">
                 {item.bullets.map((bullet) => (
                   <li set:html={bullet} />
                 ))}
               </ul>
             )}
-          </article>
-        ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- EDUCATION CALLOUT -->
+  <Callout title="Education" icon="🎓">
+    <p><strong>Ohio State University</strong> — Ph.D. in Computer Science (2021–2026), M.S. (2021–2025)<br/>
+    Advisor: Prof. Jim Davis · Minors: Mathematics, HPC · GPA: 3.70</p>
+    <p style="margin-top: 0.5rem;"><strong>B.S. in Computer Science with Honors</strong> (2017–2021) · GPA: 3.86</p>
+  </Callout>
+
+  <!-- SKILLS SECTION -->
+  <section id="skills" class="section">
+    <div class="section__header">
+      <h2 class="section__title">Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h4 class="skill-category__title">ML & Modeling</h4>
+        <div class="skill-category__items">
+          <span class="skill-item">Selective prediction</span>
+          <span class="skill-item">Vision transformers</span>
+          <span class="skill-item">VLMs</span>
+          <span class="skill-item">Calibration metrics</span>
+          <span class="skill-item">Multimodal learning</span>
+          <span class="skill-item">EO/SAR</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <h4 class="skill-category__title">Tools & Infrastructure</h4>
+        <div class="skill-category__items">
+          <span class="skill-item">Python</span>
+          <span class="skill-item">PyTorch</span>
+          <span class="skill-item">HuggingFace</span>
+          <span class="skill-item">Git</span>
+          <span class="skill-item">Slurm</span>
+          <span class="skill-item">Singularity</span>
+          <span class="skill-item">Linux HPC</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <h4 class="skill-category__title">Domains</h4>
+        <div class="skill-category__items">
+          <span class="skill-item">Defense & remote sensing</span>
+          <span class="skill-item">Analyst-facing tooling</span>
+          <span class="skill-item">Multimodal MT</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <h4 class="skill-category__title">Service</h4>
+        <div class="skill-category__items">
+          <span class="skill-item">CVPR 2022–23</span>
+          <span class="skill-item">ICCV 2023</span>
+          <span class="skill-item">ECCV 2022</span>
+          <span class="skill-item">HackOHI/O</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="education" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading title="Education" />
+  <!-- PUBLICATIONS SECTION -->
+  <section id="publications" class="section">
+    <div class="section__header">
+      <h2 class="section__title">Publications</h2>
+      <span class="section__subtitle">All with runnable code</span>
     </div>
-    <div class="section__body">
-      <div class="prose">
-        <h3>Ohio State University — Columbus, OH</h3>
-        <p>
-          <strong>Ph.D. in Computer Science and Engineering</strong> — Aug 2021 – May 2026 (Expected)<br />
-          <strong>M.S. in Computer Science and Engineering</strong> — Aug 2021 – May 2025<br />
-          Advisor: Prof. Jim Davis · Minors: Mathematics and High-Performance Computing · GPA: 3.70
-        </p>
-        <p>
-          <strong>B.S. in Computer Science and Engineering with Honors</strong> — Aug 2017 – May 2021<br />
-          Minor: Mathematics · Scholarships: Maximus, Ten-Hai Lai, Ansel, Name and Seal · GPA: 3.86
-        </p>
-      </div>
+    <div class="grid grid--2">
+      {publications.map((pub) => (
+        <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+      ))}
+    </div>
+    <div class="mt-lg">
+      <a class="button button--ghost button--small" href={`${import.meta.env.BASE_URL}publications/`}>
+        Browse all publications →
+      </a>
     </div>
   </section>
 
-  <section id="skills" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading title="Skills" />
+  <!-- ARTIFACTS SECTION -->
+  <section id="artifacts" class="section">
+    <div class="section__header">
+      <h2 class="section__title">Open Source</h2>
+      <span class="section__subtitle">Tools & datasets</span>
     </div>
-    <div class="section__body">
-      <div class="prose skills-list">
-        <p><strong>Machine learning &amp; modeling</strong></p>
-        <ul>
-          <li>Selective prediction and abstention policies for vision, multimodal MT, and LLMs</li>
-          <li>Vision transformers, vision-language models, multimodal EO/SAR representation learning</li>
-          <li>Evaluation harness design, calibration metrics, and selective accuracy analysis</li>
-        </ul>
-
-        <p><strong>Tools &amp; infrastructure</strong></p>
-        <ul>
-          <li>Python, PyTorch, HuggingFace, Git</li>
-          <li>Slurm, Singularity, Linux HPC clusters</li>
-          <li>Experiment tracking, report generation (HTML/Markdown), LaTeX</li>
-        </ul>
-
-        <p><strong>Domains</strong></p>
-        <ul>
-          <li>Analyst-facing tooling, defense and remote sensing applications</li>
-          <li>Multimodal machine translation and imagery-aware evaluation</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="service" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading title="Professional service" />
-    </div>
-    <div class="section__body">
-      <div class="prose">
-        <ul>
-          <li>Reviewer: CVPR 2022–2023, ICCV 2023, ECCV 2022</li>
-          <li>Volunteer: HackOHI/O 2023</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="publications" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading
-        title="Publications & articles"
-        description="Papers I've published — all with code you can run."
-      />
-    </div>
-    <div class="section__body">
-      <div class="publication-grid">
-        {publications.map((pub) => (
-          <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
-        ))}
-      </div>
-      <div class="section__cta">
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>Browse publication archive</a>
-      </div>
-    </div>
-  </section>
-
-  <section id="artifacts" class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading
-        title="Open-source code"
-        description="Tools and datasets from my research."
-      />
-    </div>
-    <div class="section__body">
-      <div class="artifact-grid">
-        {featuredArtifacts.map((artifact) => (
-          <article class="artifact-card card">
-            <div class="artifact-card__header">
-              <h3>
-                <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                  {artifact.data.name}
-                </a>
-              </h3>
-              {artifact.data.repo && (
-                <a class="badge badge--link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </a>
-              )}
+    <div class="grid grid--3">
+      {featuredArtifacts.map((artifact) => (
+        <article class="card card--clickable">
+          <div class="card__header">
+            <h3 class="card__title">
+              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                {artifact.data.name}
+              </a>
+            </h3>
+          </div>
+          <p class="card__description">{artifact.data.summary}</p>
+          <div class="card__tags">
+            {artifact.data.reproduce.slice(0, 2).map((item) => (
+              <span class="card__tag">{item.split(' ').slice(0, 3).join(' ')}...</span>
+            ))}
+          </div>
+          {artifact.data.tiesTo.length > 0 && (
+            <div class="card__links">
+              <span class="card__link">
+                Supports: {artifact.data.tiesTo
+                  .map((slug) => publicationLookup.get(slug))
+                  .filter(Boolean)
+                  .slice(0, 1)
+                  .join(', ')}
+              </span>
             </div>
-            <p>{artifact.data.summary}</p>
-            <ul>
-              {artifact.data.reproduce.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-            {artifact.data.tiesTo.length > 0 && (
-              <p class="artifact-card__ties">
-                Supports:&nbsp;
-                {artifact.data.tiesTo
-                  .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
-                  .filter((item): item is { slug: string; title: string } => Boolean(item.title))
-                  .map((item, index, arr) => (
-                    <span>
-                      <a href={`${import.meta.env.BASE_URL}publications/${item.slug}/`}>{item.title}</a>
-                      {index < arr.length - 1 ? ', ' : ''}
-                    </span>
-                  ))}
-              </p>
-            )}
-          </article>
-        ))}
-      </div>
-      <div class="section__cta">
-        <a class="button" href={`${import.meta.env.BASE_URL}artifacts/`}>View all artifacts</a>
-      </div>
+          )}
+        </article>
+      ))}
+    </div>
+    <div class="mt-lg">
+      <a class="button button--small" href={`${import.meta.env.BASE_URL}artifacts/`}>
+        View all artifacts →
+      </a>
     </div>
   </section>
 </BaseLayout>

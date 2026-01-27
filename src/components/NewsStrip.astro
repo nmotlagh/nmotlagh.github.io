@@ -11,25 +11,97 @@ const archiveHref = `${import.meta.env.BASE_URL}news/`;
 
 {items.length > 0 && (
   <section class="news-strip" id="news" aria-label="Latest updates">
-    <div class="news-strip__inner site-shell">
-      <div class="news-strip__label">
-        <span class="tag">What’s new</span>
-        <a href={archiveHref}>Archive</a>
-      </div>
-      <ol class="news-strip__items">
-        {items.map((item) => (
-          <li>
-            <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
-            {item.data.link ? (
-              <a href={item.data.link} target="_blank" rel="noopener noreferrer">
-                {item.data.title}
-              </a>
-            ) : (
-              <span>{item.data.title}</span>
-            )}
-          </li>
-        ))}
-      </ol>
+    <div class="news-strip__header">
+      <span class="news-strip__label">What's new</span>
+      <a href={archiveHref} class="news-strip__archive">Archive →</a>
     </div>
+    <ol class="news-strip__items">
+      {items.map((item) => (
+        <li>
+          <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+          {item.data.link ? (
+            <a href={item.data.link} target="_blank" rel="noopener noreferrer">
+              {item.data.title}
+            </a>
+          ) : (
+            <span>{item.data.title}</span>
+          )}
+        </li>
+      ))}
+    </ol>
   </section>
 )}
+
+<style>
+  .news-strip {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+  
+  .news-strip__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .news-strip__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+  }
+  
+  .news-strip__archive {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+  
+  .news-strip__archive:hover {
+    color: var(--color-accent);
+  }
+  
+  .news-strip__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  @media (min-width: 640px) {
+    .news-strip__items {
+      flex-direction: row;
+      gap: var(--space-xl);
+    }
+    
+    .news-strip__items li {
+      flex: 1;
+    }
+  }
+  
+  .news-strip__items li {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+  
+  .news-strip__items time {
+    font-weight: 600;
+    color: var(--color-text-soft);
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: var(--space-2xs);
+  }
+  
+  .news-strip__items a {
+    color: var(--color-text);
+  }
+  
+  .news-strip__items a:hover {
+    color: var(--color-accent);
+  }
+</style>

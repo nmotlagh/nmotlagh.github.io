@@ -8,22 +8,19 @@ const highlightEntries = (await getCollection('publications'))
 ---
 
 {highlightEntries.length > 0 && (
-  <section class="site-shell highlights">
-    <div class="highlights__header">
-      <p class="tag">Research highlights</p>
-      <h2>Recent work</h2>
-      <p>
-        A few projects I'm proud of &mdash; each with paper, code, and data.
-      </p>
+  <section class="highlights-section" aria-label="Research highlights">
+    <div class="highlights-header">
+      <span class="highlights-label">Research highlights</span>
+      <h2 class="highlights-title">Recent work</h2>
+      <p class="highlights-desc">A few projects I'm proud of — each with paper, code, and data.</p>
     </div>
-    <div class="highlights__grid">
+    <div class="highlights-grid">
       {highlightEntries.map((entry) => {
         const detailHref = `${import.meta.env.BASE_URL}publications/${entry.slug}/`;
         const badges = [
           { label: 'Paper', href: entry.data.pdf ?? entry.data.external ?? detailHref },
           { label: 'Code', href: entry.data.code },
           { label: 'Data', href: entry.data.data },
-          { label: 'Slides', href: entry.data.slides },
         ];
         return (
           <article class="highlight-card">
@@ -36,12 +33,12 @@ const highlightEntries = (await getCollection('publications'))
               {entry.data.title}
             </a>
             <p class="highlight-card__body">{entry.data.tldr}</p>
-            {entry.data.metric && <span class="metric-chip">{entry.data.metric}</span>}
-            <div class="highlight-card__badges" role="list">
+            {entry.data.metric && <span class="highlight-card__metric">{entry.data.metric}</span>}
+            <div class="highlight-card__links">
               {badges.map(
                 (badge) =>
                   badge.href && (
-                    <a class="badge badge--link" href={badge.href} target="_blank" rel="noopener noreferrer">
+                    <a class="highlight-card__link" href={badge.href} target="_blank" rel="noopener noreferrer">
                       {badge.label}
                     </a>
                   ),
@@ -53,3 +50,126 @@ const highlightEntries = (await getCollection('publications'))
     </div>
   </section>
 )}
+
+<style>
+  .highlights-section {
+    background: var(--color-callout-bg);
+    border: 1px solid var(--color-callout-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+  
+  .highlights-header {
+    margin-bottom: var(--space-lg);
+  }
+  
+  .highlights-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+  }
+  
+  .highlights-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: var(--space-xs) 0;
+  }
+  
+  .highlights-desc {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  
+  .highlights-grid {
+    display: grid;
+    gap: var(--space-lg);
+  }
+  
+  @media (min-width: 640px) {
+    .highlights-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 900px) {
+    .highlights-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .highlight-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    transition: all var(--transition-fast);
+  }
+  
+  .highlight-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .highlight-card__eyebrow {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-text-soft);
+    display: flex;
+    gap: var(--space-2xs);
+  }
+  
+  .highlight-card__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.4;
+  }
+  
+  .highlight-card__title:hover {
+    color: var(--color-accent);
+  }
+  
+  .highlight-card__body {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+    flex: 1;
+  }
+  
+  .highlight-card__metric {
+    display: inline-flex;
+    align-self: flex-start;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-accent-soft);
+    border-radius: var(--radius-sm);
+    color: var(--color-accent);
+  }
+  
+  .highlight-card__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
+    padding-top: var(--space-xs);
+    border-top: 1px solid var(--color-border);
+  }
+  
+  .highlight-card__link {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+  
+  .highlight-card__link:hover {
+    color: var(--color-accent);
+  }
+</style>
