@@ -1,0 +1,47 @@
+---
+title: "Why LLMs Need Reject Options"
+date: "2026-02-08"
+description: "Large language models confidently fabricate answers. Structured abstention, borrowed from vision, offers a principled fix."
+tags: ["selective prediction", "uncertainty", "LLMs", "calibration"]
+draft: true
+---
+
+{/* TODO: Open with a concrete, vivid example of an LLM confidently producing a wrong answer in a high-stakes context (medical, legal, or defense). Set the stakes immediately: the problem is not that models are wrong sometimes, but that they do not know when they are wrong. */}
+
+## The Confidence Problem
+
+{/* TODO: Explain that modern LLMs are trained to always produce an answer. Softmax probabilities are poorly calibrated, so "confidence" scores are unreliable. Draw the contrast: humans hedge, hesitate, and say "I don't know" — models do not. Frame this as a design flaw, not an inherent limitation. 1-2 paragraphs. */}
+
+{/* TODO: Briefly mention the scale of the problem — hallucination rates in deployed systems, the trust deficit this creates, and why post-hoc guardrails (retrieval-augmented generation, output filtering) are patches rather than solutions. */}
+
+## What Vision Models Already Know
+
+{/* TODO: Introduce selective prediction and reject-option classification as established ideas in computer vision. Reference your ISVC and MVA work without heavy jargon: the core insight is that a classifier can learn to partition its decision space into "clean" regions (where it is reliably correct) and "dirty" regions (where mistakes cluster). */}
+
+{/* TODO: Tell the origin story — in 2021, you and Jim Davis were studying t-SNE plots of learned representations and noticed that errors were not uniformly scattered; they concentrated in specific, identifiable regions. This observation became the foundation for building classifiers that recognize dirty regions and either correct course or abstain. Keep this concrete and visual. */}
+
+{/* TODO: Summarize the key result: by training models to recognize when they are operating in unreliable territory, you can dramatically reduce error rates on the predictions the model does make, with a controlled trade-off in coverage. Mention the naturally constrained framework. */}
+
+## Why Language Is Harder
+
+{/* TODO: Explain the shift from vision to language. In vision, uncertainty is often spatial or distributional — blurry images, out-of-distribution objects, ambiguous boundaries. In language, uncertainty is context-dependent and compositional. A question might be easy given the right context and impossible without it. The same surface-level question can have wildly different difficulty depending on what the model has seen. */}
+
+{/* TODO: Discuss the three-way distinction your current work addresses: (1) questions the model could answer with more reasoning or chain-of-thought, (2) questions that need external context the model does not have, and (3) questions that are genuinely beyond reach — unanswerable or ill-posed. Explain why collapsing these categories into a single "uncertain" label loses actionable information. */}
+
+## Structured Abstention
+
+{/* TODO: Without revealing the specific method from the EMNLP submission, describe the goal: training LLMs to distinguish between these categories and respond accordingly. The model should reason harder when reasoning helps, request context when context is the bottleneck, and abstain cleanly when the question is out of scope. Frame this as teaching the model metacognitive awareness — not just "what do I think the answer is" but "how reliable is my answer likely to be, and why." */}
+
+{/* TODO: Connect back to the clean/dirty regions metaphor from the vision work. The principle is the same — partition the space, identify the boundaries, and act differently on each side — but the space is now the space of prompts, contexts, and reasoning chains rather than pixel features. */}
+
+## Why This Matters for Deployment
+
+{/* TODO: Discuss concrete deployment domains where reject options are not optional: defense and intelligence (where a fabricated answer can drive real decisions), medical diagnosis support (where overconfident wrong answers erode clinician trust), and any setting where the cost of a confident wrong answer exceeds the cost of no answer at all. */}
+
+{/* TODO: Argue that structured abstention is a prerequisite for trustworthy AI systems, not a nice-to-have. If we cannot build models that know their own limits, we cannot responsibly deploy them in consequential settings. */}
+
+## A Note on Signal and Noise
+
+{/* TODO: Briefly share your perspective on the current state of research. The barrier to contributing has dropped — LLM-assisted writing, easier access to compute, lower friction to submission. The result is a flood of papers, many incremental or redundant, that overwhelms reviewers and buries important work. Argue that higher review standards are needed, and that LLM-assisted reviewing (used to filter and prioritize, not to replace human judgment) could help restore signal. Keep this measured and constructive, not bitter. 1-2 paragraphs. */}
+
+{/* TODO: Tie it back to the main theme — the research community itself could benefit from a kind of reject option: the ability to say "this does not clear the bar" with less friction and more consistency. */}

@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const rendered = await post.render();
+const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+const blogPostSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date,
+  author: {
+    '@type': 'Person',
+    name: 'Nick Kashani Motlagh',
+  },
+  url: Astro.site ? new URL(`blog/${post.slug}/`, Astro.site).href : undefined,
+};
+---
+
+<BaseLayout title={post.data.title} description={post.data.description} structuredData={blogPostSchema}>
+  <article class="site-shell blog-post">
+    <a class="backlink" href={`${import.meta.env.BASE_URL}blog/`}>
+      ← Blog
+    </a>
+    <header class="blog-post__header">
+      <time datetime={post.data.date}>{formatter.format(new Date(post.data.date))}</time>
+      <h1>{post.data.title}</h1>
+      {post.data.tags.length > 0 && (
+        <ul class="tag-list">
+          {post.data.tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )}
+    </header>
+
+    <section class="blog-post__body prose">
+      <rendered.Content />
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .blog-post {
+    max-width: 72ch;
+  }
+
+  .backlink {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  .backlink:hover {
+    color: var(--color-accent);
+  }
+
+  .blog-post__header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .blog-post__header time {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-soft);
+  }
+
+  .blog-post__header h1 {
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin: var(--space-sm) 0 0;
+  }
+
+  .blog-post__body {
+    margin-bottom: var(--space-3xl);
+  }
+
+  .blog-post__body :global(h2) {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: var(--space-2xl) 0 var(--space-md);
+    letter-spacing: -0.01em;
+  }
+
+  .blog-post__body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .blog-post__body :global(blockquote) {
+    border-left: 3px solid var(--color-accent);
+    margin: var(--space-lg) 0;
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-accent-soft);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  .blog-post__body :global(blockquote p) {
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .blog-post__body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    padding: 0.15em 0.35em;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-sm);
+  }
+
+  .blog-post__body :global(pre) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    overflow-x: auto;
+    margin: var(--space-lg) 0;
+  }
+
+  .blog-post__body :global(pre code) {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+  }
+</style>

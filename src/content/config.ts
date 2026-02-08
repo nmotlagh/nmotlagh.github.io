@@ -69,4 +69,15 @@ const artifacts = defineCollection({
   }),
 });
 
-export const collections = { pages, publications, news, artifacts };
+const blog = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    description: z.string().max(200),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { pages, publications, news, artifacts, blog };
