@@ -7,24 +7,24 @@
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
 
-  /* Light mode colors - Teal accent */
-  --color-bg: #f8fafb;
+  /* Light mode colors - Warm amber accent, refined warm neutrals */
+  --color-bg: #faf9f7;
   --color-surface: #ffffff;
-  --color-surface-alt: #f1f5f9;
-  --color-text: #1e293b;
-  --color-text-muted: #64748b;
-  --color-text-soft: #94a3b8;
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
-  --color-accent: #14b8a6;
-  --color-accent-hover: #0d9488;
-  --color-highlight: #0f766e;
-  --color-accent-soft: rgba(20, 184, 166, 0.1);
-  --color-accent-glow: rgba(20, 184, 166, 0.15);
+  --color-surface-alt: #f5f3f0;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-text-soft: #a8a29e;
+  --color-border: #e7e5e4;
+  --color-border-strong: #d6d3d1;
+  --color-accent: #b45309;
+  --color-accent-hover: #92400e;
+  --color-accent-soft: rgba(180, 83, 9, 0.08);
+  --color-accent-glow: rgba(180, 83, 9, 0.12);
+  --color-highlight: #78350f;
 
   /* Callout colors */
-  --color-callout-bg: linear-gradient(135deg, rgba(20, 184, 166, 0.08) 0%, rgba(20, 184, 166, 0.03) 100%);
-  --color-callout-border: rgba(20, 184, 166, 0.3);
+  --color-callout-bg: linear-gradient(135deg, rgba(180, 83, 9, 0.06) 0%, rgba(180, 83, 9, 0.02) 100%);
+  --color-callout-border: rgba(180, 83, 9, 0.25);
 
   /* Spacing */
   --space-2xs: 0.25rem;
@@ -62,22 +62,22 @@
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface-alt: #334155;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
-  --color-text-soft: #64748b;
-  --color-border: #334155;
-  --color-border-strong: #475569;
-  --color-accent: #2dd4bf;
-  --color-accent-hover: #5eead4;
-  --color-highlight: #99f6e4;
-  --color-accent-soft: rgba(45, 212, 191, 0.15);
-  --color-accent-glow: rgba(45, 212, 191, 0.2);
+  --color-bg: #1a1614;
+  --color-surface: #262220;
+  --color-surface-alt: #302b28;
+  --color-text: #f5f0eb;
+  --color-text-muted: #b8b0a8;
+  --color-text-soft: #78716c;
+  --color-border: #3b3532;
+  --color-border-strong: #4d4541;
+  --color-accent: #e5a04b;
+  --color-accent-hover: #f0b86a;
+  --color-accent-soft: rgba(229, 160, 75, 0.12);
+  --color-accent-glow: rgba(229, 160, 75, 0.18);
+  --color-highlight: #f5ce9a;
 
-  --color-callout-bg: linear-gradient(135deg, rgba(45, 212, 191, 0.12) 0%, rgba(45, 212, 191, 0.05) 100%);
-  --color-callout-border: rgba(45, 212, 191, 0.4);
+  --color-callout-bg: linear-gradient(135deg, rgba(229, 160, 75, 0.10) 0%, rgba(229, 160, 75, 0.04) 100%);
+  --color-callout-border: rgba(229, 160, 75, 0.35);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
