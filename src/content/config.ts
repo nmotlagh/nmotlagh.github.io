@@ -28,6 +28,7 @@ const publications = defineCollection({
     authors: z.array(z.string()),
     tldr: z.string().max(200),
     highlight: z.boolean().optional().default(false),
+    award: z.string().optional(),
     metric: z.string().optional(),
     doi: z.string().optional(),
     datePublished: z.string().optional(),

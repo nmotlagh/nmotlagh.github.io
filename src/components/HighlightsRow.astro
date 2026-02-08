@@ -29,6 +29,9 @@ const highlightEntries = (await getCollection('publications'))
               <span aria-hidden="true">·</span>
               <span>{entry.data.year}</span>
             </div>
+            {entry.data.award && (
+              <span class="highlight-card__award">{entry.data.award}</span>
+            )}
             <a class="highlight-card__title" href={detailHref}>
               {entry.data.title}
             </a>
@@ -171,5 +174,16 @@ const highlightEntries = (await getCollection('publications'))
   
   .highlight-card__link:hover {
     color: var(--color-accent);
+  }
+
+  .highlight-card__award {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-pill);
+    margin-top: var(--space-2xs);
   }
 </style>

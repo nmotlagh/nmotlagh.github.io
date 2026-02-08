@@ -22,7 +22,7 @@ const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeri
       <ol class="news-archive">
         {newsItems.map((item) => (
           <li>
-            <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+            <time datetime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
             {item.data.link ? (
               <a href={item.data.link} target="_blank" rel="noopener noreferrer">
                 {item.data.title}

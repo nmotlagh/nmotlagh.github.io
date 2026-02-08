@@ -34,6 +34,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Type-check
+        run: npx astro check
+
+      - name: Security audit
+        run: npm audit --audit-level=high
+
       - name: Build site
         run: npm run build
 
@@ -41,6 +47,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+          retention-days: 1
 
   deploy:
     needs: build

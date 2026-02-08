@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { entry, artifacts = [] }: Props = Astro.props;
-const rendered = await entry.render();
 const { data, slug } = entry;
 const detailHref = `${import.meta.env.BASE_URL}publications/${slug}/`;
 
@@ -22,6 +21,9 @@ const badges: { label: string; href?: string }[] = [
 
 <article class="card publication-card">
   <p class="publication-card__eyebrow">{data.venue} · {data.year}</p>
+  {data.award && (
+    <span class="card__award">{data.award}</span>
+  )}
   <h3 class="publication-card__title">
     <a href={detailHref}>{data.title}</a>
   </h3>
@@ -106,5 +108,16 @@ const badges: { label: string; href?: string }[] = [
     color: var(--color-text-muted);
     margin: var(--space-xs) 0 0;
     line-height: 1.6;
+  }
+
+  .card__award {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    background: var(--color-accent-soft);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-pill);
+    margin-top: var(--space-2xs);
   }
 </style>

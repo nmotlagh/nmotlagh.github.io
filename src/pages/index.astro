@@ -11,8 +11,8 @@ import headshot from '../assets/headshot.jpg';
 
 const about = await getEntry('pages', 'about');
 const experience = await getEntry('pages', 'experience');
-const aboutRendered = await about.render();
-const experienceItems = experience.data.items ?? [];
+const aboutRendered = about ? await about.render() : undefined;
+const experienceItems = experience?.data.items ?? [];
 
 const publicationEntries = await getCollection('publications');
 const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
@@ -44,7 +44,7 @@ const personSchema = {
   '@type': 'Person',
   name: 'Nick Kashani Motlagh',
   url: siteOrigin,
-  jobTitle: 'Ph.D. Candidate; Research Scientist track 2026',
+  jobTitle: 'Ph.D. Candidate — Uncertainty & Calibration Research',
   affiliation: {
     '@type': 'CollegeOrUniversity',
     name: 'The Ohio State University',
@@ -57,6 +57,9 @@ const personSchema = {
     'Computer Vision',
     'Uncertainty Quantification',
     'Multimodal Systems',
+    'LLM Calibration',
+    'Selective Prediction',
+    'Reinforcement Learning',
   ],
 };
 
@@ -91,33 +94,36 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
 
 <BaseLayout
   title="Home"
-  description="Nick Kashani Motlagh is a machine learning engineer and Ph.D. candidate advancing production-ready, uncertainty-aware multimodal systems at The Ohio State University."
+  description="Nick Kashani Motlagh is a machine learning engineer and Ph.D. candidate building uncertainty-aware AI systems that know their limits — and know why. Ph.D. candidate at Ohio State researching honest, calibrated language models."
   structuredData={structuredData}
 >
   <!-- INTRO SECTION -->
   <div class="hero-intro">
     <TechBadges />
     <p class="hero-intro__greeting">Hi, I'm Nick 👋</p>
-    <h2 class="hero-intro__headline">
+    <h1 class="hero-intro__headline">
       I train AI systems to <span class="accent">know when they don't know</span>
-    </h2>
+    </h1>
     <p class="hero-intro__description">
-      Building AI systems that know their limits — teaching models when to abstain instead of guessing. 
-      Ph.D. candidate at Ohio State researching uncertainty-aware vision-language systems.
+      Building AI systems that know their limits — and know <em>why</em> they don't know.
+      Ph.D. candidate at Ohio State researching uncertainty-aware language models that diagnose their own failure modes instead of guessing.
+    </p>
+    <p class="hero-intro__status">
+      <strong>Seeking:</strong> Research Scientist &amp; ML Engineering roles · PhD finishing May 2026 · Columbus, OH · Open to relocation
     </p>
     <div class="hero-intro__actions">
       <a class="button" href={resumeHref} target="_blank" rel="noopener noreferrer">
-        View Resume
+        View Resume (PDF)
       </a>
       <a class="button button--ghost" href={emailHref}>
-        Get in Touch
+        Discuss Opportunities
       </a>
     </div>
   </div>
 
   <!-- STATUS CALLOUT -->
   <Callout title="Currently" icon="🎯" variant="highlight">
-    <p><strong>Graduate Research Associate</strong> at OSU Computer Vision Lab. Finishing PhD May 2026 and seeking 2026 research scientist roles. Columbus, OH — open to relocation.</p>
+    <p><strong>Graduate Research Associate</strong> at OSU Computer Vision Lab. Finishing PhD May 2026 — current work: teaching LLMs to distinguish between what they don't know and what they can't know. Seeking research scientist or ML engineering roles. Columbus, OH — open to relocation.</p>
   </Callout>
 
   <!-- NEWS STRIP -->
@@ -125,16 +131,6 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
 
   <!-- RESEARCH HIGHLIGHTS -->
   <HighlightsRow />
-
-  <!-- ABOUT SECTION -->
-  <section id="about" class="section">
-    <div class="section__header">
-      <h2 class="section__title">About</h2>
-    </div>
-    <div class="prose">
-      <aboutRendered.Content />
-    </div>
-  </section>
 
   <!-- EXPERIENCE SECTION -->
   <section id="experience" class="section">
@@ -176,32 +172,42 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
     </div>
     <div class="skills-grid">
       <div class="skill-category">
-        <h4 class="skill-category__title">ML & Modeling</h4>
+        <h4 class="skill-category__title">Core Research</h4>
         <div class="skill-category__items">
           <span class="skill-item">Selective prediction</span>
+          <span class="skill-item">LLM self-assessment</span>
+          <span class="skill-item">Confidence calibration</span>
+          <span class="skill-item">Calibration metrics</span>
+          <span class="skill-item">RL fine-tuning</span>
+          <span class="skill-item">Multimodal learning</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <h4 class="skill-category__title">Models &amp; Architectures</h4>
+        <div class="skill-category__items">
           <span class="skill-item">Vision transformers</span>
           <span class="skill-item">VLMs</span>
-          <span class="skill-item">Calibration metrics</span>
-          <span class="skill-item">Multimodal learning</span>
           <span class="skill-item">EO/SAR</span>
         </div>
       </div>
       <div class="skill-category">
-        <h4 class="skill-category__title">Tools & Infrastructure</h4>
+        <h4 class="skill-category__title">Tools &amp; Infrastructure</h4>
         <div class="skill-category__items">
           <span class="skill-item">Python</span>
           <span class="skill-item">PyTorch</span>
           <span class="skill-item">HuggingFace</span>
-          <span class="skill-item">Git</span>
+          <span class="skill-item">vLLM</span>
+          <span class="skill-item">DeepSpeed</span>
           <span class="skill-item">Slurm</span>
           <span class="skill-item">Singularity</span>
           <span class="skill-item">Linux HPC</span>
+          <span class="skill-item">Git</span>
         </div>
       </div>
       <div class="skill-category">
         <h4 class="skill-category__title">Domains</h4>
         <div class="skill-category__items">
-          <span class="skill-item">Defense & remote sensing</span>
+          <span class="skill-item">Defense &amp; remote sensing</span>
           <span class="skill-item">Analyst-facing tooling</span>
           <span class="skill-item">Multimodal MT</span>
         </div>
@@ -276,6 +282,16 @@ const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry
       <a class="button button--small" href={`${import.meta.env.BASE_URL}artifacts/`}>
         View all artifacts →
       </a>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="section">
+    <div class="section__header">
+      <h2 class="section__title">About</h2>
+    </div>
+    <div class="prose">
+      {aboutRendered && <aboutRendered.Content />}
     </div>
   </section>
 </BaseLayout>

@@ -18,7 +18,7 @@ const archiveHref = `${import.meta.env.BASE_URL}news/`;
     <ol class="news-strip__items">
       {items.map((item) => (
         <li>
-          <time dateTime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+          <time datetime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
           {item.data.link ? (
             <a href={item.data.link} target="_blank" rel="noopener noreferrer">
               {item.data.title}

@@ -254,6 +254,16 @@ p {
   background: var(--color-accent-soft);
 }
 
+/* Focus-visible states for keyboard navigation */
+.sidebar__link:focus-visible,
+.card:focus-visible,
+.card--clickable:focus-visible,
+.button:focus-visible,
+.timeline-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .sidebar__link svg {
   width: 16px;
   height: 16px;
@@ -350,6 +360,7 @@ p {
   margin-bottom: var(--space-xs);
 }
 
+h1.hero-intro__headline,
 .hero-intro__headline {
   font-size: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
   font-weight: 700;
@@ -367,6 +378,16 @@ p {
   color: var(--color-text-muted);
   line-height: 1.7;
   max-width: 60ch;
+}
+
+.hero-intro__status {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: var(--space-sm) 0 0;
+}
+
+.hero-intro__status strong {
+  color: var(--color-accent);
 }
 
 .hero-intro__actions {
@@ -588,6 +609,7 @@ p {
 
 .card--clickable:hover {
   border-color: var(--color-accent);
+  transform: translateY(-4px);
 }
 
 .card__header {
@@ -685,6 +707,7 @@ p {
 .button {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: var(--space-xs);
   justify-content: center;
   padding: 0.5rem 1rem;
