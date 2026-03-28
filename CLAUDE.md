@@ -23,6 +23,7 @@ The site uses Astro's typed content collections defined in `src/content/config.t
 - **`publications/`** - Research papers with rich metadata (authors, venue, year, DOI, links to PDF/arXiv/code/data)
 - **`news/`** - Data-only collection for recent updates (title, date, optional link)
 - **`artifacts/`** - Data-only collection for code repositories with reproduction steps
+- **`blog/`** - Content collection for blog posts with title, date, description, tags, and draft flag
 
 All frontmatter is validated against Zod schemas at build time. When adding content, match the existing schema structure.
 
@@ -32,16 +33,18 @@ All frontmatter is validated against Zod schemas at build time. When adding cont
 - **`src/pages/about/`, `/experience/`, `/publications/`, etc.** - Legacy redirect stubs to preserve old URLs
 - **`src/pages/404.astro`** - Custom 404 page
 - **`src/pages/rss.xml.js`** - RSS feed generation
-- **`src/pages/_index.astro.full`** - Archived full homepage variant
+- **`src/pages/blog/`** - Blog index and `[slug]` detail pages for the blog content collection
 
 ### Layout & Components
 
 - **`BaseLayout.astro`** - Global shell with theme toggle, metadata, structured data, and CSS custom properties for theming
-- **`Hero.astro`** - Homepage hero with animated interactive water background (Canvas-based)
+- **`Hero.astro`** - Homepage hero section with heading, description, action buttons, profile image, and stats
 - **`PublicationCard.astro`** - Displays publication with links, highlights, and optional image
 - **`NewsStrip.astro`** - Renders news items chronologically
 - **`HighlightsRow.astro`** - Grid of highlighted publications
 - **`SectionHeading.astro`** - Consistent section headers
+- **`TechBadges.astro`** - Renders technology/skill badge chips
+- **`Callout.astro`** - Styled callout/highlight boxes
 - **`ThemeToggle.astro`** - Light/dark mode switcher with localStorage persistence and theme transition
 
 ### Theming System
@@ -51,7 +54,7 @@ The site uses a dual-mode theme system implemented via CSS custom properties in 
 - Theme state is stored in `data-theme` attribute on `<html>` element (`"light"` or `"dark"`)
 - Initial theme derived from `localStorage` or system preference (`prefers-color-scheme`)
 - Script in `BaseLayout.astro` sets theme before first paint to prevent flash
-- Primary accent color: OSU Scarlet (`#BA0C2F`)
+- Primary accent color: blue (`#2563eb` light / `#60a5fa` dark)
 - All theme-dependent colors defined as CSS custom properties that update based on `data-theme`
 
 When adding new UI elements, use existing CSS custom property tokens rather than hardcoded colors.
