@@ -1,0 +1,75 @@
+---
+import type { ResearchArcStep } from '../../data/editorial';
+
+interface Props {
+  items: ResearchArcStep[];
+}
+
+const { items }: Props = Astro.props;
+---
+
+<ol class="research-arc" aria-label="Research arc">
+  {items.map((item) => (
+    <li class="research-arc__item">
+      <p class="research-arc__label">{item.label}</p>
+      <h3>{item.title}</h3>
+      <p>{item.description}</p>
+      <p class="research-arc__evidence">{item.evidence}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .research-arc {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .research-arc__item {
+    position: relative;
+    padding: 1.15rem 1.15rem 1.15rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: color-mix(in srgb, var(--color-panel) 90%, transparent);
+    box-shadow: var(--shadow-card);
+  }
+
+  .research-arc__item::before {
+    content: '';
+    position: absolute;
+    inset: 1rem auto 1rem 0;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--color-accent), transparent);
+  }
+
+  .research-arc__label {
+    margin: 0;
+    color: var(--color-accent);
+    font: 600 0.72rem/1.2 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .research-arc__item h3 {
+    margin: 0.55rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .research-arc__item p {
+    margin: 0.75rem 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+
+  .research-arc__evidence {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+</style>

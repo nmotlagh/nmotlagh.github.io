@@ -1,0 +1,268 @@
+---
+import { Image } from "astro:assets";
+import headshot from "../../assets/headshot.jpg";
+
+interface ActionLink {
+  label: string;
+  href: string;
+  variant?: "primary" | "ghost";
+  external?: boolean;
+}
+
+interface StatItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede: string;
+  supporting: string;
+  status: string;
+  actions: ActionLink[];
+  stats: StatItem[];
+  scholarHref: string;
+  githubHref: string;
+  linkedInHref: string;
+  emailHref: string;
+}
+
+const {
+  eyebrow,
+  title,
+  lede,
+  supporting,
+  status,
+  actions,
+  stats,
+  scholarHref,
+  githubHref,
+  linkedInHref,
+  emailHref,
+}: Props = Astro.props;
+
+const profileLinks = [
+  { label: "Scholar", href: scholarHref },
+  { label: "GitHub", href: githubHref },
+  { label: "LinkedIn", href: linkedInHref },
+  { label: "Email", href: emailHref },
+];
+---
+
+<section class="editorial-hero surface surface--raised">
+  <div class="editorial-hero__copy">
+    <p class="eyebrow">{eyebrow}</p>
+    <div class="editorial-hero__title-shell">
+      <h1 class="editorial-hero__title">{title}</h1>
+    </div>
+    <p class="editorial-hero__lede">{lede}</p>
+    <p class="editorial-hero__supporting">{supporting}</p>
+
+    <p class="editorial-hero__status">
+      <span class="tag">Now</span>
+      <span>{status}</span>
+    </p>
+
+    <div class="editorial-hero__actions">
+      {actions.map((action) => (
+        <a
+          class:list={["button", action.variant === "ghost" && "button--ghost"]}
+          href={action.href}
+          target={action.external ? "_blank" : undefined}
+          rel={action.external ? "noopener noreferrer" : undefined}
+        >
+          {action.label}
+        </a>
+      ))}
+    </div>
+
+    <dl class="editorial-hero__stats">
+      {stats.map((stat) => (
+        <div class="editorial-hero__stat">
+          <dt>{stat.label}</dt>
+          <dd>{stat.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <aside class="editorial-hero__aside">
+    <div class="editorial-hero__portrait">
+      <Image
+        src={headshot}
+        alt="Nick Kashani Motlagh"
+        width={720}
+        height={960}
+        sizes="(max-width: 960px) 100vw, 28rem"
+      />
+    </div>
+
+    <div class="editorial-hero__links-card">
+      <ul class="editorial-hero__links">
+        {profileLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+              rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </aside>
+</section>
+
+<style>
+  .editorial-hero {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  @media (min-width: 960px) {
+    .editorial-hero {
+      grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.8fr);
+      align-items: start;
+    }
+  }
+
+  .editorial-hero__copy {
+    min-width: 0;
+  }
+
+  .editorial-hero__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 5.25rem);
+    font-weight: 640;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .editorial-hero__title-shell {
+    max-width: min(100%, 46rem);
+  }
+
+  .editorial-hero__lede {
+    margin: 1.25rem 0 0;
+    max-width: 44rem;
+    font-size: clamp(1.2rem, 1rem + 0.7vw, 1.55rem);
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+
+  .editorial-hero__supporting {
+    margin: 1rem 0 0;
+    max-width: 42rem;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .editorial-hero__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+  }
+
+  .editorial-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    margin-top: 1.75rem;
+  }
+
+  .editorial-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    margin: 2rem 0 0;
+  }
+
+  @media (max-width: 639px) {
+    .editorial-hero__stats {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .editorial-hero__stat {
+    padding: 1rem 1.05rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-panel) 86%, transparent);
+  }
+
+  .editorial-hero__stat dt {
+    margin: 0;
+    color: var(--color-text-soft);
+    font: 600 0.72rem/1.2 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .editorial-hero__stat dd {
+    margin: 0.55rem 0 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 1rem + 0.3vw, 1.4rem);
+    line-height: 1.15;
+  }
+
+  .editorial-hero__aside {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .editorial-hero__portrait {
+    overflow: hidden;
+    border-radius: calc(var(--radius-2xl) * 1.15);
+    border: 1px solid var(--color-border);
+    background: linear-gradient(180deg, var(--color-panel-strong), var(--color-panel));
+    box-shadow: var(--shadow-card);
+  }
+
+  .editorial-hero__portrait :global(img) {
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center 20%;
+  }
+
+  .editorial-hero__links-card {
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-panel) 88%, transparent);
+  }
+
+  .editorial-hero__links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.25rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .editorial-hero__links a {
+    color: var(--color-text);
+    font-weight: 500;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+  }
+
+  .editorial-hero__links a:hover {
+    color: var(--color-accent);
+  }
+</style>

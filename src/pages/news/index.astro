@@ -10,16 +10,24 @@ const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeri
 ---
 
 <BaseLayout title="News" description="Latest publications, releases, and results across selective prediction and multimodal ML.">
-  <section class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading
-        eyebrow="Updates"
-        title="News & announcements"
-        description="Quick hits for recruiters and collaborators who need to verify freshness in seconds. Subscribe via RSS to keep up."
-      />
-    </div>
-    <div class="section__body">
-      <ol class="news-archive">
+  <section class="section">
+    <div class="site-shell archive-page">
+      <div class="archive-page__header">
+        <div>
+          <SectionHeading
+            eyebrow="Updates"
+            title="News and announcements"
+            description="A quick-running log of publications, submissions, releases, and career updates."
+          />
+        </div>
+
+        <p class="archive-page__aside">
+          This is the fastest page to scan if you only want to know what changed
+          recently. The full archive is also available via RSS.
+        </p>
+      </div>
+
+      <ol class="news-timeline">
         {newsItems.map((item) => (
           <li>
             <time datetime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>

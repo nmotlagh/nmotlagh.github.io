@@ -1,0 +1,208 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'publications'>;
+  artifacts?: CollectionEntry<'artifacts'>[];
+  reverse?: boolean;
+}
+
+const { entry, artifacts = [], reverse = false }: Props = Astro.props;
+const detailHref = `${import.meta.env.BASE_URL}publications/${entry.slug}/`;
+const badges = [
+  { label: 'Read paper', href: entry.data.pdf ?? entry.data.external ?? detailHref },
+  { label: 'Code', href: entry.data.code },
+  { label: 'Data', href: entry.data.data },
+  { label: 'Slides', href: entry.data.slides },
+];
+const notablePoint =
+  entry.data.metric ??
+  entry.data.award ??
+  entry.data.highlights?.[0] ??
+  `${entry.data.venue} ${entry.data.year}`;
+---
+
+<article class:list={['feature-slab surface', reverse && 'feature-slab--reverse']}>
+  <div class="feature-slab__copy">
+    <p class="eyebrow">{entry.data.venue} / {entry.data.year}</p>
+    <h3 class="feature-slab__title">
+      <a href={detailHref} data-pretext-balance data-pretext-source={entry.data.title}>
+        {entry.data.title}
+      </a>
+    </h3>
+    <p class="feature-slab__authors">{entry.data.authors.join(', ')}</p>
+    <p class="feature-slab__summary">{entry.data.tldr}</p>
+
+    {entry.data.highlights && entry.data.highlights.length > 0 && (
+      <ul class="feature-slab__highlights">
+        {entry.data.highlights.slice(0, 2).map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    )}
+
+    <div class="feature-slab__actions">
+      {badges.map(
+        (badge) =>
+          badge.href && (
+            <a
+              class="badge badge--link"
+              href={badge.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {badge.label}
+            </a>
+          ),
+      )}
+    </div>
+  </div>
+
+  <div class="feature-slab__aside">
+    <div class="feature-slab__note">
+      <p class="eyebrow">Why it matters</p>
+      <p>{notablePoint}</p>
+    </div>
+
+    {Array.isArray(entry.data.tags) && entry.data.tags.length > 0 && (
+      <ul class="tag-list">
+        {entry.data.tags.map((tag) => (
+          <li>{tag}</li>
+        ))}
+      </ul>
+    )}
+
+    {artifacts.length > 0 && (
+      <div class="feature-slab__artifact-list">
+        <p class="eyebrow">Runnable artifacts</p>
+        <ul>
+          {artifacts.map((artifact) => (
+            <li>
+              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                {artifact.data.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</article>
+
+<style>
+  .feature-slab {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1.35rem, 3vw, 2.25rem);
+  }
+
+  @media (min-width: 900px) {
+    .feature-slab {
+      grid-template-columns: minmax(0, 1.3fr) minmax(17rem, 0.8fr);
+      align-items: start;
+    }
+
+    .feature-slab--reverse {
+      grid-template-columns: minmax(17rem, 0.8fr) minmax(0, 1.3fr);
+    }
+
+    .feature-slab--reverse .feature-slab__copy {
+      order: 2;
+    }
+  }
+
+  .feature-slab__title {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 2vw, 2.7rem);
+    font-weight: 620;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .feature-slab__title a {
+    color: inherit;
+  }
+
+  .feature-slab__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .feature-slab__authors {
+    margin: 0.85rem 0 0;
+    color: var(--color-text-soft);
+    font: 500 0.82rem/1.5 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .feature-slab__summary {
+    margin: 1rem 0 0;
+    max-width: 40rem;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  .feature-slab__highlights {
+    margin: 1.2rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--color-text-muted);
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .feature-slab__highlights li::marker {
+    color: var(--color-accent);
+  }
+
+  .feature-slab__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1.35rem;
+  }
+
+  .feature-slab__aside {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .feature-slab__note,
+  .feature-slab__artifact-list {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: color-mix(in srgb, var(--color-panel) 86%, transparent);
+    padding: 1rem 1.05rem;
+  }
+
+  .feature-slab__note p:last-child,
+  .feature-slab__artifact-list p:last-child {
+    margin-bottom: 0;
+  }
+
+  .feature-slab__note p:last-child {
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    line-height: 1.15;
+  }
+
+  .feature-slab__artifact-list ul {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .feature-slab__artifact-list a {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .feature-slab__artifact-list a:hover {
+    color: var(--color-accent);
+  }
+</style>

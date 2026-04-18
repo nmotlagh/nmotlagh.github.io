@@ -1,0 +1,27 @@
+---
+title: "Reject or Refine? Separating Retrievable from Unrecoverable Uncertainty in Adaptive QA"
+year: 2026
+venue: "EMNLP 2026 (under review)"
+authors:
+  - "N. Kashani Motlagh"
+  - "et al."
+tldr: "In a fixed QA stack, the signal for 'retrieve' is not the signal for 'abstain'. A class-weighted question-only controller learns genuine 3-way routing where logprob confidence cannot."
+highlight: true
+datePublished: "2026-04-15"
+tags:
+  - "selective prediction"
+  - "adaptive QA"
+  - "retrieval-augmented generation"
+  - "abstention"
+highlights:
+  - "Cheap answer confidence is near chance for recoverability once the direct branch fails."
+  - "At matched coverage, a class-weighted question-only controller beats cumulative-logprob thresholds on both Refine Recall and Reject Recall."
+---
+
+Modern adaptive QA systems have to choose among three actions — answer directly, retrieve and then answer, or abstain — but most work studies only one of these boundaries at a time. This paper asks a narrower question: under a fixed model–retriever–corpus stack, is the signal that says "retrieve" the same signal that says "abstain"?
+
+The short answer is no. Cheap logprob confidence, which works reasonably well for deciding whether to answer now, degrades to near chance for the retrieve-vs-abstain decision once the direct branch has already failed. The strongest retriever-side scalar we test improves recoverability AUC but still collapses at its calibrated best-E2E operating point. A class-weighted question-only controller, in contrast, achieves non-trivial 3-way routing and, at matched coverage, beats cumulative-logprob thresholds on both refine and reject recall.
+
+Operationally, the 3-way routing problem is a two-stage control problem: answer confidence decides whether to leave direct answering, and stack-relative recoverability decides whether retrieval can rescue the question or whether it should be rejected. The experiments identify class weighting as the mechanism that preserves a non-trivial retrieve action when the unrecoverable majority would otherwise drown the minority retrieve class.
+
+Under review at EMNLP 2026. Code release will follow acceptance.

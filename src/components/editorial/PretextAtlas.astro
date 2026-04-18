@@ -1,0 +1,284 @@
+---
+import type { AtlasRoute } from '../../data/editorial';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  hint: string;
+  body: string;
+  routes: AtlasRoute[];
+}
+
+const { eyebrow, title, description, hint, body, routes }: Props = Astro.props;
+---
+
+<section class="pretext-atlas surface surface--raised" data-pretext-atlas>
+  <div class="pretext-atlas__header">
+    <div class="pretext-atlas__copy">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2 class="pretext-atlas__title" data-pretext-balance data-pretext-source={title}>
+        {title}
+      </h2>
+      <p class="pretext-atlas__description">{description}</p>
+    </div>
+
+    <aside class="pretext-atlas__hint-box">
+      <p class="eyebrow">Live behavior</p>
+      <p>{hint}</p>
+      <p class="pretext-atlas__hint-code">
+        Powered by <code>prepareWithSegments()</code> and <code>layoutNextLine()</code>.
+      </p>
+    </aside>
+  </div>
+
+  <div class="pretext-atlas__viewport" data-pretext-atlas-viewport>
+    <div class="pretext-atlas__atmosphere pretext-atlas__atmosphere--left"></div>
+    <div class="pretext-atlas__atmosphere pretext-atlas__atmosphere--right"></div>
+    <div class="pretext-atlas__line-layer" data-pretext-atlas-lines aria-hidden="true"></div>
+
+    <div class="pretext-atlas__cards" data-pretext-atlas-cards>
+      {routes.map((route) => (
+        <button
+          type="button"
+          class:list={['pretext-atlas__card', `pretext-atlas__card--${route.tone}`]}
+          data-pretext-atlas-card
+          data-lane={route.lane}
+          data-top={String(route.top)}
+        >
+          <span class="pretext-atlas__card-kicker">{route.kicker}</span>
+          <strong>{route.title}</strong>
+          <span>{route.body}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <p class="pretext-atlas__source" data-pretext-atlas-source>
+    {body}
+  </p>
+</section>
+
+<style>
+  .pretext-atlas {
+    padding: clamp(1.35rem, 3vw, 2.5rem);
+    display: grid;
+    gap: 1.4rem;
+  }
+
+  .pretext-atlas__header {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .pretext-atlas__header {
+      grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.5fr);
+      align-items: end;
+    }
+  }
+
+  .pretext-atlas__title {
+    margin: 0;
+    max-width: 14ch;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 4vw, 4.4rem);
+    font-weight: 620;
+    line-height: 0.96;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+
+  .pretext-atlas__description {
+    margin: 0.9rem 0 0;
+    max-width: 48rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+  }
+
+  .pretext-atlas__hint-box {
+    padding: 1rem 1.05rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: color-mix(in srgb, var(--color-panel) 88%, transparent);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+
+  .pretext-atlas__hint-box p {
+    margin: 0;
+  }
+
+  .pretext-atlas__hint-box p + p {
+    margin-top: 0.75rem;
+  }
+
+  .pretext-atlas__hint-code {
+    color: var(--color-text);
+    font-size: 0.95rem;
+  }
+
+  .pretext-atlas__hint-code code {
+    font: 0.82em/1.2 var(--font-mono);
+    padding: 0.14em 0.4em;
+    border-radius: 0.45rem;
+    background: var(--color-accent-soft);
+  }
+
+  .pretext-atlas__viewport {
+    position: relative;
+    overflow: hidden;
+    min-height: 36rem;
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius-2xl) * 1.08);
+    background:
+      radial-gradient(circle at top, color-mix(in srgb, var(--color-panel-strong) 92%, transparent) 0%, color-mix(in srgb, var(--color-panel) 86%, transparent) 58%),
+      linear-gradient(180deg, color-mix(in srgb, var(--color-panel) 94%, transparent) 0%, color-mix(in srgb, var(--color-bg) 28%, var(--color-panel) 72%) 100%);
+    box-shadow: var(--shadow-card);
+    isolation: isolate;
+  }
+
+  .pretext-atlas__atmosphere {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.92;
+    z-index: 0;
+  }
+
+  .pretext-atlas__atmosphere--left {
+    background:
+      radial-gradient(38% 42% at 18% 22%, rgba(29, 109, 145, 0.10), transparent 72%),
+      radial-gradient(42% 36% at 26% 72%, rgba(155, 92, 52, 0.09), transparent 75%);
+  }
+
+  .pretext-atlas__atmosphere--right {
+    background:
+      radial-gradient(34% 36% at 82% 18%, rgba(155, 92, 52, 0.14), transparent 68%),
+      radial-gradient(36% 42% at 78% 72%, rgba(47, 83, 122, 0.08), transparent 72%);
+  }
+
+  .pretext-atlas__line-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 0.95rem + 0.45vw, 1.42rem);
+    line-height: 1.14;
+    letter-spacing: -0.022em;
+    color: var(--color-text);
+  }
+
+  .pretext-atlas__cards {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+
+  .pretext-atlas__card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    gap: 0.55rem;
+    width: 15rem;
+    padding: 0.95rem 1rem;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-border-strong);
+    background: color-mix(in srgb, var(--color-panel-strong) 90%, transparent);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text);
+    text-align: left;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    transition: box-shadow var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .pretext-atlas__card:hover,
+  .pretext-atlas__card:focus-visible {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .pretext-atlas__card:active {
+    cursor: grabbing;
+  }
+
+  .pretext-atlas__card[data-dragging='true'] {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .pretext-atlas__card strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.32rem;
+    font-weight: 620;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  .pretext-atlas__card span:last-child {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .pretext-atlas__card-kicker {
+    color: var(--color-text-soft);
+    font: 600 0.68rem/1.2 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .pretext-atlas__card--reason {
+    background: color-mix(in srgb, rgba(29, 109, 145, 0.12) 70%, var(--color-panel) 30%);
+  }
+
+  .pretext-atlas__card--retrieve {
+    background: color-mix(in srgb, rgba(155, 92, 52, 0.12) 68%, var(--color-panel) 32%);
+  }
+
+  .pretext-atlas__card--abstain {
+    background: color-mix(in srgb, rgba(86, 66, 49, 0.14) 72%, var(--color-panel) 28%);
+  }
+
+  .pretext-atlas__source {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+  }
+
+  .pretext-atlas[data-pretext-atlas-ready='true'] .pretext-atlas__source {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .pretext-atlas__line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: pre;
+    user-select: text;
+  }
+
+  .pretext-atlas[data-pretext-atlas-compact='true'] .pretext-atlas__viewport {
+    min-height: 22rem;
+  }
+
+  .pretext-atlas[data-pretext-atlas-compact='true'] .pretext-atlas__cards {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .pretext-atlas__viewport {
+      min-height: 26rem;
+    }
+  }
+</style>

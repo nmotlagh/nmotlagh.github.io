@@ -1,13 +1,13 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import '../styles/theme.css';
+import '../styles/editorial.css';
 import headshot from '../assets/headshot.jpg';
 
 const siteName = 'Nick Kashani Motlagh';
 const defaultDescription =
-  'Ph.D. candidate at The Ohio State University researching uncertainty-aware vision-language systems.';
+  'PhD candidate at The Ohio State University building uncertainty-aware ML systems that know when to stop guessing.';
 
 interface LayoutProps {
   title?: string;
@@ -17,17 +17,18 @@ interface LayoutProps {
   showSidebar?: boolean;
 }
 
-const { title, description = defaultDescription, ogImage, structuredData, showSidebar = true }: LayoutProps = Astro.props;
+const { title, description = defaultDescription, ogImage, structuredData }: LayoutProps = Astro.props;
 
 const pageTitle = title ? `${title} · ${siteName}` : siteName;
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
-const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const homeHref = import.meta.env.BASE_URL;
+const resumeHref = `${homeHref}resume.pdf`;
 const scholarHref = 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en';
 const githubHref = 'https://github.com/nmotlagh';
 const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
 const emailHref = 'mailto:kashanimotlagh.1@osu.edu';
-const faviconHref = `${import.meta.env.BASE_URL}favicon.svg`;
-const rssHref = `${import.meta.env.BASE_URL}rss.xml`;
+const faviconHref = `${homeHref}favicon.svg`;
+const rssHref = `${homeHref}rss.xml`;
 const structured = Array.isArray(structuredData)
   ? structuredData.filter(Boolean)
   : structuredData
@@ -41,15 +42,23 @@ const ogImageUrl =
       ? new URL(resolvedOgImage.src, Astro.site).href
       : resolvedOgImage.src;
 
+const normalizePath = (path: string) => (path.endsWith('/') ? path : `${path}/`);
+const currentPath = normalizePath(Astro.url.pathname);
+const isActivePath = (href: string) => {
+  const targetPath = normalizePath(new URL(href, Astro.url).pathname);
+  if (targetPath === normalizePath(homeHref)) {
+    return currentPath === targetPath;
+  }
+  return currentPath.startsWith(targetPath);
+};
+
 const navLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Experience', href: '#experience' },
-  { label: 'Skills', href: '#skills' },
-  { label: 'Publications', href: '#publications' },
-  { label: 'Artifacts', href: '#artifacts' },
-  { label: 'News', href: `${import.meta.env.BASE_URL}news/` },
-  { label: 'Blog', href: `${import.meta.env.BASE_URL}blog/` },
-];
+  { label: 'Home', href: homeHref },
+  { label: 'Publications', href: `${homeHref}publications/` },
+  { label: 'Artifacts', href: `${homeHref}artifacts/` },
+  { label: 'Blog', href: `${homeHref}blog/` },
+  { label: 'News', href: `${homeHref}news/` },
+].map((link) => ({ ...link, active: isActivePath(link.href) }));
 ---
 
 <!DOCTYPE html>
@@ -57,14 +66,17 @@ const navLinks = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8fafb" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#11100d" media="(prefers-color-scheme: dark)" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap"
+    />
     <link rel="icon" type="image/svg+xml" href={faviconHref} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
@@ -98,22 +110,17 @@ const navLinks = [
           try {
             localStorage.setItem(storageKey, value);
           } catch (_) {
-            // Ignore storage failures (e.g., private browsing).
+            // Ignore storage failures.
           }
         };
 
         const applyTheme = (value) => {
-          const theme = value === 'dark' ? 'dark' : 'light';
-          doc.dataset.theme = theme;
+          doc.dataset.theme = value === 'dark' ? 'dark' : 'light';
         };
 
         const init = () => {
           const stored = getStored();
-          if (stored) {
-            applyTheme(stored);
-          } else {
-            applyTheme(media.matches ? 'dark' : 'light');
-          }
+          applyTheme(stored ? stored : media.matches ? 'dark' : 'light');
         };
 
         init();
@@ -147,82 +154,67 @@ const navLinks = [
   </head>
   <body>
     <a class="skip-link" href="#page-content">Skip to content</a>
-    
-    {showSidebar ? (
-      <div class="site-layout">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-          <Image
-            src={headshot}
-            alt="Nick Kashani Motlagh"
-            width={140}
-            height={140}
-            class="sidebar__photo"
-            loading="eager"
-          />
-          
-          <div>
-            <h1 class="sidebar__name">{siteName}</h1>
-            <p class="sidebar__title">PhD Candidate @ Ohio State</p>
-            <p class="sidebar__tagline">Building AI that knows its limits</p>
-          </div>
 
-          <div class="sidebar__contact">
-            <a class="sidebar__link" href={emailHref}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              Email
-            </a>
-            <a class="sidebar__link" href={githubHref} target="_blank" rel="noopener noreferrer">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-              GitHub
-            </a>
-            <a class="sidebar__link" href={scholarHref} target="_blank" rel="noopener noreferrer">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-              Scholar
-            </a>
-            <a class="sidebar__link" href={linkedInHref} target="_blank" rel="noopener noreferrer">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-              LinkedIn
-            </a>
-            <a class="sidebar__link" href={resumeHref} target="_blank" rel="noopener noreferrer">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <div class="site-chrome">
+      <header class="site-header">
+        <div class="site-shell site-header__bar">
+          <a class="site-header__brand" href={homeHref}>
+            <span class="site-header__title">{siteName}</span>
+          </a>
+
+          <div class="site-header__nav" aria-label="Primary navigation">
+            {navLinks.map((link) => (
+              <a
+                class="site-header__nav-link"
+                href={link.href}
+                data-active={link.active ? 'true' : 'false'}
+                data-astro-prefetch
+              >
+                {link.label}
+              </a>
+            ))}
+            <a
+              class="site-header__nav-link--cta"
+              href={resumeHref}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Resume
             </a>
-          </div>
-
-          <nav class="sidebar__nav" aria-label="Primary navigation">
-            {navLinks.map(link => (
-              <a class="sidebar__nav-link" href={link.href} data-astro-prefetch>{link.label}</a>
-            ))}
-          </nav>
-
-          <div class="sidebar__theme-toggle">
             <ThemeToggle />
           </div>
-        </aside>
+        </div>
+      </header>
 
-        <!-- MAIN CONTENT -->
-        <main id="page-content" class="main-content">
-          <slot />
-          
-          <footer class="site-footer">
-            <p>© {new Date().getFullYear()} {siteName} · U.S. citizen</p>
-            <p>Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a></p>
-          </footer>
-        </main>
-      </div>
-    ) : (
-      <!-- FULL WIDTH LAYOUT (for other pages) -->
-      <main id="page-content" class="site-shell" style="padding: var(--space-3xl) var(--space-xl);">
+      <main id="page-content" class="site-main">
         <slot />
-        
-        <footer class="site-footer" style="margin-top: var(--space-3xl);">
-          <p>© {new Date().getFullYear()} {siteName}</p>
-          <p><a href={import.meta.env.BASE_URL}>← Back to home</a></p>
-        </footer>
       </main>
-    )}
-    
+
+      <footer class="site-footer">
+        <div class="site-shell site-footer__grid">
+          <div>
+            <h2 class="site-footer__title">Nick Kashani Motlagh</h2>
+            <p class="site-footer__copy">
+              PhD candidate at Ohio State. Columbus, Ohio.
+              Research on selective prediction, abstention, and adaptive question answering.
+            </p>
+          </div>
+
+          <div class="site-footer__links">
+            <a href={emailHref}>Email</a>
+            <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
+            <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      import '../scripts/pretext-enhance.ts';
+    </script>
+
     <script is:inline>
       window.addEventListener('DOMContentLoaded', () => {
         if (typeof window.plausible !== 'function') return;

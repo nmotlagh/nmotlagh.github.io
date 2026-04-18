@@ -19,16 +19,25 @@ artifactEntries.forEach((artifact) => {
 ---
 
 <BaseLayout title="Publications" description="Research spanning selective prediction, multimodal machine translation, and dependable LLM systems.">
-  <section class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading
-        eyebrow="Research archive"
-        title="Publications & Scholarly Articles"
-        description="Every paper includes badges linking to the paper, arXiv, code, datasets, and slides where available. Keyboard-friendly navigation keeps the grid accessible."
-      />
-    </div>
-    <div class="section__body">
-      <div class="publication-grid">
+  <section class="section">
+    <div class="site-shell archive-page">
+      <div class="archive-page__header">
+        <div>
+          <SectionHeading
+            eyebrow="Research archive"
+            title="Publications and scholarly articles"
+            description="A reading-friendly archive of papers on selective prediction, multimodal evidence, calibration, and typed abstention for ML systems."
+          />
+        </div>
+
+        <p class="archive-page__aside">
+          Each card keeps the paper, code, data, and artifact trail close at
+          hand so the archive still feels like a lab notebook rather than a list
+          of citations.
+        </p>
+      </div>
+
+      <div class="publication-grid grid grid--2 archive-page__grid">
         {publications.map((pub) => (
           <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
         ))}

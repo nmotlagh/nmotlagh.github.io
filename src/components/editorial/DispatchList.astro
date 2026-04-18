@@ -1,0 +1,158 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  newsItems: CollectionEntry<'news'>[];
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { newsItems, posts }: Props = Astro.props;
+const formatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+const newsHref = `${import.meta.env.BASE_URL}news/`;
+const blogHref = `${import.meta.env.BASE_URL}blog/`;
+---
+
+<section class="dispatch-list">
+  <article class="dispatch-list__panel surface">
+    <div class="dispatch-list__header">
+      <div>
+        <p class="eyebrow">Dispatches</p>
+        <h3>Latest news</h3>
+      </div>
+      <a href={newsHref}>View archive</a>
+    </div>
+
+    <ol class="dispatch-list__items">
+      {newsItems.map((item) => (
+        <li>
+          <time datetime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+          {item.data.link ? (
+            <a href={item.data.link} target="_blank" rel="noopener noreferrer">
+              {item.data.title}
+            </a>
+          ) : (
+            <span>{item.data.title}</span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </article>
+
+  <article class="dispatch-list__panel surface">
+    <div class="dispatch-list__header">
+      <div>
+        <p class="eyebrow">Notebook</p>
+        <h3>Latest writing</h3>
+      </div>
+      <a href={blogHref}>Browse posts</a>
+    </div>
+
+    {posts.length > 0 ? (
+      <ol class="dispatch-list__items">
+        {posts.map((post) => (
+          <li>
+            <time datetime={post.data.date}>{formatter.format(new Date(post.data.date))}</time>
+            <a href={`${import.meta.env.BASE_URL}blog/${post.slug}/`}>{post.data.title}</a>
+            <p>{post.data.description}</p>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <p class="dispatch-list__empty">
+        No posts yet.
+      </p>
+    )}
+  </article>
+</section>
+
+<style>
+  .dispatch-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    .dispatch-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .dispatch-list__panel {
+    padding: 1.35rem;
+  }
+
+  .dispatch-list__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .dispatch-list__header h3 {
+    margin: 0.2rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 620;
+    letter-spacing: -0.04em;
+  }
+
+  .dispatch-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .dispatch-list__items li {
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .dispatch-list__items li:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .dispatch-list__items time {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--color-text-soft);
+    font: 600 0.72rem/1.2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .dispatch-list__items a,
+  .dispatch-list__items span {
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+
+  .dispatch-list__items a {
+    font-weight: 600;
+  }
+
+  .dispatch-list__items a:hover {
+    color: var(--color-accent);
+  }
+
+  .dispatch-list__items p {
+    margin: 0.45rem 0 0;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+  }
+
+  .dispatch-list__empty {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+</style>

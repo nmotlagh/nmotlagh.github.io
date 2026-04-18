@@ -1,24 +1,27 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import TechBadges from '../components/TechBadges.astro';
-import Callout from '../components/Callout.astro';
-import NewsStrip from '../components/NewsStrip.astro';
-import HighlightsRow from '../components/HighlightsRow.astro';
-import PublicationCard from '../components/PublicationCard.astro';
-import { getCollection, getEntry } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
-import headshot from '../assets/headshot.jpg';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import EditorialHero from "../components/editorial/EditorialHero.astro";
+import FeatureSlab from "../components/editorial/FeatureSlab.astro";
+import ResearchArc from "../components/editorial/ResearchArc.astro";
+import DispatchList from "../components/editorial/DispatchList.astro";
+import ContactRail from "../components/editorial/ContactRail.astro";
+import { homeEditorial, researchArc } from "../data/editorial";
+import { getCollection, getEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import headshot from "../assets/headshot.jpg";
 
-const about = await getEntry('pages', 'about');
-const experience = await getEntry('pages', 'experience');
+const about = await getEntry("pages", "about");
+const experience = await getEntry("pages", "experience");
 const aboutRendered = about ? await about.render() : undefined;
 const experienceItems = experience?.data.items ?? [];
 
-const publicationEntries = await getCollection('publications');
+const publicationEntries = await getCollection("publications");
 const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
+const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry]));
 
-const artifactEntries = await getCollection('artifacts');
-const artifactMap = new Map<string, CollectionEntry<'artifacts'>[]>();
+const artifactEntries = await getCollection("artifacts");
+const artifactMap = new Map<string, CollectionEntry<"artifacts">[]>();
 artifactEntries.forEach((artifact) => {
   artifact.data.tiesTo.forEach((slug) => {
     if (!artifactMap.has(slug)) {
@@ -27,61 +30,82 @@ artifactEntries.forEach((artifact) => {
     artifactMap.get(slug)?.push(artifact);
   });
 });
-const featuredArtifacts = [...artifactEntries]
-  .sort((a, b) => a.data.name.localeCompare(b.data.name))
-  .slice(0, 6);
+const artifactLookup = new Map(artifactEntries.map((entry) => [entry.id, entry]));
+
+const featuredPublications = homeEditorial.featuredPublicationSlugs
+  .map((slug) => publicationLookup.get(slug))
+  .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
+const featuredArtifacts = homeEditorial.featuredArtifactIds
+  .map((id) => artifactLookup.get(id))
+  .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
+const newsItems = (await getCollection("news"))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 4);
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 2);
 
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
-const scholarHref = 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en';
-const githubHref = 'https://github.com/nmotlagh';
-const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
-const emailHref = 'mailto:kashanimotlagh.1@osu.edu';
-const siteOrigin = Astro.site?.href ?? 'https://nmotlagh.github.io';
+const scholarHref = "https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en";
+const githubHref = "https://github.com/nmotlagh";
+const linkedInHref = "https://www.linkedin.com/in/nicholas-kashani-motlagh";
+const emailHref = "mailto:kashanimotlagh.1@osu.edu";
+const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
+const stats = [
+  { label: "Publications", value: String(publications.length) },
+  { label: "Advisor", value: "Jim Davis" },
+  { label: "Lab", value: "CVL, Ohio State" },
+  { label: "Defense", value: "2026" },
+];
+
 const personSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Nick Kashani Motlagh',
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Nick Kashani Motlagh",
   url: siteOrigin,
-  jobTitle: 'Ph.D. Candidate — Uncertainty & Calibration Research',
+  jobTitle: "PhD Candidate",
   affiliation: {
-    '@type': 'CollegeOrUniversity',
-    name: 'The Ohio State University',
+    "@type": "CollegeOrUniversity",
+    name: "The Ohio State University",
   },
   email: emailHref,
   image: headshotUrl,
   sameAs: [githubHref, linkedInHref, scholarHref],
   knowsAbout: [
-    'Machine Learning',
-    'Computer Vision',
-    'Uncertainty Quantification',
-    'Multimodal Systems',
-    'LLM Calibration',
-    'Selective Prediction',
-    'Reinforcement Learning',
+    "Machine Learning",
+    "Selective Prediction",
+    "Uncertainty Quantification",
+    "LLM Calibration",
+    "Multimodal Systems",
+    "Adaptive QA",
   ],
 };
 
 const publicationSchemas = publications.map((pub) => {
   const isBasedOn = [pub.data.code, pub.data.data].filter(Boolean).map((url) => ({
-    '@type': 'CreativeWork',
+    "@type": "CreativeWork",
     url,
   }));
+
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ScholarlyArticle',
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
     name: pub.data.title,
     url: `${siteOrigin}publications/${pub.slug}/`,
     datePublished: pub.data.datePublished ?? String(pub.data.year),
     publisher: pub.data.venue
       ? {
-          '@type': 'Organization',
+          "@type": "Organization",
           name: pub.data.venue,
         }
       : undefined,
     author: pub.data.authors.map((author) => ({
-      '@type': 'Person',
+      "@type": "Person",
       name: author,
     })),
     isBasedOn: isBasedOn.length > 0 ? isBasedOn : undefined,
@@ -89,211 +113,208 @@ const publicationSchemas = publications.map((pub) => {
 });
 
 const structuredData = [personSchema, ...publicationSchemas];
-const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry.data.title]));
+const current = homeEditorial.currentWork;
 ---
 
 <BaseLayout
   title="Home"
-  description="Nick Kashani Motlagh — ML researcher at Ohio State teaching AI systems to stop guessing and start admitting what they don't know."
+  description="Nick Kashani Motlagh — PhD candidate at Ohio State working on selective prediction, abstention, and adaptive question answering with LLMs."
   structuredData={structuredData}
 >
-  <!-- INTRO SECTION -->
-  <div class="hero-intro">
-    <TechBadges />
-    <p class="hero-intro__greeting">Hi, I'm Nick 👋</p>
-    <h1 class="hero-intro__headline">
-      I train AI systems to <span class="accent">know when they don't know</span>
-    </h1>
-    <p class="hero-intro__description">
-      Language models make things up, and most of the time they have no idea they're doing it.
-      My research at Ohio State trains models to either resolve their uncertainty or back out entirely, as fast as possible, instead of confidently guessing.
-    </p>
-    <p class="hero-intro__status">
-      <strong>On the market:</strong> Research Scientist &amp; ML Engineering roles · PhD defense 2026 · Columbus, OH · Will relocate
-    </p>
-    <div class="hero-intro__actions">
-      <a class="button" href={resumeHref} target="_blank" rel="noopener noreferrer">
-        View Resume (PDF)
-      </a>
-      <a class="button button--ghost" href={emailHref}>
-        Discuss Opportunities
-      </a>
+  <section class="section">
+    <div class="site-shell">
+      <EditorialHero
+        eyebrow={homeEditorial.hero.eyebrow}
+        title={homeEditorial.hero.title}
+        lede={homeEditorial.hero.lede}
+        supporting={homeEditorial.hero.supporting}
+        status={homeEditorial.hero.status}
+        actions={[
+          { label: "Resume", href: resumeHref, external: true },
+          { label: "Email me", href: emailHref, variant: "ghost" },
+        ]}
+        stats={stats}
+        scholarHref={scholarHref}
+        githubHref={githubHref}
+        linkedInHref={linkedInHref}
+        emailHref={emailHref}
+      />
     </div>
-  </div>
+  </section>
 
-  <!-- STATUS CALLOUT -->
-  <Callout title="Currently" icon="🎯" variant="highlight">
-    <p><strong>Graduate Research Associate</strong> at OSU's Computer Vision Lab, finishing my PhD in 2026. Currently preparing an EMNLP 2026 submission on typed abstention for LLM agents — training models to distinguish between uncertainty they can resolve with more reasoning, gaps that need external knowledge, and questions that are genuinely unanswerable. Actively writing my dissertation on typed deferral and abstention for uncertainty-aware QA. Looking for research scientist or ML engineering roles, based in Columbus, OH, and happy to relocate.</p>
-  </Callout>
-
-  <!-- NEWS STRIP -->
-  <NewsStrip />
-
-  <!-- RESEARCH HIGHLIGHTS -->
-  <HighlightsRow />
-
-  <!-- EXPERIENCE SECTION -->
-  <section id="experience" class="section">
-    <div class="section__header">
-      <h2 class="section__title">Experience</h2>
-      <span class="section__subtitle">Research & industry</span>
+  <section class="section" id="current">
+    <div class="site-shell">
+      <article class="current-work surface">
+        <p class="eyebrow">{current.eyebrow}</p>
+        <h2 class="current-work__title">{current.title}</h2>
+        <p class="current-work__body">{current.body}</p>
+        <p class="current-work__venue">{current.venue}</p>
+      </article>
     </div>
-    <div class="timeline">
-      {experienceItems.map((item) => (
-        <article class="timeline-item">
-          <div class="timeline-item__date">{item.timeframe}</div>
-          <div class="timeline-item__content">
-            <h3 class="timeline-item__title">{item.role}</h3>
-            <p class="timeline-item__location">{item.location}</p>
-            {item.bullets && item.bullets.length > 0 && (
-              <ul class="timeline-item__bullets">
-                {item.bullets.map((bullet) => (
-                  <li set:html={bullet} />
-                ))}
-              </ul>
-            )}
+  </section>
+
+  <section class="section" id="news">
+    <div class="site-shell">
+      <DispatchList newsItems={newsItems} posts={posts} />
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="About"
+        title="How the research has developed."
+        description="From selective prediction in vision to adaptive question answering with LLMs, with stops along the way in multimodal translation and remote sensing."
+      />
+
+      <div class="home-about">
+        <article class="surface" style="padding: clamp(1.3rem, 3vw, 2.2rem);">
+          <div class="prose">
+            {aboutRendered && <aboutRendered.Content />}
           </div>
         </article>
-      ))}
-    </div>
-  </section>
 
-  <!-- EDUCATION CALLOUT -->
-  <Callout title="Education" icon="🎓">
-    <p><strong>Ohio State University</strong> — Ph.D. in Computer Science (2021–2026), M.S. (2021–2025)<br/>
-    Advisor: Prof. Jim Davis · Minors: Mathematics, HPC · GPA: 3.70</p>
-    <p style="margin-top: 0.5rem;"><strong>B.S. in Computer Science with Honors</strong> (2017–2021) · GPA: 3.86</p>
-  </Callout>
-
-  <!-- SKILLS SECTION -->
-  <section id="skills" class="section">
-    <div class="section__header">
-      <h2 class="section__title">Skills</h2>
-    </div>
-    <div class="skills-grid">
-      <div class="skill-category">
-        <h4 class="skill-category__title">Core Research</h4>
-        <div class="skill-category__items">
-          <span class="skill-item">Selective prediction</span>
-          <span class="skill-item">LLM self-assessment</span>
-          <span class="skill-item">Confidence calibration</span>
-          <span class="skill-item">Calibration metrics</span>
-          <span class="skill-item">RL fine-tuning</span>
-          <span class="skill-item">GRPO</span>
-          <span class="skill-item">Multimodal learning</span>
-        </div>
-      </div>
-      <div class="skill-category">
-        <h4 class="skill-category__title">Models &amp; Architectures</h4>
-        <div class="skill-category__items">
-          <span class="skill-item">Vision transformers</span>
-          <span class="skill-item">VLMs</span>
-          <span class="skill-item">EO/SAR</span>
-        </div>
-      </div>
-      <div class="skill-category">
-        <h4 class="skill-category__title">Tools &amp; Infrastructure</h4>
-        <div class="skill-category__items">
-          <span class="skill-item">Python</span>
-          <span class="skill-item">PyTorch</span>
-          <span class="skill-item">HuggingFace</span>
-          <span class="skill-item">vLLM</span>
-          <span class="skill-item">Unsloth</span>
-          <span class="skill-item">DeepSpeed</span>
-          <span class="skill-item">Slurm</span>
-          <span class="skill-item">Singularity</span>
-          <span class="skill-item">Linux HPC</span>
-          <span class="skill-item">Git</span>
-        </div>
-      </div>
-      <div class="skill-category">
-        <h4 class="skill-category__title">Domains</h4>
-        <div class="skill-category__items">
-          <span class="skill-item">Defense &amp; remote sensing</span>
-          <span class="skill-item">Analyst-facing tooling</span>
-          <span class="skill-item">Multimodal MT</span>
-        </div>
-      </div>
-      <div class="skill-category">
-        <h4 class="skill-category__title">Service</h4>
-        <div class="skill-category__items">
-          <span class="skill-item">CVPR 2022–23</span>
-          <span class="skill-item">ICCV 2023</span>
-          <span class="skill-item">ECCV 2022</span>
-          <span class="skill-item">HackOHI/O</span>
-        </div>
+        <ResearchArc items={researchArc} />
       </div>
     </div>
   </section>
 
-  <!-- PUBLICATIONS SECTION -->
-  <section id="publications" class="section">
-    <div class="section__header">
-      <h2 class="section__title">Publications</h2>
-      <span class="section__subtitle">All with runnable code</span>
-    </div>
-    <div class="grid grid--2">
-      {publications.map((pub) => (
-        <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
-      ))}
-    </div>
-    <div class="mt-lg">
-      <a class="button button--ghost button--small" href={`${import.meta.env.BASE_URL}publications/`}>
-        Browse all publications →
-      </a>
+  <section class="section" id="publications">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="Selected work"
+        title="Publications."
+        description="Each paper links out to the PDF, code, or data where available."
+      />
+
+      <div class="stack" style="gap: 1.15rem;">
+        {featuredPublications.map((entry, index) => (
+          <FeatureSlab
+            entry={entry}
+            artifacts={artifactMap.get(entry.slug)}
+            reverse={index % 2 === 1}
+          />
+        ))}
+      </div>
+
+      <div>
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>
+          All publications
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- ARTIFACTS SECTION -->
-  <section id="artifacts" class="section">
-    <div class="section__header">
-      <h2 class="section__title">Open Source</h2>
-      <span class="section__subtitle">Tools & datasets</span>
-    </div>
-    <div class="grid grid--3">
-      {featuredArtifacts.map((artifact) => (
-        <article class="card card--clickable">
-          <div class="card__header">
-            <h3 class="card__title">
+  <section class="section" id="artifacts">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="Code"
+        title="Open-source repos."
+        description="Training code, evaluation harnesses, and datasets that ship with the papers."
+      />
+
+      <div class="home-artifact-grid">
+        {featuredArtifacts.map((artifact) => (
+          <article class="home-artifact-card surface">
+            <p class="eyebrow">Repo</p>
+            <h3>
               <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
                 {artifact.data.name}
               </a>
             </h3>
-          </div>
-          <p class="card__description">{artifact.data.summary}</p>
-          <div class="card__tags">
-            {artifact.data.reproduce.slice(0, 2).map((item) => (
-              <span class="card__tag">{item.split(' ').slice(0, 3).join(' ')}...</span>
-            ))}
-          </div>
-          {artifact.data.tiesTo.length > 0 && (
-            <div class="card__links">
-              <span class="card__link">
-                Supports: {artifact.data.tiesTo
-                  .map((slug) => publicationLookup.get(slug))
-                  .filter(Boolean)
-                  .slice(0, 1)
-                  .join(', ')}
-              </span>
-            </div>
-          )}
-        </article>
-      ))}
-    </div>
-    <div class="mt-lg">
-      <a class="button button--small" href={`${import.meta.env.BASE_URL}artifacts/`}>
-        View all artifacts →
-      </a>
+            <p>{artifact.data.summary}</p>
+            <ul>
+              {artifact.data.reproduce.slice(0, 3).map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+
+      <div>
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
+          All repos
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- ABOUT SECTION -->
-  <section id="about" class="section">
-    <div class="section__header">
-      <h2 class="section__title">About</h2>
+  <section class="section" id="experience">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="Experience"
+        title="Roles."
+        description="Research, teaching, and internships."
+      />
+
+      <div class="home-experience-grid">
+        {experienceItems.slice(0, 3).map((item) => (
+          <article class="home-experience-card surface">
+            <p class="eyebrow">Role</p>
+            <h3>{item.role}</h3>
+            <p class="home-experience-card__meta">
+              {item.location ? `${item.location} / ${item.timeframe}` : item.timeframe}
+            </p>
+            {item.bullets && item.bullets.length > 0 && (
+              <ul>
+                {item.bullets.slice(0, 2).map((bullet) => (
+                  <li set:html={bullet} />
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
     </div>
-    <div class="prose">
-      {aboutRendered && <aboutRendered.Content />}
+  </section>
+
+  <section class="section">
+    <div class="site-shell">
+      <ContactRail
+        facts={homeEditorial.recruiterFacts}
+        roles={experienceItems.slice(0, 4).map((item) => ({
+          role: item.role,
+          location: item.location,
+          timeframe: item.timeframe,
+        }))}
+        resumeHref={resumeHref}
+        emailHref={emailHref}
+        linkedInHref={linkedInHref}
+        githubHref={githubHref}
+      />
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .current-work {
+    padding: clamp(1.5rem, 3.5vw, 2.6rem);
+  }
+
+  .current-work__title {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.6rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    max-width: 54rem;
+    text-wrap: balance;
+  }
+
+  .current-work__body {
+    margin: 1.1rem 0 0;
+    max-width: 52rem;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .current-work__venue {
+    margin: 1.2rem 0 0;
+    color: var(--color-text-soft);
+    font: 600 0.8rem/1.2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+</style>

@@ -11,22 +11,30 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
 ---
 
 <BaseLayout title="Artifacts" description="Pinned GitHub repositories, datasets, and eval harnesses for every publication.">
-  <section class="site-shell section section--split">
-    <div class="section__lead">
-      <SectionHeading
-        eyebrow="Open source"
-        title="Artifacts & GitHub repos"
-        description="Recruiters and collaborators often want to see reproducibility at a glance. Each repo lists what you can run, the datasets you can download, and how it ties back to the paper above."
-      />
-    </div>
-    <div class="section__body">
-      <div class="artifact-grid">
+  <section class="section">
+    <div class="site-shell archive-page">
+      <div class="archive-page__header">
+        <div>
+          <SectionHeading
+            eyebrow="Open source"
+            title="Artifacts and GitHub repos"
+            description="A compact archive of the code, dashboards, and datasets that turn the papers into something runnable."
+          />
+        </div>
+
+        <p class="archive-page__aside">
+          This page is for the reader who wants proof of execution: what was
+          built, what can be reproduced, and which paper each artifact supports.
+        </p>
+      </div>
+
+      <div class="grid grid--2 archive-page__grid">
         {artifacts.map((artifact) => {
           const tiedPublications = artifact.data.tiesTo
             .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
             .filter((item): item is { slug: string; title: string } => Boolean(item.title));
           return (
-            <article class="artifact-card card">
+            <article class="artifact-archive-card surface">
               <div class="artifact-card__header">
                 <h3>
                   <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
@@ -61,3 +69,47 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .artifact-archive-card {
+    padding: 1.2rem;
+  }
+
+  .artifact-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .artifact-card__header h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  .artifact-archive-card p {
+    color: var(--color-text-muted);
+    line-height: 1.75;
+  }
+
+  .artifact-archive-card ul {
+    margin: 0;
+    padding-left: 1.05rem;
+    color: var(--color-text-muted);
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .artifact-archive-card li::marker {
+    color: var(--color-accent);
+  }
+
+  .artifact-card__ties {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+</style>
