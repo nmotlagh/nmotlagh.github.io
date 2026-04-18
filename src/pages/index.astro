@@ -166,22 +166,44 @@ const current = homeEditorial.currentWork;
     </div>
   </section>
 
-  <section class="section" id="about">
+  <section class="section" id="projects">
     <div class="site-shell stack">
       <SectionHeading
-        eyebrow="About"
-        title="How the research has developed."
-        description="From selective prediction in vision to adaptive question answering with LLMs, with stops along the way in multimodal translation and remote sensing."
+        eyebrow="Built"
+        title="Projects and open-source."
+        description="Training code, evaluation harnesses, and datasets I wrote and ship under my GitHub."
       />
 
-      <div class="home-about">
-        <article class="surface" style="padding: clamp(1.3rem, 3vw, 2.2rem);">
-          <div class="prose">
-            {aboutRendered && <aboutRendered.Content />}
-          </div>
-        </article>
+      <div class="home-artifact-grid">
+        {featuredArtifacts.map((artifact) => (
+          <article class="home-artifact-card surface">
+            <p class="eyebrow">Repo</p>
+            <h3>
+              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                {artifact.data.name}
+              </a>
+            </h3>
+            <p>{artifact.data.summary}</p>
+            {artifact.data.stack && artifact.data.stack.length > 0 && (
+              <ul class="home-artifact-card__stack">
+                {artifact.data.stack.map((tech) => (
+                  <li>{tech}</li>
+                ))}
+              </ul>
+            )}
+            <ul>
+              {artifact.data.reproduce.slice(0, 3).map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
 
-        <ResearchArc items={researchArc} />
+      <div>
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
+          All repos
+        </a>
       </div>
     </div>
   </section>
@@ -212,41 +234,6 @@ const current = homeEditorial.currentWork;
     </div>
   </section>
 
-  <section class="section" id="artifacts">
-    <div class="site-shell stack">
-      <SectionHeading
-        eyebrow="Code"
-        title="Open-source repos."
-        description="Training code, evaluation harnesses, and datasets that ship with the papers."
-      />
-
-      <div class="home-artifact-grid">
-        {featuredArtifacts.map((artifact) => (
-          <article class="home-artifact-card surface">
-            <p class="eyebrow">Repo</p>
-            <h3>
-              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                {artifact.data.name}
-              </a>
-            </h3>
-            <p>{artifact.data.summary}</p>
-            <ul>
-              {artifact.data.reproduce.slice(0, 3).map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-
-      <div>
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
-          All repos
-        </a>
-      </div>
-    </div>
-  </section>
-
   <section class="section" id="experience">
     <div class="site-shell stack">
       <SectionHeading
@@ -272,6 +259,26 @@ const current = homeEditorial.currentWork;
             )}
           </article>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="About"
+        title="How the research has developed."
+        description="From selective prediction in vision to adaptive question answering with LLMs, with stops along the way in multimodal translation and remote sensing."
+      />
+
+      <div class="home-about">
+        <article class="surface" style="padding: clamp(1.3rem, 3vw, 2.2rem);">
+          <div class="prose">
+            {aboutRendered && <aboutRendered.Content />}
+          </div>
+        </article>
+
+        <ResearchArc items={researchArc} />
       </div>
     </div>
   </section>
@@ -324,5 +331,23 @@ const current = homeEditorial.currentWork;
     font: 600 0.8rem/1.2 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
+  }
+
+  .home-artifact-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.9rem 0 0.3rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .home-artifact-card__stack li {
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    font: 500 0.72rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
   }
 </style>

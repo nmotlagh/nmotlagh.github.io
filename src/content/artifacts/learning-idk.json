@@ -2,6 +2,7 @@
   "name": "learning-idk",
   "repo": "https://github.com/nmotlagh/learning-idk",
   "summary": "PyTorch toolkit for per-class reject-option training with binomial threshold search, dashboards, and CLI.",
+  "stack": ["Python", "PyTorch", "CLI", "selective prediction"],
   "reproduce": [
     "Tune per-class thresholds on ImageNet, iNat, or custom datasets with one command.",
     "Export coverage/accuracy curves and selective accuracy plots for reports.",

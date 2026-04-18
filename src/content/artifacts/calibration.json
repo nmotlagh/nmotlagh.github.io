@@ -2,6 +2,7 @@
   "name": "calibration",
   "repo": "https://github.com/nmotlagh/calibration",
   "summary": "Evaluation harness for multimodal MT, selective LLM routing, and visual-text calibration experiments.",
+  "stack": ["Python", "PyTorch", "transformers", "evaluation"],
   "reproduce": [
     "Run imagery-aware contrastive probes against WMT-style checkpoints.",
     "Log structured reports (HTML/Markdown) for rapid model comparisons.",

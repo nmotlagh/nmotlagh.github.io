@@ -2,6 +2,7 @@
   "name": "Construction-Site-Satellite-Imagery",
   "repo": "https://github.com/nmotlagh/Construction-Site-Satellite-Imagery",
   "summary": "Semi-automatic satellite data ingestion plus labeling UI for monitoring changing regions.",
+  "stack": ["Python", "OpenStreetMap", "remote sensing", "labeling UI"],
   "reproduce": [
     "Generate OpenStreetMap-guided scrape manifests for temporal imagery.",
     "Label construction phases with the included lightweight annotation app.",

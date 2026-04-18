@@ -64,6 +64,7 @@ const artifacts = defineCollection({
     name: z.string(),
     repo: z.string().url(),
     summary: z.string(),
+    stack: z.array(z.string()).optional(),
     reproduce: z.array(z.string()),
     tiesTo: z.array(z.string()).default([]),
   }),
