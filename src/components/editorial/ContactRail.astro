@@ -12,19 +12,21 @@ interface Props {
   emailHref: string;
   linkedInHref: string;
   githubHref: string;
+  scholarHref: string;
 }
 
-const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref }: Props = Astro.props;
+const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref, scholarHref }: Props = Astro.props;
 ---
 
 <section class="contact-rail surface surface--raised">
   <div class="contact-rail__intro">
     <p class="eyebrow">Work with me</p>
-    <h2>Available fall 2026 — open to research scientist and applied ML engineering roles.</h2>
+    <h2>Available fall 2026 — open to applied ML and ML engineering roles.</h2>
     <p>
-      Interested in teams where uncertainty, calibration, and evaluation
-      quality are first-class concerns. Happy to talk about abstention for
-      LLM agents, selective prediction in vision, or adaptive retrieval.
+      Interested in teams shipping LLM systems where uncertainty, calibration,
+      and evaluation are first-class concerns. Happy to talk about abstention
+      for agents, RAG routing, or selective prediction. Research-adjacent roles
+      welcome.
     </p>
 
     <div class="contact-rail__actions">
@@ -47,6 +49,7 @@ const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref }: Props =
       <div class="contact-rail__links">
         <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
         <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
         <a href={emailHref}>Email</a>
       </div>
     </div>

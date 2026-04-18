@@ -10,17 +10,17 @@ export const homeEditorial = {
     eyebrow: "PhD candidate · Ohio State Computer Vision Lab",
     title: "Nick Kashani Motlagh",
     lede:
-      "I work on machine learning systems that decide when to answer, when to retrieve, and when to abstain.",
+      "I build machine learning systems that know when to answer, when to retrieve, and when to refuse.",
     supporting:
-      "Fifth-year PhD candidate advised by Jim Davis. My work spans selective prediction for vision (ISVC 2022 Best Paper, MVA 2025 journal extension), multimodal machine translation (WMT 2024), and adaptive question answering with LLMs (EMNLP 2026 submission). Five summers as a researcher at AFRL on CUI work. Graduating August 2026.",
+      "First-author on all five of my publications: selective prediction for vision (ISVC 2022 Best Paper, MVA 2025 journal extension), multimodal machine translation (WMT 2024), and adaptive question answering with LLMs (EMNLP 2026 submission). Five summers at AFRL on CUI work. Python, PyTorch, transformers, retrieval-augmented generation, evaluation harnesses, distributed training on HPC.",
     status:
-      "Available fall 2026 for research scientist and applied ML engineering roles. U.S. citizen.",
+      "Graduating August 2026. Available fall 2026 for applied ML and ML engineering roles. Columbus, OH — open to relocation and remote. U.S. citizen.",
   },
   currentWork: {
-    eyebrow: "Current paper",
-    title: "Reject or Refine? Separating retrievable from unrecoverable uncertainty in adaptive QA.",
+    eyebrow: "EMNLP 2026 under review · adaptive QA · LLM abstention",
+    title: "Reject or Refine? When LLM agents should retrieve, reason, or refuse.",
     body:
-      "When an LLM-based QA system shouldn't answer directly, is the signal that says \"retrieve\" the same signal that says \"abstain\"? In a fixed model–retriever–corpus stack, the answer is no. Cheap answer confidence is near chance for recoverability once the direct branch fails; retriever-side scalars improve AUC but collapse at usable operating points; a class-weighted question-only controller is the one thing that actually learns genuine 3-way routing.",
+      "When an LLM-based QA system shouldn't answer directly, is the signal that says \"retrieve\" the same signal that says \"abstain\"? In a fixed model–retriever–corpus stack, the answer is no. Over 41k eval instances, a small class-weighted question-only controller reaches Recoverability AUC .678 ± .005 with Reject Recall .487 ± .059; cheap logprob baselines top out at AUC ≈ .55 and never reject (Reject Recall = 0). At matched coverage, the controller's Refine Recall advantage over cumulative-logprob is +.252 [.233, .272].",
     venue: "Under review at EMNLP 2026.",
   },
   featuredPublicationSlugs: [
@@ -35,10 +35,11 @@ export const homeEditorial = {
     "construction-site-satellite-imagery",
   ],
   recruiterFacts: [
-    "PhD, The Ohio State University — defending August 2026",
-    "Available fall 2026",
-    "ISVC 2022 Best Paper · selective prediction, abstention, adaptive QA",
-    "U.S. citizen · five summers of AFRL CUI experience",
+    "PhD, The Ohio State University — graduating August 2026",
+    "Available fall 2026 · applied ML / ML engineering",
+    "First author on 5/5 publications · ISVC 2022 Best Paper",
+    "Python, PyTorch, transformers, RAG, distributed training",
+    "Five summers at AFRL · U.S. citizen · Columbus, OH (open to relocation / remote)",
   ],
 };
 

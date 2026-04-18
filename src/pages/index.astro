@@ -57,9 +57,9 @@ const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
 const stats = [
-  { label: "Publications", value: String(publications.length) },
+  { label: "First-author pubs", value: `${publications.length}/${publications.length}` },
   { label: "Best Paper", value: "ISVC 2022" },
-  { label: "Defense", value: "Aug 2026" },
+  { label: "Graduating", value: "Aug 2026" },
   { label: "Available", value: "Fall 2026" },
 ];
 
@@ -78,9 +78,16 @@ const personSchema = {
   sameAs: [githubHref, linkedInHref, scholarHref],
   knowsAbout: [
     "Machine Learning",
+    "Large Language Models",
+    "Transformers",
+    "Retrieval-Augmented Generation",
     "Selective Prediction",
     "Uncertainty Quantification",
     "LLM Calibration",
+    "Evaluation",
+    "Distributed Training",
+    "PyTorch",
+    "Python",
     "Multimodal Systems",
     "Adaptive QA",
   ],
@@ -130,7 +137,7 @@ const current = homeEditorial.currentWork;
         supporting={homeEditorial.hero.supporting}
         status={homeEditorial.hero.status}
         actions={[
-          { label: "Resume", href: resumeHref, external: true },
+          { label: "Resume (PDF)", href: resumeHref, external: true },
           { label: "Email me", href: emailHref, variant: "ghost" },
         ]}
         stats={stats}
@@ -282,6 +289,7 @@ const current = homeEditorial.currentWork;
         emailHref={emailHref}
         linkedInHref={linkedInHref}
         githubHref={githubHref}
+        scholarHref={scholarHref}
       />
     </div>
   </section>
