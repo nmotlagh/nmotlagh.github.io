@@ -12,9 +12,9 @@ export const homeEditorial = {
     lede:
       "I work on machine learning systems that decide when to answer, when to retrieve, and when to abstain.",
     supporting:
-      "Fifth-year PhD candidate advised by Jim Davis. My work started in selective prediction for image classifiers, moved into multimodal machine translation, and now centers on adaptive question answering with LLMs. Defending in 2026.",
+      "Fifth-year PhD candidate advised by Jim Davis. My work spans selective prediction for vision (ISVC 2022 Best Paper, MVA 2025 journal extension), multimodal machine translation (WMT 2024), and adaptive question answering with LLMs (EMNLP 2026 submission). Five summers as a researcher at AFRL on CUI work. Graduating August 2026.",
     status:
-      "Looking for research scientist and applied ML roles starting summer 2026.",
+      "Available fall 2026 for research scientist and applied ML engineering roles. U.S. citizen.",
   },
   currentWork: {
     eyebrow: "Current paper",
@@ -35,10 +35,10 @@ export const homeEditorial = {
     "construction-site-satellite-imagery",
   ],
   recruiterFacts: [
-    "PhD candidate, The Ohio State University",
-    "Defending in 2026",
-    "Research focus: selective prediction, abstention, LLM adaptive QA",
-    "U.S. citizen with experience on CUI and DoD-adjacent work",
+    "PhD, The Ohio State University — defending August 2026",
+    "Available fall 2026",
+    "ISVC 2022 Best Paper · selective prediction, abstention, adaptive QA",
+    "U.S. citizen · five summers of AFRL CUI experience",
   ],
 };
 

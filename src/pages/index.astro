@@ -58,9 +58,9 @@ const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headsh
 
 const stats = [
   { label: "Publications", value: String(publications.length) },
-  { label: "Advisor", value: "Jim Davis" },
-  { label: "Lab", value: "CVL, Ohio State" },
-  { label: "Defense", value: "2026" },
+  { label: "Best Paper", value: "ISVC 2022" },
+  { label: "Defense", value: "Aug 2026" },
+  { label: "Available", value: "Fall 2026" },
 ];
 
 const personSchema = {
@@ -249,7 +249,7 @@ const current = homeEditorial.currentWork;
       />
 
       <div class="home-experience-grid">
-        {experienceItems.slice(0, 3).map((item) => (
+        {experienceItems.slice(0, 4).map((item) => (
           <article class="home-experience-card surface">
             <p class="eyebrow">Role</p>
             <h3>{item.role}</h3>
