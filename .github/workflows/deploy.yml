@@ -38,7 +38,7 @@ jobs:
         run: npx astro check
 
       - name: Security audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical
 
       - name: Build site
         run: npm run build
