@@ -3,45 +3,51 @@ title: "Why LLMs Need Reject Options"
 date: "2026-02-08"
 description: "Large language models confidently fabricate answers. Structured abstention, borrowed from vision, offers a principled fix."
 tags: ["selective prediction", "uncertainty", "LLMs", "calibration"]
-draft: true
+draft: false
 ---
 
-{/* TODO: Open with a concrete, vivid example of an LLM confidently producing a wrong answer in a high-stakes context (medical, legal, or defense). Set the stakes immediately: the problem is not that models are wrong sometimes, but that they do not know when they are wrong. */}
+A well-known phenomenon: ask a modern LLM a plausible-sounding question it does not actually know the answer to, and it will produce one anyway — with the same tone and the same confidence it would produce a correct one. The problem is not that the model is sometimes wrong. The problem is that it has no mechanism to notice it is wrong.
 
-## The Confidence Problem
+## The confidence problem
 
-{/* TODO: Explain that modern LLMs are trained to always produce an answer. Softmax probabilities are poorly calibrated, so "confidence" scores are unreliable. Draw the contrast: humans hedge, hesitate, and say "I don't know" — models do not. Frame this as a design flaw, not an inherent limitation. 1-2 paragraphs. */}
+Current LLMs are trained to always produce an answer. The softmax probabilities we read off the top of the stack are poorly calibrated signals — a high logprob does not mean the model is more likely to be correct, only that the completion is consistent with the training distribution. A human operating under uncertainty hedges, asks a clarifying question, or walks away. A model does none of these things unless we specifically train it to.
 
-{/* TODO: Briefly mention the scale of the problem — hallucination rates in deployed systems, the trust deficit this creates, and why post-hoc guardrails (retrieval-augmented generation, output filtering) are patches rather than solutions. */}
+Post-hoc patches help but do not solve this. Retrieval-augmented generation adds evidence; output filters catch surface failures; chain-of-thought can expose reasoning gaps. None of them give the model a principled way to say "this is not a question I should answer." The core design is still an answer-producing machine with no off switch.
 
-## What Vision Models Already Know
+## What vision models already know
 
-{/* TODO: Introduce selective prediction and reject-option classification as established ideas in computer vision. Reference your ISVC and MVA work without heavy jargon: the core insight is that a classifier can learn to partition its decision space into "clean" regions (where it is reliably correct) and "dirty" regions (where mistakes cluster). */}
+Selective prediction is not a new idea. In computer vision we have had reject-option classifiers for decades — the classifier is allowed to return "no prediction" on examples where it would otherwise be unreliable, and the system pays a controlled coverage cost in exchange for higher accuracy on the calls it does make.
 
-{/* TODO: Tell the origin story — in 2021, you and Jim Davis were studying t-SNE plots of learned representations and noticed that errors were not uniformly scattered; they concentrated in specific, identifiable regions. This observation became the foundation for building classifiers that recognize dirty regions and either correct course or abstain. Keep this concrete and visual. */}
+My PhD work on this side (ISVC 2022, [MVA 2025 journal extension](/publications/learning-when-to-say-i-dont-know/)) was about learning per-class reject thresholds rather than global ones. The key observation is that errors in a classifier's decision space are not uniformly distributed — they concentrate in specific regions, usually near class boundaries where several classes overlap. If you can identify those regions, you can build a system that corrects course on the clean regions and abstains on the dirty ones. You lose some coverage, but you raise selective accuracy substantially, and you do it in a way that is calibrated and controllable at deployment time.
 
-{/* TODO: Summarize the key result: by training models to recognize when they are operating in unreliable territory, you can dramatically reduce error rates on the predictions the model does make, with a controlled trade-off in coverage. Mention the naturally constrained framework. */}
+That is the principle I want to carry forward: partition the decision space honestly, and act differently on each side.
 
-## Why Language Is Harder
+## Why language is harder
 
-{/* TODO: Explain the shift from vision to language. In vision, uncertainty is often spatial or distributional — blurry images, out-of-distribution objects, ambiguous boundaries. In language, uncertainty is context-dependent and compositional. A question might be easy given the right context and impossible without it. The same surface-level question can have wildly different difficulty depending on what the model has seen. */}
+In vision, uncertainty is mostly spatial or distributional — the image is blurry, the object is out of distribution, the boundary between classes is genuinely ambiguous. In language it is harder, because uncertainty is context-dependent and compositional. A question that is trivial given the right passage can be impossible without it. A question that is impossible for a 7B model can be straightforward for a larger one. The same surface string routes through wildly different difficulty depending on what the model has already seen and what it can still retrieve.
 
-{/* TODO: Discuss the three-way distinction your current work addresses: (1) questions the model could answer with more reasoning or chain-of-thought, (2) questions that need external context the model does not have, and (3) questions that are genuinely beyond reach — unanswerable or ill-posed. Explain why collapsing these categories into a single "uncertain" label loses actionable information. */}
+This matters because "I don't know" is a coarse label. It hides a three-way distinction that an operational system actually needs to make:
 
-## Structured Abstention
+1. The model could answer if it thought longer — more reasoning, more chain-of-thought, a better decoding strategy.
+2. The model could answer if it had more context — something retrieval could plausibly fetch.
+3. The question is out of reach — ill-posed, unanswerable, or beyond what the current stack can produce no matter how hard it works.
 
-{/* TODO: Without revealing the specific method from the EMNLP submission, describe the goal: training LLMs to distinguish between these categories and respond accordingly. The model should reason harder when reasoning helps, request context when context is the bottleneck, and abstain cleanly when the question is out of scope. Frame this as teaching the model metacognitive awareness — not just "what do I think the answer is" but "how reliable is my answer likely to be, and why." */}
+Collapsing these three into a single "uncertain" bucket throws away actionable information. A system that knows the difference can route: keep reasoning, trigger retrieval, or refuse.
 
-{/* TODO: Connect back to the clean/dirty regions metaphor from the vision work. The principle is the same — partition the space, identify the boundaries, and act differently on each side — but the space is now the space of prompts, contexts, and reasoning chains rather than pixel features. */}
+## Structured abstention
 
-## Why This Matters for Deployment
+My [EMNLP 2026 submission](/publications/reject-or-refine/) is about that second distinction — once the direct-answer branch has already failed, is the signal that says "retrieve could rescue this" the same signal that says "this should be rejected"? It is not. Cheap answer confidence, which works reasonably well for the first cut, degrades to near chance for the retrieve-versus-abstain decision once you condition on having already decided not to answer directly. Retriever-side signals help but collapse at usable operating points. The pattern is the same one the vision work predicted: these are different decision regions and they need to be learned separately.
 
-{/* TODO: Discuss concrete deployment domains where reject options are not optional: defense and intelligence (where a fabricated answer can drive real decisions), medical diagnosis support (where overconfident wrong answers erode clinician trust), and any setting where the cost of a confident wrong answer exceeds the cost of no answer at all. */}
+The broader point is that we should stop expecting a single scalar confidence to do everything. Answer confidence is one decision. Recoverability is another. Out-of-scope detection is a third. Each of them has a different shape, a different signal, and a different operating point, and a production system has to handle all of them cleanly.
 
-{/* TODO: Argue that structured abstention is a prerequisite for trustworthy AI systems, not a nice-to-have. If we cannot build models that know their own limits, we cannot responsibly deploy them in consequential settings. */}
+## Why this matters for deployment
 
-## A Note on Signal and Noise
+Structured abstention is not a nice-to-have for high-stakes settings. In defense and intelligence analysis, a confidently fabricated answer can drive a real decision before anyone has a chance to double-check it. In medical decision support, overconfident wrong answers erode clinician trust faster than any correct answer can rebuild it. In any setting where the cost of a wrong answer exceeds the cost of no answer, a model without a principled reject option is the wrong tool.
 
-{/* TODO: Briefly share your perspective on the current state of research. The barrier to contributing has dropped — LLM-assisted writing, easier access to compute, lower friction to submission. The result is a flood of papers, many incremental or redundant, that overwhelms reviewers and buries important work. Argue that higher review standards are needed, and that LLM-assisted reviewing (used to filter and prioritize, not to replace human judgment) could help restore signal. Keep this measured and constructive, not bitter. 1-2 paragraphs. */}
+The research direction I care about most is not making models more accurate on average — that problem is already well funded. It is making models that know when they should not answer at all, and that can tell you why.
 
-{/* TODO: Tie it back to the main theme — the research community itself could benefit from a kind of reject option: the ability to say "this does not clear the bar" with less friction and more consistency. */}
+## A note on signal and noise
+
+The barrier to producing a paper has dropped dramatically in the last two years. LLM-assisted writing, easier access to compute, lower friction to every stage of the research pipeline — all good things in isolation. The practical consequence is a flood of incremental and redundant work that overwhelms reviewers and buries the papers that actually move the field. The review system was not designed for this volume, and it shows.
+
+I think the fix is higher review standards and better triage, not fewer submissions. LLM-assisted reviewing — used to filter and prioritize, not to replace human judgment — is one tool that could help. The community itself could benefit from the same principle this post is about: the ability to say "this does not clear the bar" with less friction and more consistency. Selective acceptance is, in a sense, a reject-option problem too.
