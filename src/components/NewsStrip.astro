@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { formatDate, parseDateValue } from '../utils/dates';
 
-const allNews = await getCollection('news');
+const allNews = await getCollection('news', ({ data }) => !data.draft);
 const items = allNews
   .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
   .slice(0, 3);

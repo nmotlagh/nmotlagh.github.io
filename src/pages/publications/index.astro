@@ -5,7 +5,9 @@ import PublicationCard from '../../components/PublicationCard.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
-const publications = (await getCollection('publications')).sort((a, b) => b.data.year - a.data.year);
+const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.year - a.data.year,
+);
 const artifactEntries = await getCollection('artifacts');
 const artifactMap = new Map<string, CollectionEntry<'artifacts'>[]>();
 artifactEntries.forEach((artifact) => {

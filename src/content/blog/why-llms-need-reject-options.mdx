@@ -36,7 +36,7 @@ Collapsing these cases into one uncertainty score throws away information needed
 
 ## Structured abstention
 
-My [EMNLP 2026 submission](/publications/reject-or-refine/) studies the second boundary: after direct answering has been ruled out, can we distinguish retrievable failures from unrecoverable ones? In the evaluated stack, logprob baselines reach only .518–.553 Recoverability AUC and have Reject Recall = 0 at their calibrated operating points. A class-weighted question-only controller reaches .678 ± .005 AUC with .487 ± .059 Reject Recall over 41,145 examples.
+My current submission studies the second boundary: after direct answering has been ruled out, can we distinguish retrievable failures from unrecoverable ones? In the evaluated stack, answer-confidence baselines are not sufficient for that decision, so the routing policy needs a separate estimate of stack-relative recoverability.
 
 The broader point is that answer confidence and stack-relative recoverability are different signals. The former estimates whether direct answering should proceed. The latter estimates whether retrieval is likely to change the answerability of the question. Treating both as one scalar confidence loses the distinction the routing policy needs.
 

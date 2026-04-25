@@ -27,6 +27,7 @@ const publications = defineCollection({
     year: z.number(),
     authors: z.array(z.string()),
     tldr: z.string().max(200),
+    draft: z.boolean().optional().default(false),
     highlight: z.boolean().optional().default(false),
     award: z.string().optional(),
     metric: z.string().optional(),
@@ -54,6 +55,7 @@ const news = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.string(), // ISO 8601
+    draft: z.boolean().optional().default(false),
     link: z.string().url().optional(),
   }),
 });

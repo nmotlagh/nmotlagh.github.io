@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content';
 const artifacts = (await getCollection('artifacts')).sort((a, b) =>
   a.data.name.localeCompare(b.data.name),
 );
-const publications = await getCollection('publications');
+const publications = await getCollection('publications', ({ data }) => !data.draft);
 const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.title]));
 ---
 

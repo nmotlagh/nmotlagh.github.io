@@ -4,7 +4,7 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import { getCollection } from 'astro:content';
 import { formatDate, parseDateValue } from '../../utils/dates';
 
-const newsItems = (await getCollection('news')).sort(
+const newsItems = (await getCollection('news', ({ data }) => !data.draft)).sort(
   (a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime(),
 );
 const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' } satisfies Intl.DateTimeFormatOptions;

@@ -17,7 +17,7 @@ const experience = await getEntry("pages", "experience");
 const aboutRendered = about ? await about.render() : undefined;
 const experienceItems = experience?.data.items ?? [];
 
-const publicationEntries = await getCollection("publications");
+const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
 const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
 const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry]));
 
@@ -41,7 +41,7 @@ const featuredArtifacts = homeEditorial.featuredArtifactIds
   .map((id) => artifactLookup.get(id))
   .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
-const newsItems = (await getCollection("news"))
+const newsItems = (await getCollection("news", ({ data }) => !data.draft))
   .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
   .slice(0, 4);
 
@@ -58,7 +58,7 @@ const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
 const stats = [
-  { label: "Publications", value: `${publications.length} first-author` },
+  { label: "Publications", value: `${publications.length} public` },
   { label: "OOD utility", value: "8× gain" },
   { label: "Award", value: "ISVC Best Paper" },
   { label: "Job market", value: "Aug 2026" },
@@ -121,7 +121,6 @@ const publicationSchemas = publications.map((pub) => {
 });
 
 const structuredData = [personSchema, ...publicationSchemas];
-const current = homeEditorial.currentWork;
 ---
 
 <BaseLayout
@@ -148,29 +147,6 @@ const current = homeEditorial.currentWork;
         linkedInHref={linkedInHref}
         emailHref={emailHref}
       />
-    </div>
-  </section>
-
-  <section class="section" id="current">
-    <div class="site-shell">
-      <article class="current-work surface surface--raised">
-        <p class="eyebrow">{current.eyebrow}</p>
-        <h2 class="current-work__title">{current.title}</h2>
-        <p class="current-work__body">{current.body}</p>
-        <p class="current-work__disclaimer">
-          Co-authors anonymized for double-blind review; full author list and
-          camera-ready PDF will follow acceptance. Draft available on request.
-        </p>
-        <div class="current-work__actions">
-          <a class="badge badge--link" href={`${import.meta.env.BASE_URL}publications/reject-or-refine/`}>
-            Read summary
-          </a>
-          <a class="badge badge--link" href={emailHref}>
-            Request draft
-          </a>
-        </div>
-        <p class="current-work__venue">{current.venue}</p>
-      </article>
     </div>
   </section>
 

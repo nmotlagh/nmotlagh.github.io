@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import { parseDateValue } from '../utils/dates';
 
 export async function GET(context) {
-  const newsItems = await getCollection('news');
+  const newsItems = await getCollection('news', ({ data }) => !data.draft);
   const site = context.site ?? 'https://nmotlagh.github.io';
   const sorted = newsItems.sort(
     (a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime(),

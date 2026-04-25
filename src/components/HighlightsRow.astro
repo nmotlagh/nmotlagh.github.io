@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 
 const highlightEntries = (await getCollection('publications'))
-  .filter((entry) => entry.data.highlight)
+  .filter((entry) => !entry.data.draft && entry.data.highlight)
   .sort((a, b) => b.data.year - a.data.year)
   .slice(0, 3);
 ---

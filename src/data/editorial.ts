@@ -21,18 +21,11 @@ export const homeEditorial = {
     status:
       "Graduating August 2026 · applied scientist and ML engineer roles · LLM eval, abstention, safety.",
   },
-  currentWork: {
-    eyebrow: "EMNLP 2026 under review · adaptive QA · LLM abstention",
-    title: "Reject or Refine? Separating retrievable from unrecoverable uncertainty in adaptive QA.",
-    body:
-      "This paper studies the retrieve-versus-abstain decision after direct answering has already been ruled out. In a fixed model–retriever–corpus stack, answer confidence is a poor proxy for recoverability: logprob baselines reach only .518–.553 Recoverability AUC and have Reject Recall = 0. A class-weighted question-only controller reaches .678 ± .005 AUC with .487 ± .059 Reject Recall over 41,145 examples, and improves Refine Recall over cumulative-logprob by +.252 [.233, .272] at matched coverage.",
-    venue: "Under review at EMNLP 2026.",
-  },
   featuredPublicationSlugs: [
-    "reject-or-refine",
     "learning-when-to-say-i-dont-know",
     "naturally-constrained-reject-option-classification",
     "assessing-imagery-in-multimodal-mt",
+    "framework-for-semi-automatic-collection",
   ],
   featuredArtifactIds: [
     "learning-idk",
@@ -42,7 +35,7 @@ export const homeEditorial = {
   recruiterFacts: [
     "PhD, The Ohio State University — graduating August 2026",
     "Applied Scientist / ML Engineer · selective prediction, calibration, LLM evaluation",
-    "First author on 5 publications · ISVC 2022 Best Paper",
+    "First author on 4 public papers · ISVC 2022 Best Paper",
     "8× OOD utility gain in abstention-augmented LLM experiments (DCS Corp / AFRL)",
     "Python · PyTorch · HuggingFace · Slurm/Singularity · RAG evaluation",
     "U.S. citizen · five summers cleared work · Columbus OH, open to relocation / remote",
@@ -66,9 +59,9 @@ export const researchArc: ResearchArcStep[] = [
   },
   {
     label: "2025–26",
-    title: "Reject or refine for LLM QA",
+    title: "Adaptive QA routing",
     description:
       "Three-way routing for QA pipelines: direct answer, retrieve-then-answer, or abstain, with recoverability estimated separately from answer confidence.",
-    evidence: "EMNLP 2026 submission, under review.",
+    evidence: "Current submission under review.",
   },
 ];
