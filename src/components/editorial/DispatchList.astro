@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../../utils/dates';
 
 interface Props {
   newsItems: CollectionEntry<'news'>[];
@@ -7,11 +8,11 @@ interface Props {
 }
 
 const { newsItems, posts }: Props = Astro.props;
-const formatter = new Intl.DateTimeFormat('en-US', {
+const dateFormat = {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
-});
+} satisfies Intl.DateTimeFormatOptions;
 const newsHref = `${import.meta.env.BASE_URL}news/`;
 const blogHref = `${import.meta.env.BASE_URL}blog/`;
 ---
@@ -29,7 +30,7 @@ const blogHref = `${import.meta.env.BASE_URL}blog/`;
     <ol class="dispatch-list__items">
       {newsItems.map((item) => (
         <li>
-          <time datetime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+          <time datetime={item.data.date}>{formatDate(item.data.date, dateFormat)}</time>
           {item.data.link ? (
             <a href={item.data.link} target="_blank" rel="noopener noreferrer">
               {item.data.title}
@@ -55,7 +56,7 @@ const blogHref = `${import.meta.env.BASE_URL}blog/`;
       <ol class="dispatch-list__items">
         {posts.map((post) => (
           <li>
-            <time datetime={post.data.date}>{formatter.format(new Date(post.data.date))}</time>
+            <time datetime={post.data.date}>{formatDate(post.data.date, dateFormat)}</time>
             <a href={`${import.meta.env.BASE_URL}blog/${post.slug}/`}>{post.data.title}</a>
             <p>{post.data.description}</p>
           </li>
@@ -82,7 +83,17 @@ const blogHref = `${import.meta.env.BASE_URL}blog/`;
   }
 
   .dispatch-list__panel {
-    padding: 1.35rem;
+    padding: clamp(1.1rem, 2.4vw, 1.45rem);
+    transition:
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast),
+      transform var(--transition-fast);
+  }
+
+  .dispatch-list__panel:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
   }
 
   .dispatch-list__header {
@@ -96,9 +107,20 @@ const blogHref = `${import.meta.env.BASE_URL}blog/`;
   .dispatch-list__header h3 {
     margin: 0.2rem 0 0;
     font-family: var(--font-display);
-    font-size: 1.8rem;
-    font-weight: 620;
-    letter-spacing: -0.04em;
+    font-size: 1.55rem;
+    font-weight: 650;
+    line-height: 1.04;
+  }
+
+  .dispatch-list__header > a {
+    color: var(--color-text-muted);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .dispatch-list__header > a:hover,
+  .dispatch-list__header > a:focus-visible {
+    color: var(--color-accent);
   }
 
   .dispatch-list__items {
@@ -123,7 +145,7 @@ const blogHref = `${import.meta.env.BASE_URL}blog/`;
     display: block;
     margin-bottom: 0.35rem;
     color: var(--color-text-soft);
-    font: 600 0.72rem/1.2 var(--font-mono);
+    font: 700 0.72rem/1.2 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }

@@ -1,13 +1,12 @@
 {
   "name": "learning-idk",
-  "repo": "https://github.com/nmotlagh/learning-idk",
-  "summary": "PyTorch toolkit for per-class reject-option training with binomial threshold search, dashboards, and CLI.",
-  "stack": ["Python", "PyTorch", "CLI", "selective prediction"],
+  "repo": "https://github.com/osu-cvl/learning-idk",
+  "summary": "Companion code for ISVC 2022 / MVA 2025: per-class reject-option classification with binomial threshold search.",
+  "stack": ["Python", "PyTorch", "selective prediction"],
   "reproduce": [
-    "Tune per-class thresholds on ImageNet, iNat, or custom datasets with one command.",
-    "Export coverage/accuracy curves and selective accuracy plots for reports.",
-    "Integrate abstention policies into existing Torch models via lightweight hooks.",
-    "Production-ready toolkit that underpins selective prediction guardrails across multiple domains (vision, text, and 2-D data)."
+    "Tune per-class thresholds on ImageNet, iNaturalist, or custom datasets.",
+    "Export coverage/accuracy curves and selective-accuracy plots.",
+    "Apply learned reject thresholds to existing PyTorch classifier outputs."
   ],
   "tiesTo": [
     "learning-when-to-say-i-dont-know",

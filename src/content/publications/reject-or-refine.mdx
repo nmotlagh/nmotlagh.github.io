@@ -5,7 +5,7 @@ venue: "EMNLP 2026 (under review)"
 authors:
   - "N. Kashani Motlagh"
   - "et al."
-tldr: "A small question-only controller reaches .68 Recoverability AUC with .49 Reject Recall over 41k QA instances. Logprob baselines top out at .55 AUC and never reject."
+tldr: "A class-weighted question-only controller separates retrievable from unrecoverable QA failures better than logprob baselines."
 highlight: true
 datePublished: "2026-04-15"
 tags:
@@ -14,15 +14,15 @@ tags:
   - "retrieval-augmented generation"
   - "abstention"
 highlights:
-  - "Question-only controller: Recoverability AUC .678 ± .005, Reject Recall .487 ± .059 over 41,145 eval instances."
-  - "Logprob baselines reach only .518–.553 AUC and have Reject Recall = 0 (they never reject)."
+  - "Question-only controller: Recoverability AUC .678 ± .005 and Reject Recall .487 ± .059 over 41,145 eval instances."
+  - "Logprob baselines reach only .518–.553 AUC with Reject Recall = 0 at their calibrated operating points."
   - "Matched-coverage advantage over cumulative-logprob: Refine Recall +.252 [.233, .272]."
 ---
 
 Modern adaptive QA systems have to choose among three actions — answer directly, retrieve and then answer, or abstain — but most work studies only one of these boundaries at a time. This paper asks a narrower question: under a fixed model–retriever–corpus stack, is the signal that says "retrieve" the same signal that says "abstain"?
 
-The short answer is no. Over 41,145 eval instances, cheap logprob baselines top out at Recoverability AUC .518–.553 and have Reject Recall = 0 — they never reject. The strongest retriever-side scalar improves AUC but still collapses at its calibrated best-E2E operating point. A small class-weighted question-only controller, in contrast, reaches Recoverability AUC .678 ± .005 with Reject Recall .487 ± .059, and at matched coverage beats cumulative-logprob thresholds on Refine Recall by +.252 [.233, .272].
+The answer is no in the evaluated stack. Over 41,145 eval instances, logprob baselines top out at Recoverability AUC .518–.553 and have Reject Recall = 0 at their calibrated operating points. The strongest retriever-side scalar improves AUC but does not preserve useful reject behavior at the best-E2E threshold. A class-weighted question-only controller reaches Recoverability AUC .678 ± .005 with Reject Recall .487 ± .059, and at matched coverage improves Refine Recall over cumulative-logprob thresholds by +.252 [.233, .272].
 
-Operationally, the 3-way routing problem is a two-stage control problem: answer confidence decides whether to leave direct answering, and stack-relative recoverability decides whether retrieval can rescue the question or whether it should be rejected. The experiments identify class weighting as the mechanism that preserves a non-trivial retrieve action when the unrecoverable majority would otherwise drown the minority retrieve class.
+Operationally, the 3-way routing problem is a two-stage control problem: answer confidence determines whether to leave direct answering, and stack-relative recoverability determines whether retrieval is likely to make the question answerable. The experiments identify class weighting as important for preserving non-trivial retrieve predictions when unrecoverable examples dominate the conditional dataset.
 
-Under review at EMNLP 2026. Code release will follow acceptance.
+Under review at EMNLP 2026 (double-blind). Co-author list and PDF will follow acceptance; a draft is available on request via email. Code release will follow acceptance.

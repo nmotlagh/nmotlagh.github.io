@@ -2,11 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import { getCollection } from 'astro:content';
+import { formatDate, parseDateValue } from '../../utils/dates';
 
 const newsItems = (await getCollection('news')).sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+  (a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime(),
 );
-const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' } satisfies Intl.DateTimeFormatOptions;
 ---
 
 <BaseLayout title="News" description="Latest publications, releases, and results across selective prediction and multimodal ML.">
@@ -15,6 +16,7 @@ const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeri
       <div class="archive-page__header">
         <div>
           <SectionHeading
+            as="h1"
             eyebrow="Updates"
             title="News and announcements"
             description="A quick-running log of publications, submissions, releases, and career updates."
@@ -29,8 +31,8 @@ const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeri
 
       <ol class="news-timeline">
         {newsItems.map((item) => (
-          <li>
-            <time datetime={item.data.date}>{formatter.format(new Date(item.data.date))}</time>
+          <li id={item.id}>
+            <time datetime={item.data.date}>{formatDate(item.data.date, dateFormat)}</time>
             {item.data.link ? (
               <a href={item.data.link} target="_blank" rel="noopener noreferrer">
                 {item.data.title}

@@ -17,6 +17,7 @@ const badges: { label: string; href?: string }[] = [
   { label: 'Data', href: data.data },
   { label: 'Slides', href: data.slides },
 ];
+const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 ---
 
 <article class="publication-card surface">
@@ -34,11 +35,11 @@ const badges: { label: string; href?: string }[] = [
   <p class="publication-card__tldr">{data.tldr}</p>
 
   {Array.isArray(data.tags) && data.tags.length > 0 && (
-    <div class="publication-card__tags">
+    <ul class="publication-card__tags" role="list">
       {data.tags.map((tag) => (
-        <span class="tag">{tag}</span>
+        <li class="tag">{tag}</li>
       ))}
-    </div>
+    </ul>
   )}
 
   {data.highlights && data.highlights.length > 0 && (
@@ -56,9 +57,10 @@ const badges: { label: string; href?: string }[] = [
           badge.href && (
             <a
               class="badge badge--link"
+              aria-label={`${badge.label} for ${data.title}`}
               href={badge.href}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={isExternalHref(badge.href) ? '_blank' : undefined}
+              rel={isExternalHref(badge.href) ? 'noopener noreferrer' : undefined}
             >
               {badge.label}
             </a>
@@ -77,10 +79,21 @@ const badges: { label: string; href?: string }[] = [
 
 <style>
   .publication-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
     padding: 1.25rem;
+    transition:
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast),
+      transform var(--transition-fast);
+  }
+
+  .publication-card:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
   }
 
   .publication-card__meta {
@@ -101,10 +114,9 @@ const badges: { label: string; href?: string }[] = [
   .publication-card__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 2vw, 2.1rem);
-    font-weight: 620;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
+    font-size: clamp(1.45rem, 1.8vw, 1.95rem);
+    font-weight: 650;
+    line-height: 1.05;
   }
 
   .publication-card__title a {
@@ -117,7 +129,7 @@ const badges: { label: string; href?: string }[] = [
   }
 
   .publication-card__authors {
-    font: 500 0.8rem/1.6 var(--font-mono);
+    font: 700 0.76rem/1.6 var(--font-mono);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-text-soft);
@@ -133,18 +145,21 @@ const badges: { label: string; href?: string }[] = [
   .publication-card__award {
     display: inline-block;
     font-size: 0.78rem;
-    font-weight: 600;
-    background: var(--color-accent-soft);
+    font-weight: 700;
+    background: var(--color-secondary-soft);
     color: var(--color-text);
     padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-pill);
-    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    border: 1px solid color-mix(in srgb, var(--color-secondary) 42%, var(--color-border));
   }
 
   .publication-card__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .publication-card__highlights {
@@ -183,5 +198,15 @@ const badges: { label: string; href?: string }[] = [
     margin: 0;
     color: var(--color-text-muted);
     line-height: 1.7;
+  }
+
+  @media (max-width: 640px) {
+    .publication-card {
+      padding: 1.05rem;
+    }
+
+    .publication-card__title {
+      font-size: clamp(1.3rem, 7vw, 1.55rem);
+    }
   }
 </style>

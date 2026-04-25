@@ -1,12 +1,12 @@
 {
   "name": "calibration",
-  "repo": "https://github.com/nmotlagh/calibration",
-  "summary": "Evaluation harness for multimodal MT, selective LLM routing, and visual-text calibration experiments.",
-  "stack": ["Python", "PyTorch", "transformers", "evaluation"],
+  "repo": "https://github.com/osu-cvl/calibration",
+  "summary": "PyTorch calibration utilities for histogram binning, global temperature scaling, and class-wise temperature scaling.",
+  "stack": ["Python", "PyTorch", "calibration"],
   "reproduce": [
-    "Run imagery-aware contrastive probes against WMT-style checkpoints.",
-    "Log structured reports (HTML/Markdown) for rapid model comparisons.",
-    "Used to benchmark multimodal MT models for AFRL and academic deployments."
+    "Run global and class-wise temperature scaling on classifier logits.",
+    "Produce reliability diagrams and ECE / class-wise ECE reports.",
+    "Provides calibration utilities used by the imagery-aware contrastive MT evaluation code."
   ],
   "tiesTo": [
     "assessing-imagery-in-multimodal-mt"

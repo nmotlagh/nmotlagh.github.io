@@ -7,6 +7,7 @@ import ResearchArc from "../components/editorial/ResearchArc.astro";
 import DispatchList from "../components/editorial/DispatchList.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
 import { homeEditorial, researchArc } from "../data/editorial";
+import { parseDateValue } from "../utils/dates";
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import headshot from "../assets/headshot.jpg";
@@ -41,11 +42,11 @@ const featuredArtifacts = homeEditorial.featuredArtifactIds
   .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
 const newsItems = (await getCollection("news"))
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
   .slice(0, 4);
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft))
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
   .slice(0, 2);
 
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
@@ -57,10 +58,10 @@ const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
 const stats = [
-  { label: "First-author pubs", value: `${publications.length}/${publications.length}` },
-  { label: "Best Paper", value: "ISVC 2022" },
-  { label: "Graduating", value: "Aug 2026" },
-  { label: "Available", value: "Fall 2026" },
+  { label: "Publications", value: `${publications.length} first-author` },
+  { label: "OOD utility", value: "8× gain" },
+  { label: "Award", value: "ISVC Best Paper" },
+  { label: "Job market", value: "Aug 2026" },
 ];
 
 const personSchema = {
@@ -125,13 +126,14 @@ const current = homeEditorial.currentWork;
 
 <BaseLayout
   title="Home"
-  description="Nick Kashani Motlagh — PhD candidate at Ohio State working on selective prediction, abstention, and adaptive question answering with LLMs."
+  description="Nick Kashani Motlagh — PhD candidate at Ohio State working on selective prediction, calibration, abstention, and adaptive LLM question answering."
   structuredData={structuredData}
 >
-  <section class="section">
+  <section class="section section--hero">
     <div class="site-shell">
       <EditorialHero
         eyebrow={homeEditorial.hero.eyebrow}
+        availability={homeEditorial.hero.availability}
         title={homeEditorial.hero.title}
         lede={homeEditorial.hero.lede}
         supporting={homeEditorial.hero.supporting}
@@ -151,10 +153,22 @@ const current = homeEditorial.currentWork;
 
   <section class="section" id="current">
     <div class="site-shell">
-      <article class="current-work surface">
+      <article class="current-work surface surface--raised">
         <p class="eyebrow">{current.eyebrow}</p>
         <h2 class="current-work__title">{current.title}</h2>
         <p class="current-work__body">{current.body}</p>
+        <p class="current-work__disclaimer">
+          Co-authors anonymized for double-blind review; full author list and
+          camera-ready PDF will follow acceptance. Draft available on request.
+        </p>
+        <div class="current-work__actions">
+          <a class="badge badge--link" href={`${import.meta.env.BASE_URL}publications/reject-or-refine/`}>
+            Read summary
+          </a>
+          <a class="badge badge--link" href={emailHref}>
+            Request draft
+          </a>
+        </div>
         <p class="current-work__venue">{current.venue}</p>
       </article>
     </div>
@@ -171,7 +185,7 @@ const current = homeEditorial.currentWork;
       <SectionHeading
         eyebrow="Built"
         title="Projects and open-source."
-        description="Training code, evaluation harnesses, and datasets I wrote and ship under my GitHub."
+        description="Training code, evaluation harnesses, calibration utilities, and datasets tied to the publications."
       />
 
       <div class="home-artifact-grid">
@@ -239,7 +253,7 @@ const current = homeEditorial.currentWork;
       <SectionHeading
         eyebrow="Experience"
         title="Roles."
-        description="Research, teaching, and internships."
+        description="Research, teaching, internships, and applied evaluation work."
       />
 
       <div class="home-experience-grid">
@@ -304,50 +318,81 @@ const current = homeEditorial.currentWork;
 
 <style>
   .current-work {
+    position: relative;
+    display: grid;
+    gap: 1.1rem;
     padding: clamp(1.5rem, 3.5vw, 2.6rem);
+    overflow: hidden;
+  }
+
+  .current-work::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0.32rem;
+    background: linear-gradient(180deg, var(--color-secondary), var(--color-accent));
+  }
+
+  @media (min-width: 920px) {
+    .current-work {
+      grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.32fr);
+      align-items: start;
+    }
+
+    .current-work > .eyebrow,
+    .current-work__title,
+    .current-work__body,
+    .current-work__disclaimer {
+      grid-column: 1;
+    }
+
+    .current-work__actions,
+    .current-work__venue {
+      grid-column: 2;
+    }
   }
 
   .current-work__title {
-    margin: 0.6rem 0 0;
+    margin: 0;
     font-family: var(--font-display);
     font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.6rem);
+    font-weight: 650;
     line-height: 1.15;
-    letter-spacing: -0.03em;
     max-width: 54rem;
-    text-wrap: balance;
   }
 
   .current-work__body {
-    margin: 1.1rem 0 0;
+    margin: 0;
     max-width: 52rem;
     color: var(--color-text-muted);
     font-size: 1.05rem;
-    line-height: 1.7;
+    line-height: 1.72;
+  }
+
+  .current-work__disclaimer {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--color-secondary) 34%, var(--color-border));
+    border-left: 3px solid var(--color-secondary);
+    background: color-mix(in srgb, var(--color-secondary-soft) 44%, transparent);
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    border-radius: var(--radius-md);
+  }
+
+  .current-work__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin: 0;
   }
 
   .current-work__venue {
-    margin: 1.2rem 0 0;
+    margin: 0;
     color: var(--color-text-soft);
     font: 600 0.8rem/1.2 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-  }
-
-  .home-artifact-card__stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 0.9rem 0 0.3rem;
-    padding: 0;
-    list-style: none;
-  }
-
-  .home-artifact-card__stack li {
-    padding: 0.2rem 0.55rem;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    color: var(--color-text-muted);
-    font: 500 0.72rem/1.2 var(--font-mono);
-    letter-spacing: 0.04em;
   }
 </style>

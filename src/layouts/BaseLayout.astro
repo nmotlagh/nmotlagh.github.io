@@ -7,7 +7,7 @@ import headshot from '../assets/headshot.jpg';
 
 const siteName = 'Nick Kashani Motlagh';
 const defaultDescription =
-  'PhD candidate at The Ohio State University building uncertainty-aware ML systems that know when to stop guessing.';
+  'PhD candidate at The Ohio State University working on selective prediction, calibration, abstention, and LLM evaluation.';
 
 interface LayoutProps {
   title?: string;
@@ -66,8 +66,8 @@ const navLinks = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#11100d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f7f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1513" media="(prefers-color-scheme: dark)" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
@@ -91,7 +91,7 @@ const navLinks = [
     <meta name="twitter:site" content="@NickMotlagh" />
     <meta name="twitter:creator" content="@NickMotlagh" />
     <link rel="alternate" type="application/rss+xml" title="News · Nick Kashani Motlagh" href={rssHref} />
-    <script defer data-domain="nmotlagh.github.io" src="https://plausible.io/js/script.js"></script>
+    <script is:inline defer data-domain="nmotlagh.github.io" src="https://plausible.io/js/script.js"></script>
     <script is:inline>
       (function () {
         const storageKey = 'theme-preference';
@@ -148,7 +148,7 @@ const navLinks = [
       })();
     </script>
     {structured.map((entry) => (
-      <script type="application/ld+json" is:inline>{JSON.stringify(entry)}</script>
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(entry)} />
     ))}
     <slot name="head" />
   </head>
@@ -159,30 +159,40 @@ const navLinks = [
       <header class="site-header">
         <div class="site-shell site-header__bar">
           <a class="site-header__brand" href={homeHref}>
+            <span class="site-header__mark" aria-hidden="true">NKM</span>
             <span class="site-header__title">{siteName}</span>
           </a>
 
-          <div class="site-header__nav" aria-label="Primary navigation">
-            {navLinks.map((link) => (
-              <a
-                class="site-header__nav-link"
-                href={link.href}
-                data-active={link.active ? 'true' : 'false'}
-                data-astro-prefetch
-              >
-                {link.label}
-              </a>
-            ))}
-            <a
-              class="site-header__nav-link--cta"
-              href={resumeHref}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Resume
-            </a>
-            <ThemeToggle />
-          </div>
+          <nav class="site-header__nav" aria-label="Primary navigation">
+            <ul class="site-header__nav-list">
+              {navLinks.map((link) => (
+                <li>
+                  <a
+                    class="site-header__nav-link"
+                    href={link.href}
+                    data-active={link.active ? 'true' : 'false'}
+                    aria-current={link.active ? 'page' : undefined}
+                    data-astro-prefetch
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a
+                  class="site-header__nav-link site-header__nav-link--cta"
+                  href={resumeHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Resume
+                </a>
+              </li>
+              <li>
+                <ThemeToggle />
+              </li>
+            </ul>
+          </nav>
         </div>
       </header>
 
@@ -200,13 +210,15 @@ const navLinks = [
             </p>
           </div>
 
-          <div class="site-footer__links">
-            <a href={emailHref}>Email</a>
-            <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
-            <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a>
-          </div>
+          <nav class="site-footer__links" aria-label="Footer links">
+            <ul>
+              <li><a href={emailHref}>Email</a></li>
+              <li><a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a></li>
+              <li><a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+              <li><a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a></li>
+            </ul>
+          </nav>
         </div>
       </footer>
     </div>

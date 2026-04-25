@@ -32,9 +32,19 @@ const { items }: Props = Astro.props;
     position: relative;
     padding: 1.15rem 1.15rem 1.15rem 1.25rem;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-md);
     background: color-mix(in srgb, var(--color-panel) 90%, transparent);
     box-shadow: var(--shadow-card);
+    transition:
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast),
+      transform var(--transition-fast);
+  }
+
+  .research-arc__item:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
   }
 
   .research-arc__item::before {
@@ -42,8 +52,8 @@ const { items }: Props = Astro.props;
     position: absolute;
     inset: 1rem auto 1rem 0;
     width: 3px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, var(--color-accent), transparent);
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--color-secondary), var(--color-accent));
   }
 
   .research-arc__label {
@@ -58,8 +68,8 @@ const { items }: Props = Astro.props;
     margin: 0.55rem 0 0;
     font-family: var(--font-display);
     font-size: 1.5rem;
-    line-height: 1.02;
-    letter-spacing: -0.04em;
+    font-weight: 650;
+    line-height: 1.08;
   }
 
   .research-arc__item p {

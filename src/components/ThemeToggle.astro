@@ -1,4 +1,4 @@
-<button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false" data-theme-toggle>
+<button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" data-theme-toggle>
   <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="4" />
@@ -17,6 +17,7 @@
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   </span>
+  <span class="sr-only" aria-live="polite" data-theme-status>Light theme active</span>
 </button>
 <script is:inline>
   const storageKey = 'theme-preference';
@@ -40,6 +41,11 @@
     if (!button) return;
     const isDark = root.dataset.theme === 'dark';
     button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+    button.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    const status = button.querySelector('[data-theme-status]');
+    if (status) {
+      status.textContent = isDark ? 'Dark theme active' : 'Light theme active';
+    }
   };
 
   if (button) {

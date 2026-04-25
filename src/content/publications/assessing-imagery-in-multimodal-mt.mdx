@@ -8,7 +8,7 @@ authors:
   - "T. Anderson"
   - "J. Gwinnup"
   - "G. Erdmann"
-tldr: "Contrastive evaluation shows SOTA multimodal MT models leverage pixels beyond a regularization effect."
+tldr: "Contrastive evaluation of WMT 2024 multimodal MT systems shows measurable dependence on paired visual context."
 highlight: true
 metric: "+7% image-grounding score"
 datePublished: "2024-11-15"
@@ -21,8 +21,8 @@ tags:
   - "evaluation"
   - "WMT"
 highlights:
-  - "Introduced imagery-aware contrastive probes that isolate whether translations truly reference the paired visual context."
-  - "Benchmarked nine multimodal MT systems and showed genuine visual grounding across high-variance evaluation splits."
+  - "Introduced imagery-aware contrastive probes for testing whether translations change under mismatched visual context."
+  - "Benchmarked nine multimodal MT systems across evaluation splits with high image-sensitivity variance."
 ---
 
-We design imagery-sensitive contrastive metrics for multimodal machine translation and apply them to state-of-the-art architectures used at WMT 2024. The study shows that translations degrade when the paired image contradicts the caption, indicating that the models depend on visual evidence instead of treating images as mere regularizers. We release the evaluation harness and curated counterfactual splits to help teams audit multimodal MT deployments.
+We design imagery-sensitive contrastive metrics for multimodal machine translation and apply them to systems evaluated at WMT 2024. The experiments compare translations under matched and mismatched visual context, giving a direct test of whether image inputs influence model behavior beyond training-time regularization. We release the evaluation harness and curated counterfactual splits used for the analysis.

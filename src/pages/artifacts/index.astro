@@ -16,6 +16,7 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
       <div class="archive-page__header">
         <div>
           <SectionHeading
+            as="h1"
             eyebrow="Open source"
             title="Artifacts and GitHub repos"
             description="A compact archive of the code, dashboards, and datasets that turn the papers into something runnable."
@@ -23,8 +24,9 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
         </div>
 
         <p class="archive-page__aside">
-          This page is for the reader who wants proof of execution: what was
-          built, what can be reproduced, and which paper each artifact supports.
+          Each entry links the repository to the corresponding paper and lists
+          the main reproducibility path: scripts, reports, datasets, or
+          evaluation outputs.
         </p>
       </div>
 
@@ -41,7 +43,13 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
                     {artifact.data.name}
                   </a>
                 </h3>
-                <a class="badge badge--link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                <a
+                  class="badge badge--link"
+                  href={artifact.data.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`GitHub repository for ${artifact.data.name}`}
+                >
                   GitHub
                 </a>
               </div>
@@ -73,6 +81,16 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
 <style>
   .artifact-archive-card {
     padding: 1.2rem;
+    transition:
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast),
+      transform var(--transition-fast);
+  }
+
+  .artifact-archive-card:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
   }
 
   .artifact-card__header {
@@ -85,9 +103,19 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
   .artifact-card__header h3 {
     margin: 0;
     font-family: var(--font-display);
-    font-size: 1.8rem;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
+    font-size: 1.55rem;
+    font-weight: 650;
+    line-height: 1.08;
+  }
+
+  .artifact-card__header h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .artifact-card__header h3 a:hover,
+  .artifact-card__header h3 a:focus-visible {
+    color: var(--color-accent);
   }
 
   .artifact-archive-card p {
@@ -111,5 +139,11 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 640px) {
+    .artifact-card__header {
+      display: grid;
+    }
   }
 </style>

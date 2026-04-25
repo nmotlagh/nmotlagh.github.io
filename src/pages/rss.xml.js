@@ -1,11 +1,12 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
+import { parseDateValue } from '../utils/dates';
 
 export async function GET(context) {
   const newsItems = await getCollection('news');
   const site = context.site ?? 'https://nmotlagh.github.io';
   const sorted = newsItems.sort(
-    (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+    (a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime(),
   );
 
   return rss({
@@ -14,8 +15,8 @@ export async function GET(context) {
     site,
     items: sorted.map((item) => ({
       title: item.data.title,
-      pubDate: new Date(item.data.date),
-      link: item.data.link ?? `${site}news/`,
+      pubDate: parseDateValue(item.data.date),
+      link: item.data.link ?? new URL(`news/#${item.id}`, site).href,
     })),
   });
 }

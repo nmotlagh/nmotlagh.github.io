@@ -6,6 +6,7 @@ const target = `${import.meta.env.BASE_URL}#experience`;
 
 <BaseLayout title="Experience" description="Redirecting to the Experience section.">
   <Fragment slot="head">
+    <meta name="robots" content="noindex" />
     <meta http-equiv="refresh" content={`0;url=${target}`} />
   </Fragment>
   <section class="site-shell section">
@@ -22,4 +23,3 @@ const target = `${import.meta.env.BASE_URL}#experience`;
     </div>
   </section>
 </BaseLayout>
-

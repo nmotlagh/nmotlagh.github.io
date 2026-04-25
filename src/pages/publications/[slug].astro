@@ -64,6 +64,7 @@ const publicationSchema = {
                   badge.href && (
                     <a
                       class="badge badge--link"
+                      aria-label={`${badge.label} for ${pub.data.title}`}
                       href={badge.href}
                       target="_blank"
                       rel="noopener noreferrer"

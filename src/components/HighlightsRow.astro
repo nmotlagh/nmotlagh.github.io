@@ -22,6 +22,7 @@ const highlightEntries = (await getCollection('publications'))
           { label: 'Code', href: entry.data.code },
           { label: 'Data', href: entry.data.data },
         ];
+        const isExternalHref = (href: string) => /^https?:\/\//.test(href);
         return (
           <article class="highlight-card">
             <div class="highlight-card__eyebrow">
@@ -41,7 +42,12 @@ const highlightEntries = (await getCollection('publications'))
               {badges.map(
                 (badge) =>
                   badge.href && (
-                    <a class="highlight-card__link" href={badge.href} target="_blank" rel="noopener noreferrer">
+                    <a
+                      class="highlight-card__link"
+                      href={badge.href}
+                      target={isExternalHref(badge.href) ? '_blank' : undefined}
+                      rel={isExternalHref(badge.href) ? 'noopener noreferrer' : undefined}
+                    >
                       {badge.label}
                     </a>
                   ),

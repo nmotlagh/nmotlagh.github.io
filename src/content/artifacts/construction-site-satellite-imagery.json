@@ -1,13 +1,12 @@
 {
-  "name": "Construction-Site-Satellite-Imagery",
-  "repo": "https://github.com/nmotlagh/Construction-Site-Satellite-Imagery",
-  "summary": "Semi-automatic satellite data ingestion plus labeling UI for monitoring changing regions.",
-  "stack": ["Python", "OpenStreetMap", "remote sensing", "labeling UI"],
+  "name": "construction-site-satellite-imagery-collection",
+  "repo": "https://github.com/osu-cvl/Construction-Site-Satellite-Imagery-Collection",
+  "summary": "Companion code for OpenStreetMap-guided temporal satellite imagery collection and annotation.",
+  "stack": ["Python", "OpenStreetMap", "remote sensing"],
   "reproduce": [
-    "Generate OpenStreetMap-guided scrape manifests for temporal imagery.",
-    "Label construction phases with the included lightweight annotation app.",
-    "Export train/val/test splits for change-detection baselines.",
-    "Demonstrates end-to-end dataset design, labeling tooling, and export pipelines for remote sensing change detection."
+    "Generate OpenStreetMap-guided download manifests for temporal imagery.",
+    "Label construction phases with the bundled annotation app.",
+    "Export train/val/test splits for change-detection baselines."
   ],
   "tiesTo": [
     "framework-for-semi-automatic-collection"

@@ -3,14 +3,15 @@ interface Props {
   eyebrow?: string;
   title: string;
   description?: string;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }
 
-const { eyebrow, title, description }: Props = Astro.props;
+const { eyebrow, title, description, as = 'h2' } = Astro.props as Props;
+const HeadingTag = as;
 ---
 
 <div class="section-heading">
   {eyebrow && <span class="section-heading__eyebrow">{eyebrow}</span>}
-  <h2 class="section-heading__title">{title}</h2>
+  <HeadingTag class="section-heading__title">{title}</HeadingTag>
   {description && <p class="section-heading__description">{description}</p>}
 </div>
-

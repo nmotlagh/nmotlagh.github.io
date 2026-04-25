@@ -14,8 +14,14 @@ interface StatItem {
   value: string;
 }
 
+interface AvailabilityBadge {
+  label: string;
+  detail: string;
+}
+
 interface Props {
   eyebrow: string;
+  availability?: AvailabilityBadge;
   title: string;
   lede: string;
   supporting: string;
@@ -30,6 +36,7 @@ interface Props {
 
 const {
   eyebrow,
+  availability,
   title,
   lede,
   supporting,
@@ -50,12 +57,10 @@ const profileLinks = [
 ];
 ---
 
-<section class="editorial-hero surface surface--raised">
+<section class="editorial-hero" aria-labelledby="intro-title">
   <div class="editorial-hero__copy">
     <p class="eyebrow">{eyebrow}</p>
-    <div class="editorial-hero__title-shell">
-      <h1 class="editorial-hero__title">{title}</h1>
-    </div>
+    <h1 id="intro-title" class="editorial-hero__title">{title}</h1>
     <p class="editorial-hero__lede">{lede}</p>
     <p class="editorial-hero__supporting">{supporting}</p>
 
@@ -76,6 +81,29 @@ const profileLinks = [
         </a>
       ))}
     </div>
+  </div>
+
+  <aside class="editorial-hero__panel surface surface--raised" aria-label="Profile snapshot">
+    <div class="editorial-hero__portrait">
+      <Image
+        src={headshot}
+        alt="Nick Kashani Motlagh"
+        width={720}
+        height={960}
+        sizes="(max-width: 960px) 100vw, 24rem"
+        loading="eager"
+      />
+    </div>
+
+    {availability && (
+      <p class="editorial-hero__availability">
+        <span class="editorial-hero__availability-dot" aria-hidden="true"></span>
+        <span>
+          <strong>{availability.label}</strong>
+          <span>{availability.detail}</span>
+        </span>
+      </p>
+    )}
 
     <dl class="editorial-hero__stats">
       {stats.map((stat) => (
@@ -85,21 +113,9 @@ const profileLinks = [
         </div>
       ))}
     </dl>
-  </div>
 
-  <aside class="editorial-hero__aside">
-    <div class="editorial-hero__portrait">
-      <Image
-        src={headshot}
-        alt="Nick Kashani Motlagh"
-        width={720}
-        height={960}
-        sizes="(max-width: 960px) 100vw, 28rem"
-      />
-    </div>
-
-    <div class="editorial-hero__links-card">
-      <ul class="editorial-hero__links">
+    <nav class="editorial-hero__links" aria-label="Profile links">
+      <ul>
         {profileLinks.map((link) => (
           <li>
             <a
@@ -112,56 +128,53 @@ const profileLinks = [
           </li>
         ))}
       </ul>
-    </div>
+    </nav>
   </aside>
 </section>
 
 <style>
   .editorial-hero {
     display: grid;
-    gap: clamp(1.5rem, 4vw, 3rem);
-    padding: clamp(1.5rem, 4vw, 3rem);
+    gap: clamp(1.4rem, 4vw, 3.5rem);
+    align-items: start;
   }
 
   @media (min-width: 960px) {
     .editorial-hero {
-      grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.8fr);
-      align-items: start;
+      grid-template-columns: minmax(0, 1.18fr) minmax(18rem, 0.52fr);
     }
   }
 
   .editorial-hero__copy {
     min-width: 0;
+    padding-top: clamp(0.25rem, 2vw, 1.35rem);
   }
 
   .editorial-hero__title {
     margin: 0;
+    max-width: 11ch;
+    color: var(--color-text);
     font-family: var(--font-display);
-    font-size: clamp(3rem, 6vw, 5.25rem);
-    font-weight: 640;
-    line-height: 0.98;
-    letter-spacing: -0.045em;
-    text-wrap: balance;
-  }
-
-  .editorial-hero__title-shell {
-    max-width: min(100%, 46rem);
+    font-size: clamp(3.8rem, 8vw, 7rem);
+    font-weight: 680;
+    line-height: 0.92;
   }
 
   .editorial-hero__lede {
     margin: 1.25rem 0 0;
-    max-width: 44rem;
-    font-size: clamp(1.2rem, 1rem + 0.7vw, 1.55rem);
-    line-height: 1.45;
+    max-width: 42rem;
     color: var(--color-text);
+    font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.72rem);
+    font-weight: 650;
+    line-height: 1.32;
   }
 
   .editorial-hero__supporting {
     margin: 1rem 0 0;
-    max-width: 42rem;
+    max-width: 48rem;
     color: var(--color-text-muted);
     font-size: 1.05rem;
-    line-height: 1.7;
+    line-height: 1.78;
   }
 
   .editorial-hero__status {
@@ -169,100 +182,180 @@ const profileLinks = [
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem;
-    margin: 1.5rem 0 0;
+    margin: 1.45rem 0 0;
     color: var(--color-text-muted);
-    font-size: 0.95rem;
+    font-size: 0.96rem;
   }
 
   .editorial-hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.875rem;
-    margin-top: 1.75rem;
+    gap: 0.85rem;
+    margin-top: 1.6rem;
   }
 
-  .editorial-hero__stats {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.9rem;
-    margin: 2rem 0 0;
-  }
-
-  @media (max-width: 639px) {
-    .editorial-hero__stats {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .editorial-hero__stat {
-    padding: 1rem 1.05rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--color-panel) 86%, transparent);
-  }
-
-  .editorial-hero__stat dt {
-    margin: 0;
-    color: var(--color-text-soft);
-    font: 600 0.72rem/1.2 var(--font-mono);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .editorial-hero__stat dd {
-    margin: 0.55rem 0 0;
-    color: var(--color-text);
-    font-family: var(--font-display);
-    font-size: clamp(1.15rem, 1rem + 0.3vw, 1.4rem);
-    line-height: 1.15;
-  }
-
-  .editorial-hero__aside {
+  .editorial-hero__panel {
     display: grid;
     gap: 1rem;
+    padding: 0.75rem;
   }
 
   .editorial-hero__portrait {
     overflow: hidden;
-    border-radius: calc(var(--radius-2xl) * 1.15);
     border: 1px solid var(--color-border);
-    background: linear-gradient(180deg, var(--color-panel-strong), var(--color-panel));
-    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-alt);
   }
 
   .editorial-hero__portrait :global(img) {
-    aspect-ratio: 3 / 4;
     width: 100%;
+    aspect-ratio: 1;
     height: auto;
     object-fit: cover;
     object-position: center 20%;
   }
 
-  .editorial-hero__links-card {
-    padding: 1rem 1.2rem;
-    border-radius: var(--radius-xl);
+  .editorial-hero__availability {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0.8rem 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--color-positive) 38%, var(--color-border));
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-positive-soft) 60%, transparent);
+    color: var(--color-text-muted);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .editorial-hero__availability strong {
+    display: block;
+    color: var(--color-text);
+    font: 700 0.73rem/1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .editorial-hero__availability span span {
+    display: block;
+    margin-top: 0.22rem;
+  }
+
+  .editorial-hero__availability-dot {
+    width: 0.58rem;
+    height: 0.58rem;
+    margin-top: 0.3rem;
+    border-radius: 50%;
+    background: var(--color-positive);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-positive) 22%, transparent);
+  }
+
+  .editorial-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
     border: 1px solid var(--color-border);
-    background: color-mix(in srgb, var(--color-panel) 88%, transparent);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .editorial-hero__stat {
+    min-width: 0;
+    padding: 0.85rem;
+    background: color-mix(in srgb, var(--color-panel) 78%, transparent);
+  }
+
+  .editorial-hero__stat:nth-child(odd) {
+    border-right: 1px solid var(--color-border);
+  }
+
+  .editorial-hero__stat:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .editorial-hero__stat dt {
+    margin: 0;
+    color: var(--color-text-soft);
+    font: 700 0.68rem/1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .editorial-hero__stat dd {
+    margin: 0.5rem 0 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+    font-weight: 650;
+    line-height: 1.1;
   }
 
   .editorial-hero__links {
-    list-style: none;
+    padding-top: 0.2rem;
+  }
+
+  .editorial-hero__links ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.65rem 1.25rem;
+    gap: 0.5rem;
+    list-style: none;
     margin: 0;
     padding: 0;
   }
 
   .editorial-hero__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.1rem;
+    padding: 0.2rem 0.35rem;
     color: var(--color-text);
-    font-weight: 500;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font: 700 0.82rem/1.2 var(--font-mono);
     letter-spacing: 0.04em;
+    text-decoration: none;
   }
 
-  .editorial-hero__links a:hover {
+  .editorial-hero__links a:hover,
+  .editorial-hero__links a:focus-visible {
     color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .editorial-hero__title {
+      font-size: clamp(3rem, 16vw, 4.25rem);
+    }
+
+    .editorial-hero__lede {
+      font-size: 1.18rem;
+      line-height: 1.32;
+    }
+
+    .editorial-hero__supporting,
+    .editorial-hero__status {
+      display: none;
+    }
+
+    .editorial-hero__panel {
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+      align-items: center;
+      padding: 0.6rem;
+    }
+
+    .editorial-hero__availability {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .editorial-hero__availability strong {
+      color: var(--color-accent);
+    }
+
+    .editorial-hero__availability span span,
+    .editorial-hero__stats,
+    .editorial-hero__links {
+      display: none;
+    }
   }
 </style>

@@ -7,20 +7,25 @@ export interface ResearchArcStep {
 
 export const homeEditorial = {
   hero: {
-    eyebrow: "PhD candidate · Ohio State Computer Vision Lab",
+    eyebrow: "Applied Scientist / ML Engineer · available August 2026",
+    availability: {
+      label: "Available August 2026",
+      detail:
+        "Applied Scientist & ML Engineer roles · LLM evaluation, abstention, safety · Columbus, OH; open to relocation / remote",
+    },
     title: "Nick Kashani Motlagh",
     lede:
-      "I build machine learning systems that know when to answer, when to retrieve, and when to refuse.",
+      "I work on selective prediction, calibration, and abstention policies for ML systems.",
     supporting:
-      "First-author on all five of my publications: selective prediction for vision (ISVC 2022 Best Paper, MVA 2025 journal extension), multimodal machine translation (WMT 2024), and adaptive question answering with LLMs (EMNLP 2026 submission). Five summers at AFRL on CUI work. Python, PyTorch, transformers, retrieval-augmented generation, evaluation harnesses, distributed training on HPC.",
+      "PhD candidate at Ohio State’s Computer Vision Lab, graduating August 2026. My research studies when fixed model pipelines should predict, defer to retrieval, or abstain, with work spanning per-class reject thresholds, multimodal MT evaluation, and lightweight controllers for adaptive QA.",
     status:
-      "Graduating August 2026. Available fall 2026 for applied ML and ML engineering roles. Columbus, OH — open to relocation and remote. U.S. citizen.",
+      "Graduating August 2026 · applied scientist and ML engineer roles · LLM eval, abstention, safety.",
   },
   currentWork: {
     eyebrow: "EMNLP 2026 under review · adaptive QA · LLM abstention",
-    title: "Reject or Refine? When LLM agents should retrieve, reason, or refuse.",
+    title: "Reject or Refine? Separating retrievable from unrecoverable uncertainty in adaptive QA.",
     body:
-      "When an LLM-based QA system shouldn't answer directly, is the signal that says \"retrieve\" the same signal that says \"abstain\"? In a fixed model–retriever–corpus stack, the answer is no. Over 41k eval instances, a small class-weighted question-only controller reaches Recoverability AUC .678 ± .005 with Reject Recall .487 ± .059; cheap logprob baselines top out at AUC ≈ .55 and never reject (Reject Recall = 0). At matched coverage, the controller's Refine Recall advantage over cumulative-logprob is +.252 [.233, .272].",
+      "This paper studies the retrieve-versus-abstain decision after direct answering has already been ruled out. In a fixed model–retriever–corpus stack, answer confidence is a poor proxy for recoverability: logprob baselines reach only .518–.553 Recoverability AUC and have Reject Recall = 0. A class-weighted question-only controller reaches .678 ± .005 AUC with .487 ± .059 Reject Recall over 41,145 examples, and improves Refine Recall over cumulative-logprob by +.252 [.233, .272] at matched coverage.",
     venue: "Under review at EMNLP 2026.",
   },
   featuredPublicationSlugs: [
@@ -36,10 +41,11 @@ export const homeEditorial = {
   ],
   recruiterFacts: [
     "PhD, The Ohio State University — graduating August 2026",
-    "Available fall 2026 · applied ML / ML engineering",
-    "First author on 5/5 publications · ISVC 2022 Best Paper",
-    "Python, PyTorch, transformers, RAG, distributed training",
-    "Five summers at AFRL · U.S. citizen · Columbus, OH (open to relocation / remote)",
+    "Applied Scientist / ML Engineer · selective prediction, calibration, LLM evaluation",
+    "First author on 5 publications · ISVC 2022 Best Paper",
+    "8× OOD utility gain in abstention-augmented LLM experiments (DCS Corp / AFRL)",
+    "Python · PyTorch · HuggingFace · Slurm/Singularity · RAG evaluation",
+    "U.S. citizen · five summers cleared work · Columbus OH, open to relocation / remote",
   ],
 };
 
@@ -48,21 +54,21 @@ export const researchArc: ResearchArcStep[] = [
     label: "2021–24",
     title: "Selective prediction for vision",
     description:
-      "Per-class reject thresholds that let image classifiers back out of ambiguous regions instead of forcing a guess.",
+      "Class-conditional reject thresholds for image classifiers, estimated from validation statistics and evaluated with coverage/selective-accuracy tradeoffs.",
     evidence: "ISVC 2022 Best Paper; MVA 2025 journal extension.",
   },
   {
     label: "2024",
     title: "Multimodal machine translation",
     description:
-      "Measured whether state-of-the-art multimodal MT systems actually use visual evidence, or treat images as a regularizer.",
+      "Contrastive evaluation for measuring whether multimodal MT systems use paired image evidence rather than benefiting only from image-conditioned training.",
     evidence: "WMT 2024.",
   },
   {
     label: "2025–26",
     title: "Reject or refine for LLM QA",
     description:
-      "Once the direct answer looks unreliable, can retrieval rescue the question or should the model abstain? A class-weighted controller can separate the two; confidence alone cannot.",
+      "Three-way routing for QA pipelines: direct answer, retrieve-then-answer, or abstain, with recoverability estimated separately from answer confidence.",
     evidence: "EMNLP 2026 submission, under review.",
   },
 ];

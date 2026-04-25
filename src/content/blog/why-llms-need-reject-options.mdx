@@ -1,53 +1,53 @@
 ---
 title: "Why LLMs Need Reject Options"
 date: "2026-02-08"
-description: "Large language models confidently fabricate answers. Structured abstention, borrowed from vision, offers a principled fix."
+description: "Selective prediction gives LLM systems a way to trade coverage for reliability instead of treating confidence as one scalar."
 tags: ["selective prediction", "uncertainty", "LLMs", "calibration"]
 draft: false
 ---
 
-A well-known phenomenon: ask a modern LLM a plausible-sounding question it does not actually know the answer to, and it will produce one anyway — with the same tone and the same confidence it would produce a correct one. The problem is not that the model is sometimes wrong. The problem is that it has no mechanism to notice it is wrong.
+LLM systems are usually evaluated on answer quality conditional on producing an answer. That misses an important deployment question: when should the system decline to answer, request more context, or route to another procedure? Selective prediction is the framework I use for that question. It treats abstention as an operating point, not as an afterthought.
 
 ## The confidence problem
 
-Current LLMs are trained to always produce an answer. The softmax probabilities we read off the top of the stack are poorly calibrated signals — a high logprob does not mean the model is more likely to be correct, only that the completion is consistent with the training distribution. A human operating under uncertainty hedges, asks a clarifying question, or walks away. A model does none of these things unless we specifically train it to.
+Token-level probabilities are useful but limited signals. A high sequence likelihood means the completion is plausible under the model distribution; it does not, by itself, imply factual correctness, answerability, or retrievability. Calibration gets harder once the system includes retrieval, multi-step reasoning, or task-specific tools because failure can come from several components, not only the decoder.
 
-Post-hoc patches help but do not solve this. Retrieval-augmented generation adds evidence; output filters catch surface failures; chain-of-thought can expose reasoning gaps. None of them give the model a principled way to say "this is not a question I should answer." The core design is still an answer-producing machine with no off switch.
+Post-hoc filters and retrieval can improve behavior, but they do not define the routing policy. A useful QA stack needs explicit decision rules for coverage, answer confidence, and recoverability: when to answer directly, when to retrieve, and when the current stack is unlikely to produce a reliable answer.
 
 ## What vision models already know
 
-Selective prediction is not a new idea. In computer vision we have had reject-option classifiers for decades — the classifier is allowed to return "no prediction" on examples where it would otherwise be unreliable, and the system pays a controlled coverage cost in exchange for higher accuracy on the calls it does make.
+Selective prediction is not new. In computer vision, reject-option classifiers are evaluated by their coverage/selective-accuracy tradeoff: the model is allowed to abstain on some inputs, and the retained predictions should become more accurate as coverage decreases.
 
-My PhD work on this side (ISVC 2022, [MVA 2025 journal extension](/publications/learning-when-to-say-i-dont-know/)) was about learning per-class reject thresholds rather than global ones. The key observation is that errors in a classifier's decision space are not uniformly distributed — they concentrate in specific regions, usually near class boundaries where several classes overlap. If you can identify those regions, you can build a system that corrects course on the clean regions and abstains on the dirty ones. You lose some coverage, but you raise selective accuracy substantially, and you do it in a way that is calibrated and controllable at deployment time.
+My PhD work in this area (ISVC 2022, [MVA 2025 journal extension](/publications/learning-when-to-say-i-dont-know/)) studies per-class reject thresholds rather than global thresholds. The motivation is simple: classifier errors are not evenly distributed across classes. A single threshold can be too conservative for easy classes and too permissive for hard ones. Estimating class-conditional thresholds from validation statistics gives a more direct handle on the coverage/selective-accuracy tradeoff.
 
-That is the principle I want to carry forward: partition the decision space honestly, and act differently on each side.
+The same design principle applies outside vision: estimate the relevant failure regions and attach explicit actions to them.
 
 ## Why language is harder
 
-In vision, uncertainty is mostly spatial or distributional — the image is blurry, the object is out of distribution, the boundary between classes is genuinely ambiguous. In language it is harder, because uncertainty is context-dependent and compositional. A question that is trivial given the right passage can be impossible without it. A question that is impossible for a 7B model can be straightforward for a larger one. The same surface string routes through wildly different difficulty depending on what the model has already seen and what it can still retrieve.
+Language introduces a routing problem that is more conditional than standard image classification. The same question can be answerable with the right passage and unanswerable without it. A failure can be due to missing context, insufficient model capacity, retrieval misspecification, prompt ambiguity, or the question being ill-posed. That makes a single "uncertain" label too coarse.
 
-This matters because "I don't know" is a coarse label. It hides a three-way distinction that an operational system actually needs to make:
+For QA systems, I think the practical distinction is three-way:
 
-1. The model could answer if it thought longer — more reasoning, more chain-of-thought, a better decoding strategy.
-2. The model could answer if it had more context — something retrieval could plausibly fetch.
-3. The question is out of reach — ill-posed, unanswerable, or beyond what the current stack can produce no matter how hard it works.
+1. Direct answer is likely sufficient.
+2. Retrieval may make the question answerable.
+3. The current model–retriever–corpus stack should abstain.
 
-Collapsing these three into a single "uncertain" bucket throws away actionable information. A system that knows the difference can route: keep reasoning, trigger retrieval, or refuse.
+Collapsing these cases into one uncertainty score throws away information needed for routing. The operating point should depend on the action being considered.
 
 ## Structured abstention
 
-My [EMNLP 2026 submission](/publications/reject-or-refine/) is about that second distinction — once the direct-answer branch has already failed, is the signal that says "retrieve could rescue this" the same signal that says "this should be rejected"? It is not. Cheap answer confidence, which works reasonably well for the first cut, degrades to near chance for the retrieve-versus-abstain decision once you condition on having already decided not to answer directly. Retriever-side signals help but collapse at usable operating points. The pattern is the same one the vision work predicted: these are different decision regions and they need to be learned separately.
+My [EMNLP 2026 submission](/publications/reject-or-refine/) studies the second boundary: after direct answering has been ruled out, can we distinguish retrievable failures from unrecoverable ones? In the evaluated stack, logprob baselines reach only .518–.553 Recoverability AUC and have Reject Recall = 0 at their calibrated operating points. A class-weighted question-only controller reaches .678 ± .005 AUC with .487 ± .059 Reject Recall over 41,145 examples.
 
-The broader point is that we should stop expecting a single scalar confidence to do everything. Answer confidence is one decision. Recoverability is another. Out-of-scope detection is a third. Each of them has a different shape, a different signal, and a different operating point, and a production system has to handle all of them cleanly.
+The broader point is that answer confidence and stack-relative recoverability are different signals. The former estimates whether direct answering should proceed. The latter estimates whether retrieval is likely to change the answerability of the question. Treating both as one scalar confidence loses the distinction the routing policy needs.
 
 ## Why this matters for deployment
 
-Structured abstention is not a nice-to-have for high-stakes settings. In defense and intelligence analysis, a confidently fabricated answer can drive a real decision before anyone has a chance to double-check it. In medical decision support, overconfident wrong answers erode clinician trust faster than any correct answer can rebuild it. In any setting where the cost of a wrong answer exceeds the cost of no answer, a model without a principled reject option is the wrong tool.
+The engineering reason to care is that many systems need a controllable coverage/reliability tradeoff. If the cost of a wrong answer is higher than the cost of no answer, the model should expose an abstention policy with measurable operating characteristics: coverage, selective accuracy, reject recall, recoverability, and downstream utility.
 
-The research direction I care about most is not making models more accurate on average — that problem is already well funded. It is making models that know when they should not answer at all, and that can tell you why.
+This is why I treat abstention as a modeling and evaluation problem rather than a product-layer patch. The interesting question is not only whether the model can answer more questions, but whether the system can choose the right action for the current input and operating point.
 
 ## A note on signal and noise
 
-The barrier to producing a paper has dropped dramatically in the last two years. LLM-assisted writing, easier access to compute, lower friction to every stage of the research pipeline — all good things in isolation. The practical consequence is a flood of incremental and redundant work that overwhelms reviewers and buries the papers that actually move the field. The review system was not designed for this volume, and it shows.
+The same selective-prediction framing also applies to research workflows. As the volume of submissions and generated text increases, review systems need better triage: not to replace expert judgment, but to allocate attention toward work with stronger evidence, clearer novelty, and reproducible artifacts.
 
-I think the fix is higher review standards and better triage, not fewer submissions. LLM-assisted reviewing — used to filter and prioritize, not to replace human judgment — is one tool that could help. The community itself could benefit from the same principle this post is about: the ability to say "this does not clear the bar" with less friction and more consistency. Selective acceptance is, in a sense, a reject-option problem too.
+That is a different problem from QA abstention, but the structure is familiar: define the action space, measure error costs, and calibrate the thresholds instead of pretending every case should receive the same decision.
