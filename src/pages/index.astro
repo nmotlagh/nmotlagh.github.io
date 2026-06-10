@@ -2,11 +2,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EditorialHero from "../components/editorial/EditorialHero.astro";
+import DissertationPillars from "../components/editorial/DissertationPillars.astro";
 import FeatureSlab from "../components/editorial/FeatureSlab.astro";
 import ResearchArc from "../components/editorial/ResearchArc.astro";
 import DispatchList from "../components/editorial/DispatchList.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
-import { homeEditorial, researchArc } from "../data/editorial";
+import { homeEditorial, researchArc, dissertationPillars } from "../data/editorial";
 import { parseDateValue } from "../utils/dates";
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -19,6 +20,9 @@ const experienceItems = experience?.data.items ?? [];
 
 const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
 const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
+const isCurrentManuscript = (entry: CollectionEntry<"publications">) =>
+  entry.data.venue.toLowerCase().includes("preparation");
+const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
 const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry]));
 
 const artifactEntries = await getCollection("artifacts");
@@ -58,8 +62,8 @@ const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
 const stats = [
-  { label: "Publications", value: `${publications.length} public` },
-  { label: "OOD utility", value: "8× gain" },
+  { label: "Peer-reviewed", value: `${peerReviewedPublications.length} papers` },
+  { label: "QA examples", value: "25K+" },
   { label: "Award", value: "ISVC Best Paper" },
   { label: "Job market", value: "Aug 2026" },
 ];
@@ -94,7 +98,7 @@ const personSchema = {
   ],
 };
 
-const publicationSchemas = publications.map((pub) => {
+const publicationSchemas = peerReviewedPublications.map((pub) => {
   const isBasedOn = [pub.data.code, pub.data.data].filter(Boolean).map((url) => ({
     "@type": "CreativeWork",
     url,
@@ -134,7 +138,7 @@ const structuredData = [personSchema, ...publicationSchemas];
         eyebrow={homeEditorial.hero.eyebrow}
         availability={homeEditorial.hero.availability}
         title={homeEditorial.hero.title}
-        lede={homeEditorial.hero.lede}
+        ledeHtml="I build models that know <em>when not to answer.</em>"
         supporting={homeEditorial.hero.supporting}
         status={homeEditorial.hero.status}
         actions={[
@@ -150,6 +154,38 @@ const structuredData = [personSchema, ...publicationSchemas];
     </div>
   </section>
 
+  <section class="section" id="dissertation">
+    <div class="site-shell">
+      <DissertationPillars
+        eyebrow={homeEditorial.dissertation.eyebrow}
+        title={homeEditorial.dissertation.title}
+        subtitle={homeEditorial.dissertation.subtitle}
+        summary={homeEditorial.dissertation.summary}
+        pillars={dissertationPillars}
+      />
+    </div>
+  </section>
+
+  <section class="section section--current" id="current-work">
+    <div class="site-shell">
+      <article class="current-work surface surface--raised">
+        <p class="eyebrow">{homeEditorial.currentWork.eyebrow}</p>
+        <h2 class="current-work__title">{homeEditorial.currentWork.title}</h2>
+        <p class="current-work__body">{homeEditorial.currentWork.body}</p>
+        <p class="current-work__disclaimer">{homeEditorial.currentWork.disclaimer}</p>
+        <p class="current-work__venue">{homeEditorial.currentWork.venue}</p>
+        <div class="current-work__actions">
+          <a class="button" href={`${import.meta.env.BASE_URL}publications/adaptive-qa-abstention/`}>
+            Manuscript note
+          </a>
+          <a class="button button--ghost" href="#publications">
+            Related papers
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <section class="section" id="news">
     <div class="site-shell">
       <DispatchList newsItems={newsItems} posts={posts} />
@@ -160,8 +196,8 @@ const structuredData = [personSchema, ...publicationSchemas];
     <div class="site-shell stack">
       <SectionHeading
         eyebrow="Built"
-        title="Projects and open-source."
-        description="Training code, evaluation harnesses, calibration utilities, and datasets tied to the publications."
+        title="Code and data."
+        description="Training code, evaluation harnesses, calibration utilities, and datasets tied to the papers."
       />
 
       <div class="home-artifact-grid">
@@ -192,7 +228,7 @@ const structuredData = [personSchema, ...publicationSchemas];
 
       <div>
         <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
-          All repos
+          All code and data
         </a>
       </div>
     </div>
@@ -202,8 +238,8 @@ const structuredData = [personSchema, ...publicationSchemas];
     <div class="site-shell stack">
       <SectionHeading
         eyebrow="Selected work"
-        title="Publications."
-        description="Each paper links out to the PDF, code, or data where available."
+        title="Papers and reports."
+        description="Peer-reviewed papers, public code and data, and current manuscript notes with careful status labels."
       />
 
       <div class="stack" style="gap: 1.15rem;">
@@ -293,26 +329,45 @@ const structuredData = [personSchema, ...publicationSchemas];
 </BaseLayout>
 
 <style>
+  .section--current {
+    padding-top: clamp(0.85rem, 2vw, 1.35rem);
+  }
+
   .current-work {
     position: relative;
     display: grid;
-    gap: 1.1rem;
-    padding: clamp(1.5rem, 3.5vw, 2.6rem);
+    gap: 1.15rem;
+    padding: clamp(1.35rem, 3.5vw, 2.8rem);
     overflow: hidden;
+    isolation: isolate;
   }
 
   .current-work::before {
     content: '';
     position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--color-text-soft) 26%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 1.6rem 1.6rem;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 62%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 62%);
+  }
+
+  .current-work::after {
+    content: '';
+    position: absolute;
     inset: 0 auto 0 0;
-    width: 0.32rem;
-    background: linear-gradient(180deg, var(--color-secondary), var(--color-accent));
+    width: 3px;
+    background: var(--color-positive);
   }
 
   @media (min-width: 920px) {
     .current-work {
-      grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.32fr);
-      align-items: start;
+      grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.38fr);
+      align-items: end;
     }
 
     .current-work > .eyebrow,
@@ -331,18 +386,20 @@ const structuredData = [personSchema, ...publicationSchemas];
   .current-work__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.6rem);
-    font-weight: 650;
-    line-height: 1.15;
-    max-width: 54rem;
+    font-size: clamp(2rem, 1.25rem + 2.1vw, 3.65rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+    max-width: 42rem;
   }
 
   .current-work__body {
     margin: 0;
-    max-width: 52rem;
+    max-width: 55rem;
     color: var(--color-text-muted);
     font-size: 1.05rem;
     line-height: 1.72;
+    overflow-wrap: break-word;
   }
 
   .current-work__disclaimer {
@@ -350,11 +407,12 @@ const structuredData = [personSchema, ...publicationSchemas];
     padding: 0.8rem 1rem;
     border: 1px solid color-mix(in srgb, var(--color-secondary) 34%, var(--color-border));
     border-left: 3px solid var(--color-secondary);
-    background: color-mix(in srgb, var(--color-secondary-soft) 44%, transparent);
+    background: color-mix(in srgb, var(--color-secondary-soft) 52%, var(--color-panel) 48%);
     color: var(--color-text-muted);
     font-size: 0.92rem;
     line-height: 1.6;
     border-radius: var(--radius-md);
+    overflow-wrap: break-word;
   }
 
   .current-work__actions {
@@ -366,9 +424,40 @@ const structuredData = [personSchema, ...publicationSchemas];
 
   .current-work__venue {
     margin: 0;
-    color: var(--color-text-soft);
+    align-self: end;
+    color: var(--color-text);
     font: 600 0.8rem/1.2 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 640px) {
+    .current-work {
+      width: calc(100vw - 2rem);
+      inline-size: calc(100vw - 2rem);
+      max-width: calc(100vw - 2rem);
+      padding: 1.15rem;
+    }
+
+    .current-work__title {
+      max-width: 100%;
+      font-size: clamp(1.85rem, 7.5vw, 2.2rem);
+      overflow-wrap: normal;
+    }
+
+    .current-work__body,
+    .current-work__disclaimer,
+    .current-work__venue {
+      inline-size: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .current-work__venue {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+    }
   }
 </style>

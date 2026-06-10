@@ -10,7 +10,7 @@ const publications = await getCollection('publications', ({ data }) => !data.dra
 const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.title]));
 ---
 
-<BaseLayout title="Artifacts" description="Pinned GitHub repositories, datasets, and eval harnesses for every publication.">
+<BaseLayout title="Code & Data" description="Pinned GitHub repositories, datasets, and evaluation harnesses for the research portfolio.">
   <section class="section">
     <div class="site-shell archive-page">
       <div class="archive-page__header">
@@ -18,15 +18,15 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
           <SectionHeading
             as="h1"
             eyebrow="Open source"
-            title="Artifacts and GitHub repos"
+            title="Code and data"
             description="A compact archive of the code, dashboards, and datasets that turn the papers into something runnable."
           />
         </div>
 
         <p class="archive-page__aside">
-          Each entry links the repository to the corresponding paper and lists
-          the main reproducibility path: scripts, reports, datasets, or
-          evaluation outputs.
+          Each entry links the repository to the corresponding paper or report
+          and lists the main reproducibility path: scripts, reports, datasets,
+          or evaluation outputs.
         </p>
       </div>
 

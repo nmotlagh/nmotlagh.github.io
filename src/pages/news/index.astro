@@ -8,6 +8,7 @@ const newsItems = (await getCollection('news', ({ data }) => !data.draft)).sort(
   (a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime(),
 );
 const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' } satisfies Intl.DateTimeFormatOptions;
+const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 ---
 
 <BaseLayout title="News" description="Latest publications, releases, and results across selective prediction and multimodal ML.">
@@ -34,7 +35,11 @@ const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' } satisfies 
           <li id={item.id}>
             <time datetime={item.data.date}>{formatDate(item.data.date, dateFormat)}</time>
             {item.data.link ? (
-              <a href={item.data.link} target="_blank" rel="noopener noreferrer">
+              <a
+                href={item.data.link}
+                target={isExternalHref(item.data.link) ? "_blank" : undefined}
+                rel={isExternalHref(item.data.link) ? "noopener noreferrer" : undefined}
+              >
                 {item.data.title}
               </a>
             ) : (

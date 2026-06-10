@@ -14,8 +14,9 @@ const { pub } = Astro.props;
 const rendered = await pub.render();
 const artifacts = await getCollection('artifacts');
 const relatedArtifacts = artifacts.filter((artifact) => artifact.data.tiesTo.includes(pub.slug));
+const isCurrentManuscript = pub.data.venue.toLowerCase().includes('preparation');
 const badges = [
-  { label: 'Paper', href: pub.data.pdf ?? pub.data.external },
+  { label: isCurrentManuscript ? 'Manuscript note' : 'Paper', href: pub.data.pdf ?? pub.data.external },
   { label: 'arXiv', href: pub.data.arxiv },
   { label: 'Code', href: pub.data.code },
   { label: 'Data', href: pub.data.data },
@@ -28,14 +29,16 @@ const isBasedOn = [pub.data.code, pub.data.data].filter(Boolean).map((url) => ({
 }));
 const publicationSchema = {
   '@context': 'https://schema.org',
-  '@type': 'ScholarlyArticle',
+  '@type': isCurrentManuscript ? 'CreativeWork' : 'ScholarlyArticle',
   name: pub.data.title,
   url: `${siteOrigin}publications/${pub.slug}/`,
-  datePublished: pub.data.datePublished ?? String(pub.data.year),
-  publisher: {
-    '@type': 'Organization',
-    name: pub.data.venue,
-  },
+  datePublished: isCurrentManuscript ? undefined : pub.data.datePublished ?? String(pub.data.year),
+  publisher: isCurrentManuscript
+    ? undefined
+    : {
+        '@type': 'Organization',
+        name: pub.data.venue,
+      },
   author: pub.data.authors.map((author) => ({
     '@type': 'Person',
     name: author,
@@ -113,9 +116,9 @@ const publicationSchema = {
             </section>
           )}
 
-          {relatedArtifacts.length > 0 && (
+      {relatedArtifacts.length > 0 && (
             <section class="detail-note surface">
-              <h2>Artifacts</h2>
+              <h2>Code and data</h2>
               <ul>
                 {relatedArtifacts.map((artifact) => (
                   <li>

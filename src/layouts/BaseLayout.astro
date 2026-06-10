@@ -53,11 +53,11 @@ const isActivePath = (href: string) => {
 };
 
 const navLinks = [
-  { label: 'Home', href: homeHref },
-  { label: 'Publications', href: `${homeHref}publications/` },
-  { label: 'Artifacts', href: `${homeHref}artifacts/` },
-  { label: 'Blog', href: `${homeHref}blog/` },
-  { label: 'News', href: `${homeHref}news/` },
+  { label: 'Home', href: homeHref, mobileHidden: true },
+  { label: 'Papers', href: `${homeHref}publications/` },
+  { label: 'Reports', href: `${homeHref}blog/` },
+  { label: 'Code', href: `${homeHref}artifacts/` },
+  { label: 'News', href: `${homeHref}news/`, mobileHidden: true },
 ].map((link) => ({ ...link, active: isActivePath(link.href) }));
 ---
 
@@ -66,8 +66,8 @@ const navLinks = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5f7f2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f1513" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4f3ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
@@ -75,7 +75,7 @@ const navLinks = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Spline+Sans+Mono:wght@400..700&display=swap"
     />
     <link rel="icon" type="image/svg+xml" href={faviconHref} />
     <meta property="og:type" content="website" />
@@ -166,7 +166,7 @@ const navLinks = [
           <nav class="site-header__nav" aria-label="Primary navigation">
             <ul class="site-header__nav-list">
               {navLinks.map((link) => (
-                <li>
+                <li class:list={[link.mobileHidden && 'site-header__nav-item--mobile-hidden']}>
                   <a
                     class="site-header__nav-link"
                     href={link.href}
@@ -184,8 +184,9 @@ const navLinks = [
                   href={resumeHref}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Resume PDF"
                 >
-                  Resume
+                  CV
                 </a>
               </li>
               <li>
@@ -203,10 +204,17 @@ const navLinks = [
       <footer class="site-footer">
         <div class="site-shell site-footer__grid">
           <div>
-            <h2 class="site-footer__title">Nick Kashani Motlagh</h2>
+            <ul class="decision-strip" aria-label="Answer, abstain, refine">
+              <li data-tone="answer">Answer</li>
+              <li data-tone="abstain">Abstain</li>
+              <li data-tone="refine">Refine</li>
+            </ul>
+            <h2 class="site-footer__title" style="margin-top: 1rem;">
+              Models should know <em>when not to answer.</em>
+            </h2>
             <p class="site-footer__copy">
-              PhD candidate at Ohio State. Columbus, Ohio.
-              Research on selective prediction, abstention, and adaptive question answering.
+              Nick Kashani Motlagh · PhD candidate, The Ohio State University · Columbus, Ohio.
+              Selective prediction, abstention, and evidence use.
             </p>
           </div>
 

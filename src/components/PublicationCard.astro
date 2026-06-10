@@ -9,9 +9,13 @@ interface Props {
 const { entry, artifacts = [] }: Props = Astro.props;
 const { data, slug } = entry;
 const detailHref = `${import.meta.env.BASE_URL}publications/${slug}/`;
+const isCurrentManuscript = data.venue.toLowerCase().includes('preparation');
 
 const badges: { label: string; href?: string }[] = [
-  { label: 'Paper', href: data.pdf ?? data.external ?? detailHref },
+  {
+    label: data.pdf || data.external ? 'Paper' : isCurrentManuscript ? 'Manuscript note' : 'Note',
+    href: data.pdf ?? data.external ?? detailHref,
+  },
   { label: 'arXiv', href: data.arxiv },
   { label: 'Code', href: data.code },
   { label: 'Data', href: data.data },
@@ -71,7 +75,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 
   {artifacts.length > 0 && (
     <div class="publication-card__artifact-row">
-      <span>Artifacts</span>
+      <span>Code and data</span>
       <p>{artifacts.map((artifact) => artifact.data.name).join(' · ')}</p>
     </div>
   )}

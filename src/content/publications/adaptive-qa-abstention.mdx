@@ -1,20 +1,31 @@
 ---
-title: "Adaptive QA abstention submission"
+title: "Retrieval-Augmented Selective QA (Title Withheld for Anonymous Review)"
 year: 2026
-venue: "Under review"
+venue: "ARR submission in preparation"
 authors:
-  - "N. Kashani Motlagh"
-  - "et al."
-tldr: "Draft submission on routing decisions for adaptive QA systems."
-draft: true
-highlight: false
-datePublished: "2026-04-15"
+  - "N. Kashani Motlagh and collaborators"
+tldr: "Measures when evidence-based revision fixes a draft answer and when it breaks one, so routing policies can decide to answer, revise, or abstain."
+draft: false
+highlight: true
+metric: "Evaluated on NQ-Open, TriviaQA, and PopQA — 25K+ held-out examples; manuscript in preparation."
 tags:
   - "selective prediction"
   - "adaptive QA"
   - "retrieval-augmented generation"
   - "abstention"
+highlights:
+  - "Compares a model's direct answer with its evidence-revised answer on the same questions, measuring how often revision fixes a wrong answer, breaks a right one, or changes nothing."
+  - "Shows that answer confidence and the expected value of revision are separate routing signals: a policy needs both to decide whether to answer, revise, or abstain."
 ---
 
-Draft placeholder. Keep this entry out of public builds until the paper is ready
-to announce.
+This manuscript is being prepared for ARR submission; the title and details are
+withheld to preserve anonymous review. The work studies retrieval-augmented
+selective QA: for each question, compare the model's direct answer with the
+answer produced after retrieving evidence and revising, then measure whether
+the revision helped, hurt, or made no difference.
+
+The operating question is practical. Confidence estimates whether the draft
+answer is already correct; a separate signal is needed to estimate whether
+revising with retrieved evidence will improve it. The current manuscript reports
+results on NQ-Open, TriviaQA, and PopQA. No acceptance or public paper link is
+claimed here.

@@ -9,8 +9,16 @@ interface Props {
 
 const { entry, artifacts = [], reverse = false }: Props = Astro.props;
 const detailHref = `${import.meta.env.BASE_URL}publications/${entry.slug}/`;
+const isCurrentManuscript = entry.data.venue.toLowerCase().includes('preparation');
 const badges = [
-  { label: 'Read paper', href: entry.data.pdf ?? entry.data.external ?? detailHref },
+  {
+    label: entry.data.pdf || entry.data.external
+      ? 'Read paper'
+      : isCurrentManuscript
+        ? 'Manuscript note'
+        : 'Project note',
+    href: entry.data.pdf ?? entry.data.external ?? detailHref,
+  },
   { label: 'Code', href: entry.data.code },
   { label: 'Data', href: entry.data.data },
   { label: 'Slides', href: entry.data.slides },
@@ -76,7 +84,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 
     {artifacts.length > 0 && (
       <div class="feature-slab__artifact-list">
-        <p class="eyebrow">Runnable artifacts</p>
+        <p class="eyebrow">Runnable code</p>
         <ul>
           {artifacts.map((artifact) => (
             <li>
@@ -97,10 +105,20 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     display: grid;
     gap: clamp(1.1rem, 3vw, 2rem);
     padding: clamp(1.15rem, 2.6vw, 2rem);
+    overflow: hidden;
     transition:
       border-color var(--transition-fast),
       box-shadow var(--transition-fast),
       transform var(--transition-fast);
+  }
+
+  .feature-slab::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0.26rem;
+    background: var(--color-accent);
+    opacity: 0.82;
   }
 
   .feature-slab:hover {
@@ -127,23 +145,27 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   .feature-slab__title {
     margin: 0.35rem 0 0;
     font-family: var(--font-display);
-    font-size: clamp(1.8rem, 1.7vw, 2.35rem);
-    font-weight: 650;
-    line-height: 1.03;
+    font-size: clamp(1.9rem, 2.2vw, 2.8rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 0.98;
   }
 
   .feature-slab__title a {
     color: inherit;
+    text-decoration: none;
   }
 
-  .feature-slab__title a:hover {
+  .feature-slab__title a:hover,
+  .feature-slab__title a:focus-visible {
     color: var(--color-accent);
+    text-decoration: underline;
   }
 
   .feature-slab__authors {
     margin: 0.85rem 0 0;
     color: var(--color-text-soft);
-    font: 700 0.78rem/1.5 var(--font-mono);
+    font: 600 0.74rem/1.6 var(--font-mono);
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -165,7 +187,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   }
 
   .feature-slab__highlights li::marker {
-    color: var(--color-accent);
+    color: var(--color-secondary);
   }
 
   .feature-slab__actions {
@@ -179,6 +201,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     display: grid;
     gap: 0.9rem;
     align-content: start;
+    min-width: 0;
   }
 
   .feature-slab__note,
@@ -196,9 +219,10 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   .feature-slab__note p:last-child {
     color: var(--color-text);
     font-family: var(--font-display);
-    font-size: 1.2rem;
-    font-weight: 650;
-    line-height: 1.25;
+    font-style: italic;
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.22;
   }
 
   .feature-slab__artifact-list ul {

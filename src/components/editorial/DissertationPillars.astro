@@ -1,0 +1,246 @@
+---
+import type { DissertationPillar } from '../../data/editorial';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  pillars: DissertationPillar[];
+}
+
+const { eyebrow, title, subtitle, summary, pillars }: Props = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<article class="dissertation surface">
+  <header class="dissertation__header">
+    <p class="eyebrow">{eyebrow}</p>
+    <h2 class="dissertation__title">
+      {title}<span class="dissertation__subtitle"><em>{subtitle}</em></span>
+    </h2>
+    <p class="dissertation__summary">{summary}</p>
+  </header>
+
+  <ol class="dissertation__pillars">
+    {pillars.map((pillar) => (
+      <li class="dissertation__pillar" data-action={pillar.action}>
+        <div class="dissertation__pillar-head">
+          <span class="dissertation__index">{pillar.index}</span>
+          <span class="dissertation__failure">{pillar.failurePoint}</span>
+        </div>
+        <p class="dissertation__question">{pillar.question}</p>
+        <h3 class="dissertation__pillar-title">
+          {pillar.publicationSlug ? (
+            <a href={`${baseUrl}publications/${pillar.publicationSlug}/`}>{pillar.title}</a>
+          ) : (
+            pillar.title
+          )}
+        </h3>
+        <p class="dissertation__description">{pillar.description}</p>
+        <p class="dissertation__evidence">
+          <span class="dissertation__action">{pillar.actionLabel}</span>
+          {pillar.evidence}
+        </p>
+      </li>
+    ))}
+  </ol>
+</article>
+
+<style>
+  .dissertation {
+    position: relative;
+    padding: clamp(1.4rem, 3.4vw, 2.8rem);
+    overflow: hidden;
+  }
+
+  .dissertation::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(
+      180deg,
+      var(--color-accent) 0 33%,
+      var(--color-secondary) 33% 66%,
+      var(--color-positive) 66% 100%
+    );
+  }
+
+  .dissertation__header {
+    max-width: 56rem;
+  }
+
+  .dissertation__title {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(2.3rem, 4.4vw, 4.2rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 0.98;
+  }
+
+  .dissertation__subtitle {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--color-accent);
+    font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+    line-height: 1.05;
+  }
+
+  .dissertation__summary {
+    margin: 1.1rem 0 0;
+    color: var(--color-text-muted);
+    font-size: 1.04rem;
+    line-height: 1.75;
+  }
+
+  .dissertation__pillars {
+    display: grid;
+    gap: 0;
+    margin: clamp(1.4rem, 3vw, 2.2rem) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--hairline);
+  }
+
+  @media (min-width: 920px) {
+    .dissertation__pillars {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .dissertation__pillar {
+    position: relative;
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    padding: 1.3rem 0 0.4rem;
+  }
+
+  @media (min-width: 920px) {
+    .dissertation__pillar {
+      padding: 1.4rem 1.5rem 0.5rem 0;
+    }
+
+    .dissertation__pillar + .dissertation__pillar {
+      padding-left: 1.5rem;
+      border-left: var(--hairline);
+    }
+  }
+
+  @media (max-width: 919px) {
+    .dissertation__pillar + .dissertation__pillar {
+      border-top: var(--hairline);
+    }
+  }
+
+  .dissertation__pillar-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .dissertation__index {
+    color: var(--color-text-soft);
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .dissertation__failure {
+    color: var(--color-text-muted);
+    font: 600 0.68rem/1.4 var(--font-mono);
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .dissertation__question {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+    line-height: 1.18;
+  }
+
+  .dissertation__pillar-title {
+    margin: 0;
+    font: 650 0.95rem/1.4 var(--font-sans);
+    letter-spacing: 0.01em;
+    text-transform: none;
+  }
+
+  .dissertation__pillar-title a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .dissertation__pillar-title a:hover,
+  .dissertation__pillar-title a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .dissertation__description {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.96rem;
+    line-height: 1.7;
+  }
+
+  .dissertation__evidence {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0.2rem 0 0.8rem;
+    color: var(--color-text-soft);
+    font: 600 0.72rem/1.5 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .dissertation__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.18rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .dissertation__action::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1.5px solid currentColor;
+  }
+
+  .dissertation__pillar[data-action='abstain'] .dissertation__action {
+    color: var(--color-secondary);
+  }
+
+  .dissertation__pillar[data-action='abstain'] .dissertation__action::before {
+    border-radius: 50%;
+  }
+
+  .dissertation__pillar[data-action='answer'] .dissertation__action {
+    color: var(--color-accent);
+  }
+
+  .dissertation__pillar[data-action='answer'] .dissertation__action::before {
+    background: currentColor;
+  }
+
+  .dissertation__pillar[data-action='refine'] .dissertation__action {
+    color: var(--color-positive);
+  }
+
+  .dissertation__pillar[data-action='refine'] .dissertation__action::before {
+    transform: rotate(45deg);
+  }
+</style>

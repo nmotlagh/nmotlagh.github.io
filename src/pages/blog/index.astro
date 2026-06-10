@@ -10,21 +10,21 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' } satisfies Intl.DateTimeFormatOptions;
 ---
 
-<BaseLayout title="Blog" description="Writing on selective prediction, uncertainty quantification, and adaptive question answering.">
+<BaseLayout title="Reports" description="Research reports and notes on selective prediction, uncertainty quantification, and adaptive question answering.">
   <section class="section">
     <div class="site-shell archive-page">
       <div class="archive-page__header">
         <div>
           <SectionHeading
             as="h1"
-            eyebrow="Writing"
-            title="Blog"
+            eyebrow="Reports"
+            title="Research reports"
             description="Longer-form notes on selective prediction, uncertainty quantification, evaluation design, and the gap between what models know and what they claim to know."
           />
         </div>
 
         <p class="archive-page__aside">
-          The blog is the slower companion to the paper archive: fewer entries,
+          These reports are the slower companion to the paper archive: fewer entries,
           more argument, and more room for ideas that are not yet finished.
         </p>
       </div>
@@ -32,7 +32,7 @@ const dateFormat = { month: 'long', day: 'numeric', year: 'numeric' } satisfies 
       {posts.length === 0 ? (
         <div class="surface surface--muted stack" style="padding: clamp(1.2rem, 3vw, 2rem);">
           <p class="archive-page__aside">
-            No posts are published yet. In the meantime, the publications archive
+            No reports are published yet. In the meantime, the publications archive
             has the current research thread with PDFs, code, and artifacts.
           </p>
           <div>

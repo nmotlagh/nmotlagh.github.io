@@ -10,9 +10,9 @@ LLM systems are usually evaluated on answer quality conditional on producing an 
 
 ## The confidence problem
 
-Token-level probabilities are useful but limited signals. A high sequence likelihood means the completion is plausible under the model distribution; it does not, by itself, imply factual correctness, answerability, or retrievability. Calibration gets harder once the system includes retrieval, multi-step reasoning, or task-specific tools because failure can come from several components, not only the decoder.
+Token-level probabilities are useful but limited signals. A high sequence likelihood means the completion is plausible under the model distribution; it does not, by itself, imply factual correctness, answerability, or retrievability. Calibration degrades in multi-component pipelines because decoder confidence says nothing about whether retrieval returned the right passage or whether the reasoning chain holds; failure can originate at any stage, not only the decoder.
 
-Post-hoc filters and retrieval can improve behavior, but they do not define the routing policy. A useful QA stack needs explicit decision rules for coverage, answer confidence, and recoverability: when to answer directly, when to retrieve, and when the current stack is unlikely to produce a reliable answer.
+Post-hoc filters and retrieval can reduce error rates, but they do not define the routing policy. A useful QA stack needs explicit decision rules — answer directly, trigger retrieval, or abstain — with thresholds set separately for each action.
 
 ## What vision models already know
 
@@ -36,18 +36,12 @@ Collapsing these cases into one uncertainty score throws away information needed
 
 ## Structured abstention
 
-My current submission studies the second boundary: after direct answering has been ruled out, can we distinguish retrievable failures from unrecoverable ones? In the evaluated stack, answer-confidence baselines are not sufficient for that decision, so the routing policy needs a separate estimate of stack-relative recoverability.
+My current ARR submission package studies the decision that remains after retrieval has already run: should the system return the draft, revise with the passages, or abstain? In the evaluated stack, answer-confidence baselines are not sufficient for that decision, so the routing policy needs a separate estimate of whether revision is likely to help.
 
-The broader point is that answer confidence and stack-relative recoverability are different signals. The former estimates whether direct answering should proceed. The latter estimates whether retrieval is likely to change the answerability of the question. Treating both as one scalar confidence loses the distinction the routing policy needs.
+The broader point is that answer confidence and the expected value of revision are different signals. The former estimates whether the draft answer is currently correct. The latter estimates whether revising with retrieved evidence will make the answer better or worse. Treating both as one scalar confidence loses the distinction the routing policy needs.
 
 ## Why this matters for deployment
 
-The engineering reason to care is that many systems need a controllable coverage/reliability tradeoff. If the cost of a wrong answer is higher than the cost of no answer, the model should expose an abstention policy with measurable operating characteristics: coverage, selective accuracy, reject recall, recoverability, and downstream utility.
+The engineering reason to care is that many systems need a controllable coverage/reliability tradeoff. If the cost of a wrong answer is higher than the cost of no answer, the model should expose an abstention policy with measurable operating characteristics: coverage, selective accuracy, reject recall, and downstream utility.
 
-This is why I treat abstention as a modeling and evaluation problem rather than a product-layer patch. The interesting question is not only whether the model can answer more questions, but whether the system can choose the right action for the current input and operating point.
-
-## A note on signal and noise
-
-The same selective-prediction framing also applies to research workflows. As the volume of submissions and generated text increases, review systems need better triage: not to replace expert judgment, but to allocate attention toward work with stronger evidence, clearer novelty, and reproducible artifacts.
-
-That is a different problem from QA abstention, but the structure is familiar: define the action space, measure error costs, and calibrate the thresholds instead of pretending every case should receive the same decision.
+This is why I treat abstention as a modeling and evaluation problem rather than a product-layer patch. The question worth optimizing is not answer count but whether the system selects the right action for each input and operating point.

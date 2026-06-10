@@ -8,6 +8,10 @@ import type { CollectionEntry } from 'astro:content';
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.year - a.data.year,
 );
+const isCurrentManuscript = (entry: CollectionEntry<'publications'>) =>
+  entry.data.venue.toLowerCase().includes('preparation');
+const currentManuscripts = publications.filter(isCurrentManuscript);
+const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
 const artifactEntries = await getCollection('artifacts');
 const artifactMap = new Map<string, CollectionEntry<'artifacts'>[]>();
 artifactEntries.forEach((artifact) => {
@@ -20,7 +24,7 @@ artifactEntries.forEach((artifact) => {
 });
 ---
 
-<BaseLayout title="Publications" description="Research spanning selective prediction, multimodal machine translation, and dependable LLM systems.">
+<BaseLayout title="Publications" description="Peer-reviewed papers and current manuscript notes spanning selective prediction, multimodal machine translation, and dependable LLM systems.">
   <section class="section">
     <div class="site-shell archive-page">
       <div class="archive-page__header">
@@ -28,22 +32,58 @@ artifactEntries.forEach((artifact) => {
           <SectionHeading
             as="h1"
             eyebrow="Research archive"
-            title="Publications and scholarly articles"
-            description="A reading-friendly archive of papers on selective prediction, multimodal evidence, calibration, and typed abstention for ML systems."
+            title="Papers and manuscript notes"
+            description="A reading-friendly archive of peer-reviewed papers and current research reports on selective prediction, multimodal evidence, calibration, and typed abstention for ML systems."
           />
         </div>
 
         <p class="archive-page__aside">
-          Each card summarizes the task, method, reported signal, and available
-          artifacts so the archive can be scanned without opening every PDF.
+          Status labels are explicit: current manuscript notes are separated
+          from peer-reviewed work, and public PDFs/code/data are linked where available.
         </p>
       </div>
 
-      <div class="publication-grid grid grid--2 archive-page__grid">
-        {publications.map((pub) => (
-          <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
-        ))}
-      </div>
+      {currentManuscripts.length > 0 && (
+        <section class="publication-group" aria-labelledby="current-manuscripts-heading">
+          <div class="publication-group__heading">
+            <p class="eyebrow">Current manuscript</p>
+            <h2 id="current-manuscripts-heading">In preparation</h2>
+          </div>
+          <div class="publication-grid grid grid--2 archive-page__grid">
+            {currentManuscripts.map((pub) => (
+              <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section class="publication-group" aria-labelledby="peer-reviewed-heading">
+        <div class="publication-group__heading">
+          <p class="eyebrow">Peer-reviewed</p>
+          <h2 id="peer-reviewed-heading">Published papers</h2>
+        </div>
+        <div class="publication-grid grid grid--2 archive-page__grid">
+          {peerReviewedPublications.map((pub) => (
+            <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+          ))}
+        </div>
+      </section>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .publication-group {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .publication-group__heading h2 {
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 650;
+    line-height: 1.02;
+  }
+</style>

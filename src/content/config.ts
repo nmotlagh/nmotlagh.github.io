@@ -1,5 +1,9 @@
 import { defineCollection, z } from 'astro:content';
 
+const hrefSchema = z.string().refine((value) => value.startsWith('/') || /^https?:\/\//.test(value), {
+  message: 'Expected an absolute URL or a root-relative path.',
+});
+
 const pages = defineCollection({
   schema: z.object({
     title: z.string(),
@@ -56,7 +60,7 @@ const news = defineCollection({
     title: z.string(),
     date: z.string(), // ISO 8601
     draft: z.boolean().optional().default(false),
-    link: z.string().url().optional(),
+    link: hrefSchema.optional(),
   }),
 });
 

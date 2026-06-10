@@ -6,7 +6,7 @@
   "reproduce": [
     "Run global and class-wise temperature scaling on classifier logits.",
     "Produce reliability diagrams and ECE / class-wise ECE reports.",
-    "Provides calibration utilities used by the imagery-aware contrastive MT evaluation code."
+    "Import as a dependency when reproducing the imagery-aware contrastive MT evaluation code."
   ],
   "tiesTo": [
     "assessing-imagery-in-multimodal-mt"

@@ -13,8 +13,8 @@ highlight: true
 metric: "+7% image-grounding score"
 datePublished: "2024-11-15"
 pdf: "https://aclanthology.org/2024.wmt-1.62"
-code: "https://github.com/nmotlagh/calibration"
-data: "https://github.com/nmotlagh/calibration/tree/main/data"
+code: "https://github.com/osu-cvl/calibration"
+data: "https://github.com/osu-cvl/calibration/tree/main/data"
 tags:
   - "multimodal MT"
   - "vision-language models"
@@ -22,7 +22,7 @@ tags:
   - "WMT"
 highlights:
   - "Introduced imagery-aware contrastive probes for testing whether translations change under mismatched visual context."
-  - "Benchmarked nine multimodal MT systems across evaluation splits with high image-sensitivity variance."
+  - "Benchmarked nine multimodal MT systems under matched and mismatched visual context, with wide variance in how much each system relies on the image."
 ---
 
 We design imagery-sensitive contrastive metrics for multimodal machine translation and apply them to systems evaluated at WMT 2024. The experiments compare translations under matched and mismatched visual context, giving a direct test of whether image inputs influence model behavior beyond training-time regularization. We release the evaluation harness and curated counterfactual splits used for the analysis.
