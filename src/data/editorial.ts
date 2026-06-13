@@ -23,14 +23,14 @@ export const homeEditorial = {
     availability: {
       label: "Available August 2026",
       detail:
-        "Research Scientist, Applied Scientist & ML Engineer roles · LLM evaluation, abstention, safety · Columbus, OH; open to relocation / remote",
+        "Research Scientist, Applied Scientist & ML Engineer roles · U.S. citizen with five summers of AFRL cleared experience · Columbus, OH; open to relocation / remote",
     },
     title: "Nick Kashani Motlagh",
     lede: "I build models that know when not to answer.",
     supporting:
-      "PhD candidate at Ohio State's Computer Vision Lab, defending August 2026. My dissertation, <em>Answering Under Uncertainty</em>, studies the three places direct answering breaks down: when a prediction is unreliable (abstention), when an input is ambiguous relative to available evidence (evidence use), and when a draft answer should get a second look before it is returned (revision).",
+      "PhD candidate at Ohio State's Computer Vision Lab, defending August 2026. I ship the engineering as well as the ideas: PyTorch training code, evaluation harnesses, and calibration dashboards, run as distributed experiments on Slurm/Singularity clusters. My dissertation, <em>Answering Under Uncertainty</em>, studies the three places direct answering breaks down: when a prediction is unreliable (abstention), when an input is ambiguous relative to available evidence (evidence use), and when a draft answer should get a second look before it is returned (revision).",
     status:
-      "Current ARR manuscript: when should a QA system trust its draft answer, revise it with retrieved evidence, or decline to answer? Title and details withheld during anonymous review.",
+      "Current work: when should a QA system trust its draft answer, revise it with retrieved evidence, or decline? An ARR manuscript in preparation, anonymized for review.",
   },
   dissertation: {
     eyebrow: "PhD dissertation · defending August 2026",
@@ -41,12 +41,12 @@ export const homeEditorial = {
   },
   currentWork: {
     eyebrow: "Current manuscript",
-    title: "Retrieval-augmented selective QA — title withheld for review",
+    title: "Selective RAG-QA: answer, revise, or abstain",
     body:
-      "An ARR submission on retrieval-augmented selective QA. The work measures when revising a draft answer with retrieved evidence makes it better and when it makes it worse, then uses those measurements to decide whether the system should answer, revise, or abstain instead of relying on confidence alone.",
+      "An ARR submission on retrieval-augmented selective QA. The work measures when revising a draft answer with retrieved evidence makes it better and when it makes it worse, then uses those measurements to decide whether the system should answer, revise, or abstain instead of relying on confidence alone. Results are reported on NQ-Open, TriviaQA, and PopQA.",
     venue: "ARR submission in preparation",
     disclaimer:
-      "No acceptance is claimed here. The working title and manuscript details are withheld to preserve anonymous review.",
+      "Title and author list are withheld to preserve anonymous review.",
   },
   featuredPublicationSlugs: [
     "adaptive-qa-abstention",
@@ -63,11 +63,39 @@ export const homeEditorial = {
     "PhD, The Ohio State University — defending August 2026",
     "Research Scientist / Applied Scientist / ML Engineer · selective prediction, calibration, LLM evaluation",
     "First author on 4 published papers · 1 manuscript in preparation · ISVC 2022 Best Paper",
-    "Current ARR manuscript on retrieval-augmented selective QA · title withheld for review",
+    "Current ARR manuscript on retrieval-augmented selective QA — in preparation",
     "Python · PyTorch · HuggingFace · Slurm/Singularity · RAG evaluation",
     "U.S. citizen · five summers cleared work · Columbus OH, open to relocation / remote",
   ],
 };
+
+export interface SkillGroup {
+  label: string;
+  items: string[];
+}
+
+export const skillGroups: SkillGroup[] = [
+  {
+    label: "Languages & ML",
+    items: ["Python", "PyTorch", "Hugging Face", "NumPy", "scikit-learn"],
+  },
+  {
+    label: "Systems & scale",
+    items: ["Slurm", "Singularity", "Distributed training", "GPU clusters", "Git"],
+  },
+  {
+    label: "Research areas",
+    items: [
+      "LLM evaluation",
+      "Retrieval-augmented generation",
+      "Selective prediction",
+      "Calibration",
+      "Uncertainty quantification",
+      "Abstention",
+      "Multimodal systems",
+    ],
+  },
+];
 
 export const dissertationPillars: DissertationPillar[] = [
   {

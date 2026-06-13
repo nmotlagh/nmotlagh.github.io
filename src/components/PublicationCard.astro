@@ -9,24 +9,27 @@ interface Props {
 const { entry, artifacts = [] }: Props = Astro.props;
 const { data, slug } = entry;
 const detailHref = `${import.meta.env.BASE_URL}publications/${slug}/`;
-const isCurrentManuscript = data.venue.toLowerCase().includes('preparation');
+const LEAD_AUTHOR = 'Kashani Motlagh';
+const isLeadAuthor = (author: string) => author.includes(LEAD_AUTHOR);
+const isFirstAuthor = isLeadAuthor(data.authors[0] ?? '');
 
-const badges: { label: string; href?: string }[] = [
-  {
-    label: data.pdf || data.external ? 'Paper' : isCurrentManuscript ? 'Manuscript note' : 'Note',
-    href: data.pdf ?? data.external ?? detailHref,
-  },
-  { label: 'arXiv', href: data.arxiv },
-  { label: 'Code', href: data.code },
-  { label: 'Data', href: data.data },
-  { label: 'Slides', href: data.slides },
-];
+// Prefer the authoritative published version (journal/proceedings) for the
+// primary "Paper" link, and surface the preprint as a separate arXiv badge.
+const primaryHref = data.external ?? data.pdf;
+const badges = [
+  primaryHref && { label: 'Paper', href: primaryHref },
+  data.arxiv && data.arxiv !== primaryHref && { label: 'arXiv', href: data.arxiv },
+  data.code && { label: 'Code', href: data.code },
+  data.data && { label: 'Data', href: data.data },
+  data.slides && { label: 'Slides', href: data.slides },
+].filter(Boolean) as { label: string; href: string }[];
 const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 ---
 
 <article class="publication-card surface">
   <div class="publication-card__meta">
     <p class="publication-card__eyebrow">{data.venue} / {data.year}</p>
+    {isFirstAuthor && <span class="publication-card__role">First author</span>}
     {data.award && <span class="publication-card__award">{data.award}</span>}
   </div>
 
@@ -35,7 +38,13 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
       {data.title}
     </a>
   </h3>
-  <p class="publication-card__authors">{data.authors.join(', ')}</p>
+  <p class="publication-card__authors">
+    {data.authors.map((author, index) => (
+      <span class:list={['pub-author', isLeadAuthor(author) && 'pub-author--lead']}>
+        {author}{index < data.authors.length - 1 ? ', ' : ''}
+      </span>
+    ))}
+  </p>
   <p class="publication-card__tldr">{data.tldr}</p>
 
   {Array.isArray(data.tags) && data.tags.length > 0 && (
@@ -119,7 +128,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     margin: 0;
     font-family: var(--font-display);
     font-size: clamp(1.45rem, 1.8vw, 1.95rem);
-    font-weight: 650;
+    font-weight: 400;
     line-height: 1.05;
   }
 
@@ -138,6 +147,21 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     text-transform: uppercase;
     color: var(--color-text-soft);
     margin: 0;
+  }
+
+  .publication-card__authors .pub-author--lead {
+    color: var(--color-text);
+  }
+
+  .publication-card__role {
+    display: inline-block;
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
   }
 
   .publication-card__tldr {

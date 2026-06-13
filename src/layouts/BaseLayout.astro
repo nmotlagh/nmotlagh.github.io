@@ -3,7 +3,6 @@ import type { ImageMetadata } from 'astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import '../styles/theme.css';
 import '../styles/editorial.css';
-import headshot from '../assets/headshot.jpg';
 
 const siteName = 'Nick Kashani Motlagh';
 const defaultDescription =
@@ -27,6 +26,7 @@ const scholarHref = 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=e
 const githubHref = 'https://github.com/nmotlagh';
 const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
 const emailHref = 'mailto:kashanimotlagh.1@osu.edu';
+const orcidHref = 'https://orcid.org/0000-0001-6229-6212';
 const faviconHref = `${homeHref}favicon.svg`;
 const rssHref = `${homeHref}rss.xml`;
 const structured = Array.isArray(structuredData)
@@ -34,13 +34,17 @@ const structured = Array.isArray(structuredData)
   : structuredData
     ? [structuredData]
     : [];
-const resolvedOgImage = ogImage ?? headshot;
-const ogImageUrl =
-  typeof resolvedOgImage === 'string'
-    ? resolvedOgImage
+const defaultOgImage = Astro.site
+  ? new URL('og-card.png', Astro.site).href
+  : `${homeHref}og-card.png`;
+const ogImageUrl = ogImage
+  ? typeof ogImage === 'string'
+    ? ogImage
     : Astro.site
-      ? new URL(resolvedOgImage.src, Astro.site).href
-      : resolvedOgImage.src;
+      ? new URL(ogImage.src, Astro.site).href
+      : ogImage.src
+  : defaultOgImage;
+const ogImageAlt = `${siteName} — Research Scientist, Applied Scientist & ML Engineer (PhD, Ohio State)`;
 
 const normalizePath = (path: string) => (path.endsWith('/') ? path : `${path}/`);
 const currentPath = normalizePath(Astro.url.pathname);
@@ -78,18 +82,21 @@ const navLinks = [
       href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Spline+Sans+Mono:wght@400..700&display=swap"
     />
     <link rel="icon" type="image/svg+xml" href={faviconHref} />
+    <link rel="apple-touch-icon" href={`${homeHref}apple-touch-icon.png`} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:site" content="@NickMotlagh" />
-    <meta name="twitter:creator" content="@NickMotlagh" />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
     <link rel="alternate" type="application/rss+xml" title="News · Nick Kashani Motlagh" href={rssHref} />
     <script is:inline defer data-domain="nmotlagh.github.io" src="https://plausible.io/js/script.js"></script>
     <script is:inline>
@@ -222,6 +229,7 @@ const navLinks = [
             <ul>
               <li><a href={emailHref}>Email</a></li>
               <li><a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a></li>
+              <li><a href={orcidHref} target="_blank" rel="noopener noreferrer">ORCID</a></li>
               <li><a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a></li>
               <li><a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
               <li><a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a></li>

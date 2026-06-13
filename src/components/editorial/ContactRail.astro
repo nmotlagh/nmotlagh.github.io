@@ -13,9 +13,11 @@ interface Props {
   linkedInHref: string;
   githubHref: string;
   scholarHref: string;
+  orcidHref?: string;
 }
 
-const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref, scholarHref }: Props = Astro.props;
+const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref, scholarHref, orcidHref }: Props = Astro.props;
+const emailAddress = emailHref.replace(/^mailto:/, '');
 ---
 
 <section class="contact-rail surface surface--raised">
@@ -38,6 +40,11 @@ const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref, scholarHr
         View resume
       </a>
     </div>
+
+    <p class="contact-rail__email">
+      <span>Email</span>
+      <a href={emailHref}>{emailAddress}</a>
+    </p>
   </div>
 
   <div class="contact-rail__details">
@@ -53,6 +60,7 @@ const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref, scholarHr
         <a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a>
         <a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a>
         <a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a>
+        {orcidHref && <a href={orcidHref} target="_blank" rel="noopener noreferrer">ORCID</a>}
         <a href={emailHref}>Email</a>
       </div>
     </div>
@@ -122,6 +130,35 @@ const { facts, roles, resumeHref, emailHref, linkedInHref, githubHref, scholarHr
     flex-wrap: wrap;
     gap: 0.8rem;
     margin-top: 1.5rem;
+  }
+
+  .contact-rail__email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 1rem 0 0;
+  }
+
+  .contact-rail__email span {
+    color: var(--color-text-soft);
+    font: 600 0.72rem/1.2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .contact-rail__email a {
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    text-underline-offset: 0.18em;
+  }
+
+  .contact-rail__email a:hover,
+  .contact-rail__email a:focus-visible {
+    color: var(--color-accent);
   }
 
   .contact-rail__details {

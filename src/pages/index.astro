@@ -7,7 +7,8 @@ import FeatureSlab from "../components/editorial/FeatureSlab.astro";
 import ResearchArc from "../components/editorial/ResearchArc.astro";
 import DispatchList from "../components/editorial/DispatchList.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
-import { homeEditorial, researchArc, dissertationPillars } from "../data/editorial";
+import SkillsMatrix from "../components/editorial/SkillsMatrix.astro";
+import { homeEditorial, researchArc, dissertationPillars, skillGroups } from "../data/editorial";
 import { parseDateValue } from "../utils/dates";
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -58,14 +59,15 @@ const scholarHref = "https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=e
 const githubHref = "https://github.com/nmotlagh";
 const linkedInHref = "https://www.linkedin.com/in/nicholas-kashani-motlagh";
 const emailHref = "mailto:kashanimotlagh.1@osu.edu";
+const orcidHref = "https://orcid.org/0000-0001-6229-6212";
 const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 
 const stats = [
   { label: "Peer-reviewed", value: `${peerReviewedPublications.length} papers` },
-  { label: "QA examples", value: "25K+" },
+  { label: "Lead author", value: "All 4" },
   { label: "Award", value: "ISVC Best Paper" },
-  { label: "Job market", value: "Aug 2026" },
+  { label: "Available", value: "Aug 2026" },
 ];
 
 const personSchema = {
@@ -77,10 +79,20 @@ const personSchema = {
   affiliation: {
     "@type": "CollegeOrUniversity",
     name: "The Ohio State University",
+    url: "https://www.osu.edu/",
+  },
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "The Ohio State University",
   },
   email: emailHref,
   image: headshotUrl,
-  sameAs: [githubHref, linkedInHref, scholarHref],
+  identifier: {
+    "@type": "PropertyValue",
+    propertyID: "ORCID",
+    value: orcidHref,
+  },
+  sameAs: [githubHref, linkedInHref, scholarHref, orcidHref],
   knowsAbout: [
     "Machine Learning",
     "Large Language Models",
@@ -103,6 +115,8 @@ const publicationSchemas = peerReviewedPublications.map((pub) => {
     "@type": "CreativeWork",
     url,
   }));
+  const doiUrl = pub.data.doi ? `https://doi.org/${pub.data.doi}` : undefined;
+  const sameAs = [pub.data.external, pub.data.arxiv, doiUrl].filter(Boolean);
 
   return {
     "@context": "https://schema.org",
@@ -110,6 +124,10 @@ const publicationSchemas = peerReviewedPublications.map((pub) => {
     name: pub.data.title,
     url: `${siteOrigin}publications/${pub.slug}/`,
     datePublished: pub.data.datePublished ?? String(pub.data.year),
+    identifier: pub.data.doi
+      ? { "@type": "PropertyValue", propertyID: "DOI", value: pub.data.doi }
+      : undefined,
+    sameAs: sameAs.length > 0 ? sameAs : undefined,
     publisher: pub.data.venue
       ? {
           "@type": "Organization",
@@ -151,6 +169,12 @@ const structuredData = [personSchema, ...publicationSchemas];
         linkedInHref={linkedInHref}
         emailHref={emailHref}
       />
+    </div>
+  </section>
+
+  <section class="section section--skills" id="toolkit">
+    <div class="site-shell">
+      <SkillsMatrix groups={skillGroups} />
     </div>
   </section>
 
@@ -323,12 +347,17 @@ const structuredData = [personSchema, ...publicationSchemas];
         linkedInHref={linkedInHref}
         githubHref={githubHref}
         scholarHref={scholarHref}
+        orcidHref={orcidHref}
       />
     </div>
   </section>
 </BaseLayout>
 
 <style>
+  .section--skills {
+    padding-bottom: clamp(0.4rem, 1.4vw, 0.9rem);
+  }
+
   .section--current {
     padding-top: clamp(0.85rem, 2vw, 1.35rem);
   }

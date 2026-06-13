@@ -1,13 +1,14 @@
 ---
-title: "Retrieval-Augmented Selective QA (Title Withheld for Anonymous Review)"
+title: "Selective RAG-QA: Knowing When to Answer, Revise, or Abstain"
 year: 2026
 venue: "ARR submission in preparation"
 authors:
-  - "N. Kashani Motlagh and collaborators"
+  - "N. Kashani Motlagh"
+  - "co-authors withheld for review"
 tldr: "Measures when evidence-based revision fixes a draft answer and when it breaks one, so routing policies can decide to answer, revise, or abstain."
 draft: false
 highlight: true
-metric: "Evaluated on NQ-Open, TriviaQA, and PopQA — 25K+ held-out examples; manuscript in preparation."
+metric: "Routes answer / revise / abstain by separating answer confidence from the expected value of revision."
 tags:
   - "selective prediction"
   - "adaptive QA"
@@ -18,14 +19,18 @@ highlights:
   - "Shows that answer confidence and the expected value of revision are separate routing signals: a policy needs both to decide whether to answer, revise, or abstain."
 ---
 
-This manuscript is being prepared for ARR submission; the title and details are
-withheld to preserve anonymous review. The work studies retrieval-augmented
-selective QA: for each question, compare the model's direct answer with the
-answer produced after retrieving evidence and revising, then measure whether
-the revision helped, hurt, or made no difference.
+This work studies retrieval-augmented selective QA. For each question, it
+compares the model's direct answer with the answer produced after retrieving
+evidence and revising, then measures whether the revision helped, hurt, or made
+no difference.
 
-The operating question is practical. Confidence estimates whether the draft
-answer is already correct; a separate signal is needed to estimate whether
-revising with retrieved evidence will improve it. The current manuscript reports
-results on NQ-Open, TriviaQA, and PopQA. No acceptance or public paper link is
-claimed here.
+The contribution is to treat that as two separate signals rather than one.
+Answer confidence estimates whether the draft is already correct; a distinct
+signal estimates whether revising with retrieved evidence will improve it. A
+routing policy needs both — to decide when to answer directly, when to revise
+with evidence, and when to abstain — rather than relying on confidence alone.
+The evaluation spans NQ-Open, TriviaQA, and PopQA with DPR and BM25 retrieval
+over a shared Wikipedia source.
+
+The paper is in preparation for ARR submission; its title and author list are
+withheld here to preserve anonymous review.
