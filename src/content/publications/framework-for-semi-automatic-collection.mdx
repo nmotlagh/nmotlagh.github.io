@@ -11,15 +11,15 @@ tldr: "OpenStreetMap-guided imagery collection and labeling tools for building t
 datePublished: "2021-10-11"
 pdf: "https://openaccess.thecvf.com/content/ICCV2021W/LUAI/papers/Motlagh_A_Framework_for_Semi-Automatic_Collection_of_Temporal_Satellite_Imagery_for_ICCVW_2021_paper.pdf"
 code: "https://github.com/osu-cvl/Construction-Site-Satellite-Imagery-Collection"
-external: "https://openaccess.thecvf.com/content/ICCV2021W/LUAI/papers/Motlagh_A_Framework_for_Semi-Automatic_Collection_of_Temporal_Satellite_Imagery_for_ICCVW_2021_paper.pdf"
+external: "https://openaccess.thecvf.com/content/ICCV2021W/LUAI/html/Motlagh_A_Framework_for_Semi-Automatic_Collection_of_Temporal_Satellite_Imagery_for_ICCVW_2021_paper.html"
 tags:
   - "remote sensing"
   - "data collection"
   - "labeling pipelines"
   - "change detection"
 highlights:
-  - "Combined imagery download, polygon filtering, temporal organization, and annotation UI in a reproducible Python pipeline."
-  - "Reduced manual setup for construction-site monitoring datasets and downstream change-detection experiments."
+  - "Combined OpenStreetMap extraction, polygon filtering, and temporal imagery download scripts in a public Python workflow."
+  - "Released the collection code and a sample construction-site satellite-imagery dataset under the repository's GPL license."
 ---
 
-We detail a semi-automatic pipeline for collecting and labeling temporal satellite imagery using OpenStreetMap metadata. The workflow identifies candidate regions, organizes imagery over time, and supports annotation for downstream change-detection and classification experiments.
+We detail a semi-automatic pipeline for collecting temporal satellite imagery using OpenStreetMap metadata. The public repository provides scripts for extracting candidate construction-site regions and downloading imagery over time, plus a sample dataset and notebook. It does not include a general annotation application or a train/validation/test split exporter.

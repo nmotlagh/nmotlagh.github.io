@@ -22,7 +22,9 @@ const experienceItems = experience?.data.items ?? [];
 const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
 const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
 const isCurrentManuscript = (entry: CollectionEntry<"publications">) =>
-  entry.data.venue.toLowerCase().includes("preparation");
+  ["preparation", "under review"].some((status) =>
+    entry.data.venue.toLowerCase().includes(status),
+  );
 const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
 const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry]));
 
@@ -65,8 +67,8 @@ const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headsh
 
 const stats = [
   { label: "Peer-reviewed", value: `${peerReviewedPublications.length} papers` },
-  { label: "Lead author", value: "All 4" },
-  { label: "Award", value: "ISVC Best Paper" },
+  { label: "First-author papers", value: "4" },
+  { label: "Award", value: "Springer Best Paper" },
   { label: "Available", value: "Aug 2026" },
 ];
 
@@ -147,7 +149,7 @@ const structuredData = [personSchema, ...publicationSchemas];
 
 <BaseLayout
   title="Home"
-  description="Nick Kashani Motlagh — PhD candidate at Ohio State working on selective prediction, calibration, abstention, and adaptive LLM question answering."
+  description="Nick Kashani Motlagh — PhD candidate at Ohio State who successfully defended a dissertation on abstention, ambiguity, and recoverability in AI systems."
   structuredData={structuredData}
 >
   <section class="section section--hero">
@@ -220,8 +222,8 @@ const structuredData = [personSchema, ...publicationSchemas];
     <div class="site-shell stack">
       <SectionHeading
         eyebrow="Built"
-        title="Code and data."
-        description="Training code, evaluation harnesses, calibration utilities, and datasets tied to the papers."
+        title="Public research code and data."
+        description="Research implementations, calibration utilities, and dataset-collection tools, with their scope stated explicitly."
       />
 
       <div class="home-artifact-grid">
@@ -263,7 +265,7 @@ const structuredData = [personSchema, ...publicationSchemas];
       <SectionHeading
         eyebrow="Selected work"
         title="Papers and reports."
-        description="Peer-reviewed papers, public code and data, and current manuscript notes with careful status labels."
+        description="Peer-reviewed papers, related public code and data, and a current manuscript note with explicit review status."
       />
 
       <div class="stack" style="gap: 1.15rem;">

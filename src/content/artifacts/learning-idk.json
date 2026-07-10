@@ -4,9 +4,9 @@
   "summary": "Companion code for ISVC 2022 / MVA 2025: per-class reject-option classification with binomial threshold search.",
   "stack": ["Python", "PyTorch", "selective prediction"],
   "reproduce": [
-    "Tune per-class thresholds on ImageNet, iNaturalist, or custom datasets.",
-    "Export coverage/accuracy curves and selective-accuracy plots.",
-    "Apply learned reject thresholds to existing PyTorch classifier outputs."
+    "Learn per-class reject thresholds from precomputed classifier logits and labels.",
+    "Evaluate select accuracy, reject accuracy, and coverage for the learned thresholds.",
+    "Run the included calibration and threshold-analysis utilities; no coverage-curve exporter is bundled."
   ],
   "tiesTo": [
     "learning-when-to-say-i-dont-know",

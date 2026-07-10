@@ -84,7 +84,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 
   {artifacts.length > 0 && (
     <div class="publication-card__artifact-row">
-      <span>Code and data</span>
+      <span>Related code and data</span>
       <p>{artifacts.map((artifact) => artifact.data.name).join(' · ')}</p>
     </div>
   )}

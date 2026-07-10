@@ -5,8 +5,8 @@
   "stack": ["Python", "PyTorch", "calibration"],
   "reproduce": [
     "Run global and class-wise temperature scaling on classifier logits.",
-    "Produce reliability diagrams and ECE / class-wise ECE reports.",
-    "Import as a dependency when reproducing the imagery-aware contrastive MT evaluation code."
+    "Produce the calibration plots and expected-calibration-error summaries implemented in the repository.",
+    "Use the utilities as building blocks; this repository is not the WMT evaluation harness."
   ],
   "tiesTo": [
     "assessing-imagery-in-multimodal-mt"

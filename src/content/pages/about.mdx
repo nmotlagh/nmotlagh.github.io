@@ -1,14 +1,14 @@
 ---
 title: "About"
-updated: "2026-04-25"
+updated: "2026-07-09"
 ---
 
-My research is on selective prediction, calibration, and abstention: decision rules that determine when a model should return a prediction, request more evidence, or withhold an answer. I am interested in settings where accuracy alone is not enough — where the system must maintain a calibrated policy over coverage, routing, and failure modes.
+My research asks what an AI system should do when directly returning its current best answer is not yet justified. I study three points in the answering process: when a classifier should abstain from an unreliable prediction, whether visual evidence moves a model's scoring of an ambiguous input toward the intended interpretation, and whether refining a question-answering draft is more likely to repair it than harm it.
 
-I am a PhD candidate at Ohio State, graduating August 2026, advised by Jim Davis. I am first author on all four of my published papers, with a fifth manuscript in preparation. The technical thread starts with per-class reject thresholds for image classifiers (ISVC 2022 Best Paper, MVA 2025 journal extension), extends to contrastive evaluation for multimodal machine translation (WMT 2024), and now focuses on adaptive LLM question answering, where uncertainty depends on both the question and the capabilities of the model-retriever-corpus stack.
+I successfully defended my PhD dissertation, *Answering Under Uncertainty: Abstention, Ambiguity, and Recoverability*, at The Ohio State University on July 8, 2026. I remain a PhD candidate while final revisions and committee sign-off are completed, with the degree expected in August 2026. I am advised by Jim Davis.
 
-My current ARR submission studies retrieval-augmented selective QA (in preparation). The paper asks when revising a draft answer with retrieved evidence makes it better and when it makes it worse. Confidence estimates whether the draft is already correct; a second, separate signal estimates whether revision will improve it — and a routing policy needs both.
+I am first author on four published papers and have a fifth manuscript under review at ACL Rolling Review. The published work covers natural reject-option classification (Springer Best Paper Award at ISVC 2022; MVA 2025 journal extension), evidence-use metrics for multimodal machine translation (WMT 2024), and a temporal satellite-imagery collection framework (ICCV Workshop 2021). The current manuscript studies paired direct and evidence-refined outcomes in retrieval-augmented QA; its submission title, author list, and preprint remain withheld during double-blind review.
 
 I write training code in Python/PyTorch, build evaluation harnesses and calibration dashboards, and run distributed experiments on Slurm/Singularity clusters.
 
-I am looking for Research Scientist, Applied Scientist, and ML Engineer roles starting August 2026, after my defense. I am strongest on teams working on LLM evaluation, calibration, retrieval-augmented systems, selective prediction, or safety/reliability infrastructure. Based in Columbus, OH, open to relocation and remote. U.S. citizen with five summers of AFRL cleared experience; cleared and federal roles are welcome.
+I am looking for Research Scientist, Applied Scientist, and ML Engineer roles starting August 2026. I am strongest on teams working on LLM evaluation, calibration, retrieval-augmented systems, selective prediction, or reliability infrastructure. Based in Columbus, OH, open to relocation and remote. U.S. citizen with five summers of AFRL research experience; federal roles are welcome.

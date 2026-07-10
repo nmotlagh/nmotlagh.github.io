@@ -18,7 +18,7 @@ Post-hoc filters and retrieval can reduce error rates, but they do not define th
 
 Selective prediction is not new. In computer vision, reject-option classifiers are evaluated by their coverage/selective-accuracy tradeoff: the model is allowed to abstain on some inputs, and the retained predictions should become more accurate as coverage decreases.
 
-My PhD work in this area (ISVC 2022, [MVA 2025 journal extension](/publications/learning-when-to-say-i-dont-know/)) studies per-class reject thresholds rather than global thresholds. The motivation is simple: classifier errors are not evenly distributed across classes. A single threshold can be too conservative for easy classes and too permissive for hard ones. Estimating class-conditional thresholds from validation statistics gives a more direct handle on the coverage/selective-accuracy tradeoff.
+My dissertation work in this area (ISVC 2022, [MVA 2025 journal extension](/publications/naturally-constrained-reject-option-classification/)) studies per-class reject thresholds rather than global thresholds. The motivation is simple: classifier errors are not evenly distributed across classes. A single threshold can be too conservative for easy classes and too permissive for hard ones. Estimating class-conditional thresholds from validation statistics gives a more direct handle on the coverage/selective-accuracy tradeoff.
 
 The same design principle applies outside vision: estimate the relevant failure regions and attach explicit actions to them.
 
@@ -36,9 +36,9 @@ Collapsing these cases into one uncertainty score throws away information needed
 
 ## Structured abstention
 
-My current ARR submission package studies the decision that remains after retrieval has already run: should the system return the draft, revise with the passages, or abstain? In the evaluated stack, answer-confidence baselines are not sufficient for that decision, so the routing policy needs a separate estimate of whether revision is likely to help.
+My current manuscript, under review at ACL Rolling Review, studies the decision that remains after retrieval has already run: should the system return the draft, refine it with the passages, or abstain? In the evaluated stack, answer-confidence baselines are not sufficient for that decision, so the routing policy needs a separate estimate of whether refinement is likely to help.
 
-The broader point is that answer confidence and the expected value of revision are different signals. The former estimates whether the draft answer is currently correct. The latter estimates whether revising with retrieved evidence will make the answer better or worse. Treating both as one scalar confidence loses the distinction the routing policy needs.
+The broader point is that answer confidence and recoverability are different signals. The former estimates whether the draft answer is currently correct. The latter concerns whether refining with retrieved evidence will repair or harm it. Treating both as one scalar confidence loses the distinction the routing policy needs.
 
 ## Why this matters for deployment
 

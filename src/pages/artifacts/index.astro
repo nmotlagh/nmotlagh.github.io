@@ -10,14 +10,14 @@ const publications = await getCollection('publications', ({ data }) => !data.dra
 const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.title]));
 ---
 
-<BaseLayout title="Code & Data" description="Pinned GitHub repositories, datasets, and evaluation harnesses for the research portfolio.">
+<BaseLayout title="Code & Data" description="Public research repositories and datasets, with the scope of each artifact stated explicitly.">
   <section class="section">
     <div class="site-shell archive-page">
       <div class="archive-page__header">
         <div>
           <SectionHeading
             as="h1"
-            eyebrow="Open source"
+            eyebrow="Public research code"
             title="Code and data"
             description="A compact archive of the code, dashboards, and datasets that turn the papers into something runnable."
           />

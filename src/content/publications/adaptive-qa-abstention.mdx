@@ -1,36 +1,33 @@
 ---
-title: "Selective RAG-QA: Knowing When to Answer, Revise, or Abstain"
+title: "Manuscript Note: Knowing When to Answer, Refine, or Abstain"
 year: 2026
-venue: "ARR submission in preparation"
+venue: "Manuscript under review"
 authors:
-  - "N. Kashani Motlagh"
-  - "co-authors withheld for review"
-tldr: "Measures when evidence-based revision fixes a draft answer and when it breaks one, so routing policies can decide to answer, revise, or abstain."
+  - "Author list withheld during review"
+tldr: "Uses paired direct and evidence-refined outcomes to evaluate answer, refine, or abstain policies for a fixed retrieval-augmented QA stack."
 draft: false
 highlight: true
-metric: "Routes answer / revise / abstain by separating answer confidence from the expected value of revision."
+metric: "Separates draft correctness from whether refinement is likely to repair or harm the answer."
 tags:
   - "selective prediction"
   - "adaptive QA"
   - "retrieval-augmented generation"
   - "abstention"
 highlights:
-  - "Compares a model's direct answer with its evidence-revised answer on the same questions, measuring how often revision fixes a wrong answer, breaks a right one, or changes nothing."
-  - "Shows that answer confidence and the expected value of revision are separate routing signals: a policy needs both to decide whether to answer, revise, or abstain."
+  - "Compares direct and evidence-refined answers on 25,870 held-out questions, distinguishing preserved, repaired, harmed, and unrecovered outcomes."
+  - "Evaluates answer, refine, or abstain policies for a fixed model-retriever-corpus stack instead of treating draft confidence as a complete estimate of recoverability."
 ---
 
 This work studies retrieval-augmented selective QA. For each question, it
 compares the model's direct answer with the answer produced after retrieving
-evidence and revising, then measures whether the revision helped, hurt, or made
-no difference.
+evidence and refining, then records whether the outcome was preserved,
+repaired, harmed, or unrecovered.
 
-The contribution is to treat that as two separate signals rather than one.
-Answer confidence estimates whether the draft is already correct; a distinct
-signal estimates whether revising with retrieved evidence will improve it. A
-routing policy needs both — to decide when to answer directly, when to revise
-with evidence, and when to abstain — rather than relying on confidence alone.
-The evaluation spans NQ-Open, TriviaQA, and PopQA with DPR and BM25 retrieval
-over a shared Wikipedia source.
+The analysis separates two questions: whether the draft is already correct and
+whether an available refinement process is likely to repair or harm it. The
+evaluation then compares answer, refine, or abstain policies for one recorded
+model-retriever-corpus stack. It spans 25,870 held-out questions from NQ-Open,
+TriviaQA, and PopQA, with DPR and BM25 retrieval over a shared Wikipedia source.
 
-The paper is in preparation for ARR submission; its title and author list are
-withheld here to preserve anonymous review.
+The manuscript is under review at ACL Rolling Review. Its submission title,
+author list, and preprint remain withheld during double-blind review.

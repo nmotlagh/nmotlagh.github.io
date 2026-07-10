@@ -9,7 +9,9 @@ const publications = (await getCollection('publications', ({ data }) => !data.dr
   (a, b) => b.data.year - a.data.year,
 );
 const isCurrentManuscript = (entry: CollectionEntry<'publications'>) =>
-  entry.data.venue.toLowerCase().includes('preparation');
+  ['preparation', 'under review'].some((status) =>
+    entry.data.venue.toLowerCase().includes(status),
+  );
 const currentManuscripts = publications.filter(isCurrentManuscript);
 const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
 const artifactEntries = await getCollection('artifacts');
@@ -33,7 +35,7 @@ artifactEntries.forEach((artifact) => {
             as="h1"
             eyebrow="Research archive"
             title="Papers and manuscript notes"
-            description="A reading-friendly archive of peer-reviewed papers and current research reports on selective prediction, multimodal evidence, calibration, and typed abstention for ML systems."
+            description="A reading-friendly archive of peer-reviewed papers and current research notes on selective prediction, multimodal evidence, calibration, and recoverability in QA systems."
           />
         </div>
 
@@ -47,7 +49,7 @@ artifactEntries.forEach((artifact) => {
         <section class="publication-group" aria-labelledby="current-manuscripts-heading">
           <div class="publication-group__heading">
             <p class="eyebrow">Current manuscript</p>
-            <h2 id="current-manuscripts-heading">In preparation</h2>
+            <h2 id="current-manuscripts-heading">Under review</h2>
           </div>
           <div class="publication-grid grid grid--2 archive-page__grid">
             {currentManuscripts.map((pub) => (

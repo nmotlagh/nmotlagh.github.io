@@ -7,10 +7,10 @@ authors:
   - "J. Davis"
   - "T. Anderson"
   - "J. Gwinnup"
-tldr: "Journal extension of ISVC 2022 Best Paper, evaluating per-class binomial reject thresholds on ImageNet and remote-sensing datasets."
+tldr: "Journal extension of the ISVC 2022 work, evaluating per-class binomial reject thresholds on synthetic, image, and text classification datasets."
 highlight: true
-metric: "Matches global thresholding's accuracy at +1.3% higher coverage on ImageNet"
-datePublished: "2025-02-01"
+metric: "ImageNet at δ=.75: +0.4 percentage points select accuracy and +1.3 points coverage versus uncalibrated global 0.5 thresholding."
+datePublished: "2024-11-26"
 doi: "10.1007/s00138-024-01620-5"
 external: "https://link.springer.com/article/10.1007/s00138-024-01620-5"
 arxiv: "https://arxiv.org/abs/2209.04944"
@@ -20,10 +20,9 @@ tags:
   - "reject option"
   - "calibration"
   - "ImageNet"
-  - "remote sensing"
 highlights:
-  - "Invited journal extension of the ISVC 2022 Best Paper; adds long-tailed wildlife and remote-sensing splits with class-conditional threshold analysis."
-  - "Per-class binomial thresholds outperform global thresholding on ImageNet and remote-sensing splits."
+  - "Extends the natural reject-region constraint across controlled synthetic data, benchmark image classification, and text classification."
+  - "Reports transfer behavior on CINIC10 and long-tailed iNaturalist19 alongside explicit selective-accuracy, reject-accuracy, and coverage tradeoffs."
 ---
 
-We present the invited journal extension of our reject-option work, evaluating per-class binomial thresholds on ImageNet, long-tailed wildlife data, and remote-sensing datasets. The paper reports class-conditional threshold behavior across these datasets and shows that dataset-specific coverage targets are needed for fair model comparison under selective prediction.
+We present the journal extension of our reject-option work. The method learns per-class softmax thresholds that maximize select accuracy while constraining the rejected region to behave like genuine correct-versus-incorrect confusion. Experiments span synthetic, image, and text classification, with separate reporting of select accuracy, reject accuracy, and coverage. The method does not require a user-specified rejection cost, target select accuracy, or target coverage, though its significance parameter still controls the operating tradeoff.

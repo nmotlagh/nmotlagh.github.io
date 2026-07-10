@@ -4,9 +4,9 @@
   "summary": "Companion code for OpenStreetMap-guided temporal satellite imagery collection and annotation.",
   "stack": ["Python", "OpenStreetMap", "remote sensing"],
   "reproduce": [
-    "Generate OpenStreetMap-guided download manifests for temporal imagery.",
-    "Label construction phases with the bundled annotation app.",
-    "Export train/val/test splits for change-detection baselines."
+    "Extract candidate construction-site polygons from OpenStreetMap data.",
+    "Download temporal satellite imagery for the extracted regions.",
+    "Inspect the released sample dataset and notebook; annotation and split-export tools are not included."
   ],
   "tiesTo": [
     "framework-for-semi-automatic-collection"

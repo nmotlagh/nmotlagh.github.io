@@ -19,34 +19,34 @@ export interface DissertationPillar {
 
 export const homeEditorial = {
   hero: {
-    eyebrow: "Research Scientist / Applied Scientist · LLM evaluation & reliability",
+    eyebrow: "Seeking Research Scientist / Applied Scientist roles · LLM evaluation & reliability",
     availability: {
       label: "Available August 2026",
       detail:
-        "Research Scientist, Applied Scientist & ML Engineer roles · U.S. citizen with five summers of AFRL cleared experience · Columbus, OH; open to relocation / remote",
+        "Research Scientist, Applied Scientist & ML Engineer roles · U.S. citizen with five summers of AFRL research experience · Columbus, OH; open to relocation / remote",
     },
     title: "Nick Kashani Motlagh",
     lede: "I build models that know when not to answer.",
     supporting:
-      "PhD candidate at Ohio State's Computer Vision Lab, defending August 2026. I ship the engineering as well as the ideas: PyTorch training code, evaluation harnesses, and calibration dashboards, run as distributed experiments on Slurm/Singularity clusters. My dissertation, <em>Answering Under Uncertainty</em>, studies the three places direct answering breaks down: when a prediction is unreliable (abstention), when an input is ambiguous relative to available evidence (evidence use), and when a draft answer should get a second look before it is returned (revision).",
+      "PhD candidate at Ohio State's Computer Vision Lab. I successfully defended my dissertation on July 8, 2026, with the degree expected in August. <em>Answering Under Uncertainty</em> studies three points where directly returning a model's current best answer may not be justified: abstention from an unreliable prediction, evidence use under ambiguity, and whether refining a draft is more likely to repair it than harm it.",
     status:
-      "Current work: when should a QA system trust its draft answer, revise it with retrieved evidence, or decline? An ARR manuscript in preparation, anonymized for review.",
+      "Current work: when should a QA system trust its draft answer, refine it with retrieved evidence, or abstain? The manuscript is under review at ACL Rolling Review; its title and author list remain withheld during review.",
   },
   dissertation: {
-    eyebrow: "PhD dissertation · defending August 2026",
+    eyebrow: "PhD dissertation · successfully defended July 8, 2026",
     title: "Answering Under Uncertainty",
-    subtitle: "Abstention, Ambiguity, and Revision",
+    subtitle: "Abstention, Ambiguity, and Recoverability",
     summary:
-      "The dissertation addresses three places where answering breaks down: unreliable output confidence, input ambiguity relative to available evidence, and uncertainty about whether revising a draft answer with retrieved evidence will make it better or worse.",
+      "The dissertation asks what an AI system should measure when direct return is not yet justified: whether to withhold an unreliable output, whether available evidence supports an intended interpretation, and whether refining a draft is more likely to repair it than harm it.",
   },
   currentWork: {
-    eyebrow: "Current manuscript",
-    title: "Selective RAG-QA: answer, revise, or abstain",
+    eyebrow: "Manuscript under review",
+    title: "Selective RAG-QA: answer, refine, or abstain",
     body:
-      "An ARR submission on retrieval-augmented selective QA. The work measures when revising a draft answer with retrieved evidence makes it better and when it makes it worse, then uses those measurements to decide whether the system should answer, revise, or abstain instead of relying on confidence alone. Results are reported on NQ-Open, TriviaQA, and PopQA.",
-    venue: "ARR submission in preparation",
+      "This work compares direct and evidence-refined answers in retrieval-augmented QA, separating preserved, repaired, harmed, and unrecovered outcomes. It then evaluates answer, refine, or abstain policies without treating draft confidence as a complete estimate of recoverability. Results are reported for a fixed stack on NQ-Open, TriviaQA, and PopQA.",
+    venue: "Under review at ACL Rolling Review",
     disclaimer:
-      "Title and author list are withheld to preserve anonymous review.",
+      "The submission title, author list, and preprint remain withheld during double-blind review.",
   },
   featuredPublicationSlugs: [
     "adaptive-qa-abstention",
@@ -60,12 +60,12 @@ export const homeEditorial = {
     "construction-site-satellite-imagery",
   ],
   recruiterFacts: [
-    "PhD, The Ohio State University — defending August 2026",
+    "PhD candidate, The Ohio State University · dissertation defended July 8, 2026 · degree expected August 2026",
     "Research Scientist / Applied Scientist / ML Engineer · selective prediction, calibration, LLM evaluation",
-    "First author on 4 published papers · 1 manuscript in preparation · ISVC 2022 Best Paper",
-    "Current ARR manuscript on retrieval-augmented selective QA — in preparation",
-    "Python · PyTorch · HuggingFace · Slurm/Singularity · RAG evaluation",
-    "U.S. citizen · five summers cleared work · Columbus OH, open to relocation / remote",
+    "First author on 4 published papers · 1 manuscript under review · Springer Best Paper Award at ISVC 2022",
+    "Current manuscript on retrieval-augmented selective QA · under review at ACL Rolling Review",
+    "Python · PyTorch · Hugging Face · Slurm/Singularity · RAG evaluation",
+    "U.S. citizen · five summers of AFRL research experience · Columbus OH, open to relocation / remote",
   ],
 };
 
@@ -107,7 +107,7 @@ export const dissertationPillars: DissertationPillar[] = [
     title: "Natural reject option",
     description:
       "Abstention when no rejection cost or coverage target is given: per-class thresholds that maximize selected accuracy while requiring the rejected region to behave like genuine confusion.",
-    evidence: "ISVC 2022 Best Paper · MVA 2025 journal extension",
+    evidence: "Springer Best Paper Award at ISVC 2022 · MVA 2025 journal extension",
     publicationSlug: "learning-when-to-say-i-dont-know",
   },
   {
@@ -125,13 +125,13 @@ export const dissertationPillars: DissertationPillar[] = [
   {
     index: "03",
     action: "refine",
-    actionLabel: "Revise",
-    failurePoint: "Post-answer revision",
+    actionLabel: "Refine",
+    failurePoint: "Post-answer recoverability",
     question: "Will a second look make the answer better or worse?",
-    title: "When revision helps",
+    title: "Measuring recoverability",
     description:
-      "Compares a model's direct answer with its evidence-revised answer on the same questions, so routing policies can weigh the chance that revision fixes a wrong answer against the chance it breaks a right one.",
-    evidence: "ARR submission in preparation",
+      "Compares direct and evidence-refined answers on the same questions, distinguishing preserved, repaired, harmed, and unrecovered outcomes for a fixed QA stack before evaluating answer, refine, or abstain policies.",
+    evidence: "Manuscript under review at ACL Rolling Review",
     publicationSlug: "adaptive-qa-abstention",
   },
 ];
@@ -142,7 +142,7 @@ export const researchArc: ResearchArcStep[] = [
     title: "Selective prediction for vision",
     description:
       "Class-conditional reject thresholds for image classifiers, estimated from validation statistics and evaluated with coverage/selective-accuracy tradeoffs.",
-    evidence: "ISVC 2022 Best Paper; MVA 2025 journal extension.",
+    evidence: "Springer Best Paper Award at ISVC 2022; MVA 2025 journal extension.",
   },
   {
     label: "2024",
@@ -155,7 +155,7 @@ export const researchArc: ResearchArcStep[] = [
     label: "2025–26",
     title: "Selective QA with retrieval",
     description:
-      "Evaluates when evidence-based revision improves a draft answer and when it degrades one, driving answer / revise / abstain decisions for retrieval-augmented QA.",
-    evidence: "ARR submission package in preparation.",
+      "Evaluates when evidence-based refinement repairs a draft answer and when it harms one, supporting answer / refine / abstain decisions for a fixed retrieval-augmented QA stack.",
+    evidence: "Manuscript under review at ACL Rolling Review.",
   },
 ];

@@ -6,7 +6,7 @@ import '../styles/editorial.css';
 
 const siteName = 'Nick Kashani Motlagh';
 const defaultDescription =
-  'PhD candidate at The Ohio State University working on selective prediction, calibration, abstention, and LLM evaluation.';
+  'PhD candidate at The Ohio State University who successfully defended a dissertation on abstention, ambiguity, and recoverability in AI systems.';
 
 interface LayoutProps {
   title?: string;
@@ -44,7 +44,7 @@ const ogImageUrl = ogImage
       ? new URL(ogImage.src, Astro.site).href
       : ogImage.src
   : defaultOgImage;
-const ogImageAlt = `${siteName} — Research Scientist, Applied Scientist & ML Engineer (PhD, Ohio State)`;
+const ogImageAlt = `${siteName} — Research Scientist, Applied Scientist & ML Engineer; PhD candidate at Ohio State`;
 
 const normalizePath = (path: string) => (path.endsWith('/') ? path : `${path}/`);
 const currentPath = normalizePath(Astro.url.pathname);
@@ -221,7 +221,8 @@ const navLinks = [
             </h2>
             <p class="site-footer__copy">
               Nick Kashani Motlagh · PhD candidate, The Ohio State University · Columbus, Ohio.
-              Selective prediction, abstention, and evidence use.
+              Dissertation successfully defended July 8, 2026. Selective prediction,
+              abstention, evidence use, and recoverability.
             </p>
           </div>
 

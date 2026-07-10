@@ -5,25 +5,24 @@ venue: "WMT 2024"
 authors:
   - "N. Kashani Motlagh"
   - "J. Davis"
-  - "T. Anderson"
   - "J. Gwinnup"
   - "G. Erdmann"
+  - "T. Anderson"
 tldr: "Contrastive evaluation of WMT 2024 multimodal MT systems shows measurable dependence on paired visual context."
 highlight: true
-metric: "+7% image-grounding score"
+metric: "Image evidence can affect model uncertainty without changing the final translation preference."
 datePublished: "2024-11-15"
 doi: "10.18653/v1/2024.wmt-1.130"
-pdf: "https://aclanthology.org/2024.wmt-1.130/"
-code: "https://github.com/osu-cvl/calibration"
-data: "https://github.com/osu-cvl/calibration/tree/main/data"
+pdf: "https://aclanthology.org/2024.wmt-1.130.pdf"
+external: "https://aclanthology.org/2024.wmt-1.130/"
 tags:
   - "multimodal MT"
   - "vision-language models"
   - "evaluation"
   - "WMT"
 highlights:
-  - "Introduced imagery-aware contrastive probes for testing whether translations change under mismatched visual context."
-  - "Benchmarked nine multimodal MT systems under matched and mismatched visual context, with wide variance in how much each system relies on the image."
+  - "Introduced imagery-aware contrastive probes for testing whether model scores change under mismatched visual context."
+  - "Evaluated three English-to-French multimodal model families, plus gated variants, under matched and mismatched visual context."
 ---
 
-We design imagery-sensitive contrastive metrics for multimodal machine translation and apply them to systems evaluated at WMT 2024. The experiments compare translations under matched and mismatched visual context, giving a direct test of whether image inputs influence model behavior beyond training-time regularization. We release the evaluation harness and curated counterfactual splits used for the analysis.
+Published at WMT 2024, this work designs imagery-sensitive contrastive metrics for multimodal machine translation and evaluates three English-to-French model families. The experiments hold a candidate translation fixed while varying matched and mismatched visual context, testing whether the image moves model uncertainty in the intended direction. These score-based diagnostics do not by themselves establish generated-translation quality or causal evidence use.
