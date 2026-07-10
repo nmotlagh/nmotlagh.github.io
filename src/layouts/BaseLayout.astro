@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
+import { getCollection } from 'astro:content';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import '../styles/theme.css';
 import '../styles/editorial.css';
@@ -56,10 +57,12 @@ const isActivePath = (href: string) => {
   return currentPath.startsWith(targetPath);
 };
 
+const hasBlogPosts = (await getCollection('blog', ({ data }) => !data.draft)).length > 0;
+
 const navLinks = [
   { label: 'Home', href: homeHref, mobileHidden: true },
   { label: 'Papers', href: `${homeHref}publications/` },
-  { label: 'Reports', href: `${homeHref}blog/` },
+  ...(hasBlogPosts ? [{ label: 'Reports', href: `${homeHref}blog/` }] : []),
   { label: 'Code', href: `${homeHref}artifacts/` },
   { label: 'News', href: `${homeHref}news/`, mobileHidden: true },
 ].map((link) => ({ ...link, active: isActivePath(link.href) }));

@@ -4,19 +4,16 @@ import SectionHeading from "../components/SectionHeading.astro";
 import EditorialHero from "../components/editorial/EditorialHero.astro";
 import DissertationPillars from "../components/editorial/DissertationPillars.astro";
 import FeatureSlab from "../components/editorial/FeatureSlab.astro";
-import ResearchArc from "../components/editorial/ResearchArc.astro";
 import DispatchList from "../components/editorial/DispatchList.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
 import SkillsMatrix from "../components/editorial/SkillsMatrix.astro";
-import { homeEditorial, researchArc, dissertationPillars, skillGroups } from "../data/editorial";
+import { homeEditorial, dissertationPillars, skillGroups } from "../data/editorial";
 import { parseDateValue } from "../utils/dates";
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import headshot from "../assets/headshot.jpg";
 
-const about = await getEntry("pages", "about");
 const experience = await getEntry("pages", "experience");
-const aboutRendered = about ? await about.render() : undefined;
 const experienceItems = experience?.data.items ?? [];
 
 const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
@@ -311,26 +308,6 @@ const structuredData = [personSchema, ...publicationSchemas];
             )}
           </article>
         ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="about">
-    <div class="site-shell stack">
-      <SectionHeading
-        eyebrow="About"
-        title="How the research has developed."
-        description="From selective prediction in vision to adaptive question answering with LLMs, with stops along the way in multimodal translation and remote sensing."
-      />
-
-      <div class="home-about">
-        <article class="surface" style="padding: clamp(1.3rem, 3vw, 2.2rem);">
-          <div class="prose">
-            {aboutRendered && <aboutRendered.Content />}
-          </div>
-        </article>
-
-        <ResearchArc items={researchArc} />
       </div>
     </div>
   </section>

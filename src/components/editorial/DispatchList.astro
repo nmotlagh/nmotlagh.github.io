@@ -18,7 +18,7 @@ const blogHref = `${import.meta.env.BASE_URL}blog/`;
 const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 ---
 
-<section class="dispatch-list">
+<section class:list={['dispatch-list', posts.length === 0 && 'dispatch-list--single']}>
   <article class="dispatch-list__panel surface">
     <div class="dispatch-list__header">
       <div>
@@ -48,16 +48,16 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     </ol>
   </article>
 
-  <article class="dispatch-list__panel surface">
-    <div class="dispatch-list__header">
-      <div>
-        <p class="eyebrow">Reports</p>
-        <h3>Research writing</h3>
+  {posts.length > 0 && (
+    <article class="dispatch-list__panel surface">
+      <div class="dispatch-list__header">
+        <div>
+          <p class="eyebrow">Reports</p>
+          <h3>Research writing</h3>
+        </div>
+        <a href={blogHref}>Browse reports</a>
       </div>
-      <a href={blogHref}>Browse reports</a>
-    </div>
 
-    {posts.length > 0 ? (
       <ol class="dispatch-list__items">
         {posts.map((post) => (
           <li>
@@ -67,12 +67,8 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
           </li>
         ))}
       </ol>
-    ) : (
-      <p class="dispatch-list__empty">
-        No posts yet.
-      </p>
-    )}
-  </article>
+    </article>
+  )}
 </section>
 
 <style>
@@ -82,7 +78,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   }
 
   @media (min-width: 900px) {
-    .dispatch-list {
+    .dispatch-list:not(.dispatch-list--single) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -179,9 +175,4 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     line-height: 1.65;
   }
 
-  .dispatch-list__empty {
-    margin: 0;
-    color: var(--color-text-muted);
-    line-height: 1.7;
-  }
 </style>
