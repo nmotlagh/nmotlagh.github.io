@@ -7,7 +7,7 @@ import '../styles/editorial.css';
 
 const siteName = 'Nick Kashani Motlagh';
 const defaultDescription =
-  'PhD candidate at The Ohio State University who successfully defended a dissertation on abstention, ambiguity, and recoverability in AI systems.';
+  'Ph.D. in Computer Science and applied ML researcher at DCS Corp studying abstention, ambiguity, and recoverability in AI systems.';
 
 interface LayoutProps {
   title?: string;
@@ -45,7 +45,7 @@ const ogImageUrl = ogImage
       ? new URL(ogImage.src, Astro.site).href
       : ogImage.src
   : defaultOgImage;
-const ogImageAlt = `${siteName} — Research Scientist, Applied Scientist & ML Engineer; PhD candidate at Ohio State`;
+const ogImageAlt = `${siteName} — Ph.D. in Computer Science and applied ML researcher at DCS Corp`;
 
 const normalizePath = (path: string) => (path.endsWith('/') ? path : `${path}/`);
 const currentPath = normalizePath(Astro.url.pathname);
@@ -223,9 +223,9 @@ const navLinks = [
               Models should know <em>when not to answer.</em>
             </h2>
             <p class="site-footer__copy">
-              Nick Kashani Motlagh · PhD candidate, The Ohio State University · Columbus, Ohio.
-              Dissertation successfully defended July 8, 2026. Selective prediction,
-              abstention, evidence use, and recoverability.
+              Nick Kashani Motlagh · Ph.D. in Computer Science · Technical Analyst II,
+              DCS Corp · Columbus, Ohio. Degree requirements completed after a successful
+              July 8, 2026 dissertation defense; formal conferral scheduled August 9, 2026.
             </p>
           </div>
 

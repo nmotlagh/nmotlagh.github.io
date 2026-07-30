@@ -66,7 +66,7 @@ const stats = [
   { label: "Peer-reviewed", value: `${peerReviewedPublications.length} papers` },
   { label: "First-author papers", value: "4" },
   { label: "Award", value: "Springer Best Paper" },
-  { label: "Available", value: "Aug 2026" },
+  { label: "Current role", value: "Technical Analyst II" },
 ];
 
 const personSchema = {
@@ -74,11 +74,11 @@ const personSchema = {
   "@type": "Person",
   name: "Nick Kashani Motlagh",
   url: siteOrigin,
-  jobTitle: "PhD Candidate",
-  affiliation: {
-    "@type": "CollegeOrUniversity",
-    name: "The Ohio State University",
-    url: "https://www.osu.edu/",
+  jobTitle: "Technical Analyst II",
+  worksFor: {
+    "@type": "Organization",
+    name: "DCS Corp",
+    url: "https://www.dcscorp.com/",
   },
   alumniOf: {
     "@type": "CollegeOrUniversity",
@@ -146,7 +146,7 @@ const structuredData = [personSchema, ...publicationSchemas];
 
 <BaseLayout
   title="Home"
-  description="Nick Kashani Motlagh — PhD candidate at Ohio State who successfully defended a dissertation on abstention, ambiguity, and recoverability in AI systems."
+  description="Nick Kashani Motlagh — Ph.D. in Computer Science and applied ML researcher at DCS Corp studying abstention, ambiguity, and recoverability in AI systems."
   structuredData={structuredData}
 >
   <section class="section section--hero">

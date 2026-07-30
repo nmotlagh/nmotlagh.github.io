@@ -1,10 +1,10 @@
 ---
-title: "Manuscript Note: Knowing When to Answer, Refine, or Abstain"
+title: "Current Research Note: Recoverability in Retrieval-Augmented QA"
 year: 2026
-venue: "Manuscript under review"
+venue: "Anonymous manuscript in preparation"
 authors:
-  - "Author list withheld during review"
-tldr: "Uses paired direct and evidence-refined outcomes to evaluate answer, refine, or abstain policies for a fixed retrieval-augmented QA stack."
+  - "Author list withheld for anonymous review"
+tldr: "Studies the value of retrieval-conditioned revision as a property of the observed draft and proposed intervention for a fixed short-form QA stack."
 draft: false
 highlight: true
 metric: "Separates draft correctness from whether refinement is likely to repair or harm the answer."
@@ -14,8 +14,8 @@ tags:
   - "retrieval-augmented generation"
   - "abstention"
 highlights:
-  - "Compares direct and evidence-refined answers on 25,870 held-out questions, distinguishing preserved, repaired, harmed, and unrecovered outcomes."
-  - "Evaluates answer, refine, or abstain policies for a fixed model-retriever-corpus stack instead of treating draft confidence as a complete estimate of recoverability."
+  - "Separates whether an observed draft is correct from whether a specific retrieval-conditioned revision is likely to repair or harm it."
+  - "Evaluates return, revise, or abstain decisions for one recorded model-retriever-corpus stack rather than treating draft confidence as a complete estimate of recoverability."
 ---
 
 This work studies retrieval-augmented selective QA. For each question, it
@@ -25,9 +25,10 @@ repaired, harmed, or unrecovered.
 
 The analysis separates two questions: whether the draft is already correct and
 whether an available refinement process is likely to repair or harm it. The
-evaluation then compares answer, refine, or abstain policies for one recorded
-model-retriever-corpus stack. It spans 25,870 held-out questions from NQ-Open,
-TriviaQA, and PopQA, with DPR and BM25 retrieval over a shared Wikipedia source.
+evaluation then compares return, revise, or abstain policies for one recorded
+model-retriever-corpus stack on short-form open-domain QA. This scope does not
+establish generality to long-form, multi-hop, or domain-specific QA.
 
-The manuscript is under review at ACL Rolling Review. Its submission title,
-author list, and preprint remain withheld during double-blind review.
+An anonymous manuscript is being prepared for ACL Rolling Review resubmission.
+Its submission title, author list, numerical results, and preprint remain
+withheld during anonymous review.
