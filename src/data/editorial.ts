@@ -19,34 +19,34 @@ export interface DissertationPillar {
 
 export const homeEditorial = {
   hero: {
-    eyebrow: "Seeking Research Scientist / Applied Scientist roles · LLM evaluation & reliability",
+    eyebrow: "Ph.D. in Computer Science | Applied ML Researcher at DCS Corp",
     availability: {
-      label: "Available August 2026",
+      label: "Technical Analyst II · DCS Corp",
       detail:
-        "Research Scientist, Applied Scientist & ML Engineer roles · U.S. citizen with five summers of AFRL research experience · Columbus, OH; open to relocation / remote",
+        "Applied ML research and evaluation · Ph.D. requirements completed at Ohio State · degree conferral scheduled August 9, 2026",
     },
     title: "Nick Kashani Motlagh",
     lede: "I build models that know when not to answer.",
     supporting:
-      "PhD candidate at Ohio State's Computer Vision Lab. I successfully defended my dissertation on July 8, 2026, with the degree expected in August. <em>Answering Under Uncertainty</em> studies three points where directly returning a model's current best answer may not be justified: abstention from an unreliable prediction, evidence use under ambiguity, and whether refining a draft is more likely to repair it than harm it.",
+      "I completed the requirements for a Ph.D. in Computer Science at The Ohio State University after successfully defending my dissertation on July 8, 2026; formal degree conferral is scheduled for August 9. <em>Answering Under Uncertainty</em> studies three points where directly returning a model's current best answer may not be justified: abstention from an unreliable prediction, evidence use under ambiguity, and whether refining a draft is more likely to repair it than harm it.",
     status:
-      "Current work: when should a QA system trust its draft answer, refine it with retrieved evidence, or abstain? The manuscript is under review at ACL Rolling Review; its title and author list remain withheld during review.",
+      "Current work: when does retrieval-conditioned revision repair a short-form QA answer, and when does it harm one? An anonymous manuscript is being prepared for ACL Rolling Review resubmission; review-sensitive details remain withheld.",
   },
   dissertation: {
-    eyebrow: "PhD dissertation · successfully defended July 8, 2026",
+    eyebrow: "Ph.D. completed · defended July 8, 2026 · conferral August 9, 2026",
     title: "Answering Under Uncertainty",
     subtitle: "Abstention, Ambiguity, and Recoverability",
     summary:
       "The dissertation asks what an AI system should measure when direct return is not yet justified: whether to withhold an unreliable output, whether available evidence supports an intended interpretation, and whether refining a draft is more likely to repair it than harm it.",
   },
   currentWork: {
-    eyebrow: "Manuscript under review",
-    title: "Selective RAG-QA: answer, refine, or abstain",
+    eyebrow: "Anonymous manuscript · preparing for ARR resubmission",
+    title: "Recoverability in retrieval-augmented QA",
     body:
-      "This work compares direct and evidence-refined answers in retrieval-augmented QA, separating preserved, repaired, harmed, and unrecovered outcomes. It then evaluates answer, refine, or abstain policies without treating draft confidence as a complete estimate of recoverability. Results are reported for a fixed stack on NQ-Open, TriviaQA, and PopQA.",
-    venue: "Under review at ACL Rolling Review",
+      "This work studies whether to return an observed QA draft or revise it using retrieved evidence. It treats the value of revision as a property of the draft and the proposed intervention, distinct from draft confidence alone. The evaluation is intentionally bounded to short-form open-domain QA with one recorded model-retriever-corpus stack; it does not establish generality to long-form, multi-hop, or domain-specific QA.",
+    venue: "In preparation for ACL Rolling Review resubmission",
     disclaimer:
-      "The submission title, author list, and preprint remain withheld during double-blind review.",
+      "The submission title, author list, numerical results, and preprint remain withheld during anonymous review.",
   },
   featuredPublicationSlugs: [
     "adaptive-qa-abstention",
@@ -60,10 +60,10 @@ export const homeEditorial = {
     "construction-site-satellite-imagery",
   ],
   recruiterFacts: [
-    "PhD candidate, The Ohio State University · dissertation defended July 8, 2026 · degree expected August 2026",
-    "Research Scientist / Applied Scientist / ML Engineer · selective prediction, calibration, LLM evaluation",
-    "First author on 4 published papers · 1 manuscript under review · Springer Best Paper Award at ISVC 2022",
-    "Current manuscript on retrieval-augmented selective QA · under review at ACL Rolling Review",
+    "Ph.D. requirements completed, The Ohio State University · defended July 8, 2026 · conferral scheduled August 9, 2026",
+    "Technical Analyst II, DCS Corp · applied ML research and evaluation",
+    "First author on 4 published papers · 1 anonymous manuscript in preparation · Springer Best Paper Award at ISVC 2022",
+    "Current research on recoverability in retrieval-augmented QA · preparing for ARR resubmission",
     "Python · PyTorch · Hugging Face · Slurm/Singularity · RAG evaluation",
     "U.S. citizen · five summers of AFRL research experience · Columbus OH, open to relocation / remote",
   ],
@@ -131,7 +131,7 @@ export const dissertationPillars: DissertationPillar[] = [
     title: "Measuring recoverability",
     description:
       "Compares direct and evidence-refined answers on the same questions, distinguishing preserved, repaired, harmed, and unrecovered outcomes for a fixed QA stack before evaluating answer, refine, or abstain policies.",
-    evidence: "Manuscript under review at ACL Rolling Review",
+    evidence: "Anonymous manuscript in preparation for ACL Rolling Review resubmission",
     publicationSlug: "adaptive-qa-abstention",
   },
 ];
@@ -155,7 +155,7 @@ export const researchArc: ResearchArcStep[] = [
     label: "2025–26",
     title: "Selective QA with retrieval",
     description:
-      "Evaluates when evidence-based refinement repairs a draft answer and when it harms one, supporting answer / refine / abstain decisions for a fixed retrieval-augmented QA stack.",
-    evidence: "Manuscript under review at ACL Rolling Review.",
+      "Studies when retrieval-conditioned revision repairs a draft answer and when it harms one, and whether that intervention-conditioned value can guide return / revise decisions for a fixed retrieval-augmented QA stack.",
+    evidence: "Anonymous manuscript in preparation for ACL Rolling Review resubmission.",
   },
 ];
