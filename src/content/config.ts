@@ -21,6 +21,28 @@ const pages = defineCollection({
         }),
       )
       .optional(),
+    education: z
+      .array(
+        z.object({
+          degree: z.string(),
+          field: z.string(),
+          institution: z.string(),
+          location: z.string().optional(),
+          timeframe: z.string(),
+          /** ISO year the degree was or will be conferred. Drives JSON-LD. */
+          completed: z.string(),
+          notes: z.array(z.string()).optional(),
+        }),
+      )
+      .optional(),
+    service: z
+      .array(
+        z.object({
+          role: z.string(),
+          venues: z.array(z.string()),
+        }),
+      )
+      .optional(),
   }),
 });
 
@@ -51,6 +73,20 @@ const publications = defineCollection({
       .optional(),
     highlights: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
+    /** Everything needed to emit a correct BibTeX entry. */
+    citation: z
+      .object({
+        type: z.enum(['inproceedings', 'article', 'unpublished']),
+        key: z.string(),
+        booktitle: z.string().optional(),
+        journal: z.string().optional(),
+        publisher: z.string().optional(),
+        volume: z.string().optional(),
+        number: z.string().optional(),
+        pages: z.string().optional(),
+        note: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -76,15 +112,4 @@ const artifacts = defineCollection({
   }),
 });
 
-const blog = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    date: z.string(),
-    description: z.string().max(200),
-    tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-  }),
-});
-
-export const collections = { pages, publications, news, artifacts, blog };
+export const collections = { pages, publications, news, artifacts };

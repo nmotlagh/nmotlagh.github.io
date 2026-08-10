@@ -1,0 +1,115 @@
+---
+interface Props {
+  bibtex: string;
+  downloadHref: string;
+}
+
+const { bibtex, downloadHref }: Props = Astro.props;
+---
+
+<section class="cite surface">
+  <div class="cite__header">
+    <p class="eyebrow">Cite</p>
+    <div class="cite__actions">
+      <button class="cite__button" type="button" data-cite-copy>
+        <span data-cite-label>Copy BibTeX</span>
+      </button>
+      <a class="badge badge--link" href={downloadHref} download>.bib</a>
+    </div>
+  </div>
+
+  <pre class="cite__code"><code data-cite-source>{bibtex}</code></pre>
+</section>
+
+<script>
+  document.querySelectorAll('[data-cite-copy]').forEach((button) => {
+    const root = button.closest('.cite');
+    const label = button.querySelector('[data-cite-label]');
+    const source = root?.querySelector('[data-cite-source]');
+    if (!label || !source) return;
+
+    let resetTimer: ReturnType<typeof setTimeout> | undefined;
+
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(source.textContent ?? '');
+        label.textContent = 'Copied';
+      } catch {
+        label.textContent = 'Press ⌘C to copy';
+        const range = document.createRange();
+        range.selectNodeContents(source);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => {
+        label.textContent = 'Copy BibTeX';
+      }, 2400);
+    });
+  });
+</script>
+
+<style>
+  .cite {
+    padding: 1.05rem 1.1rem;
+  }
+
+  .cite__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .cite__header .eyebrow {
+    margin: 0;
+  }
+
+  .cite__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .cite__button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.32rem 0.7rem;
+    border: var(--hairline-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-panel);
+    color: var(--color-text);
+    cursor: pointer;
+    font: 600 0.74rem/1.2 var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition:
+      background-color var(--transition-fast),
+      border-color var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .cite__button:hover,
+  .cite__button:focus-visible {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .cite__code {
+    margin: 0.85rem 0 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    border: var(--hairline);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-alt);
+    color: var(--color-text-muted);
+    font: 400 0.78rem/1.7 var(--font-mono);
+    tab-size: 2;
+    white-space: pre;
+  }
+</style>

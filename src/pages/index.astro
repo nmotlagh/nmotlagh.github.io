@@ -2,12 +2,20 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EditorialHero from "../components/editorial/EditorialHero.astro";
-import DissertationPillars from "../components/editorial/DissertationPillars.astro";
-import FeatureSlab from "../components/editorial/FeatureSlab.astro";
+import ResearchResults from "../components/editorial/ResearchResults.astro";
 import DispatchList from "../components/editorial/DispatchList.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
-import SkillsMatrix from "../components/editorial/SkillsMatrix.astro";
-import { homeEditorial, dissertationPillars, skillGroups } from "../data/editorial";
+import { homeEditorial, researchResults, skillGroups } from "../data/editorial";
+import { person as personProfile } from "../data/site";
+import {
+  PERSON_ID,
+  WEBSITE_ID,
+  artifactNode,
+  graph,
+  personNode,
+  publicationNode,
+  websiteNode,
+} from "../utils/schema";
 import { parseDateValue } from "../utils/dates";
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -17,29 +25,15 @@ const experience = await getEntry("pages", "experience");
 const experienceItems = experience?.data.items ?? [];
 
 const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
-const publications = publicationEntries.sort((a, b) => b.data.year - a.data.year);
-const isCurrentManuscript = (entry: CollectionEntry<"publications">) =>
-  ["preparation", "under review"].some((status) =>
-    entry.data.venue.toLowerCase().includes(status),
-  );
-const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
-const publicationLookup = new Map(publications.map((entry) => [entry.slug, entry]));
-
+const isUnderReview = (entry: CollectionEntry<"publications">) =>
+  entry.data.citation?.type === "unpublished";
+// Peer-reviewed first, newest to oldest; anything still under review sorts to the
+// bottom so the list leads with work that has actually cleared review.
+const publications = publicationEntries.sort(
+  (a, b) => Number(isUnderReview(a)) - Number(isUnderReview(b)) || b.data.year - a.data.year,
+);
 const artifactEntries = await getCollection("artifacts");
-const artifactMap = new Map<string, CollectionEntry<"artifacts">[]>();
-artifactEntries.forEach((artifact) => {
-  artifact.data.tiesTo.forEach((slug) => {
-    if (!artifactMap.has(slug)) {
-      artifactMap.set(slug, []);
-    }
-    artifactMap.get(slug)?.push(artifact);
-  });
-});
 const artifactLookup = new Map(artifactEntries.map((entry) => [entry.id, entry]));
-
-const featuredPublications = homeEditorial.featuredPublicationSlugs
-  .map((slug) => publicationLookup.get(slug))
-  .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
 const featuredArtifacts = homeEditorial.featuredArtifactIds
   .map((id) => artifactLookup.get(id))
@@ -49,115 +43,72 @@ const newsItems = (await getCollection("news", ({ data }) => !data.draft))
   .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
   .slice(0, 4);
 
-const posts = (await getCollection("blog", ({ data }) => !data.draft))
-  .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
-  .slice(0, 2);
-
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
 const scholarHref = "https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en";
 const githubHref = "https://github.com/nmotlagh";
 const linkedInHref = "https://www.linkedin.com/in/nicholas-kashani-motlagh";
 const emailHref = "mailto:kashanimotlagh.1@osu.edu";
 const orcidHref = "https://orcid.org/0000-0001-6229-6212";
-const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io";
+const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io/";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
+const personName = personProfile.name;
 
 const stats = [
-  { label: "Peer-reviewed", value: `${peerReviewedPublications.length} papers` },
-  { label: "First-author papers", value: "4" },
-  { label: "Award", value: "Springer Best Paper" },
+  { label: "First-author papers", value: "4 peer-reviewed" },
+  { label: "Best paper", value: "ISVC 2022" },
+  { label: "Largest study", value: "25,870 questions" },
   { label: "Available", value: "Aug 2026" },
 ];
 
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Nick Kashani Motlagh",
-  url: siteOrigin,
-  jobTitle: "PhD Candidate",
-  affiliation: {
-    "@type": "CollegeOrUniversity",
-    name: "The Ohio State University",
-    url: "https://www.osu.edu/",
-  },
-  alumniOf: {
-    "@type": "CollegeOrUniversity",
-    name: "The Ohio State University",
-  },
-  email: emailHref,
-  image: headshotUrl,
-  identifier: {
-    "@type": "PropertyValue",
-    propertyID: "ORCID",
-    value: orcidHref,
-  },
-  sameAs: [githubHref, linkedInHref, scholarHref, orcidHref],
-  knowsAbout: [
-    "Machine Learning",
-    "Large Language Models",
-    "Transformers",
-    "Retrieval-Augmented Generation",
-    "Selective Prediction",
-    "Uncertainty Quantification",
-    "LLM Calibration",
-    "Evaluation",
-    "Distributed Training",
-    "PyTorch",
-    "Python",
-    "Multimodal Systems",
-    "Adaptive QA",
-  ],
-};
+const education = experience?.data.education ?? [];
 
-const publicationSchemas = peerReviewedPublications.map((pub) => {
-  const isBasedOn = [pub.data.code, pub.data.data].filter(Boolean).map((url) => ({
-    "@type": "CreativeWork",
-    url,
-  }));
-  const doiUrl = pub.data.doi ? `https://doi.org/${pub.data.doi}` : undefined;
-  const sameAs = [pub.data.external, pub.data.arxiv, doiUrl].filter(Boolean);
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "ScholarlyArticle",
-    name: pub.data.title,
-    url: `${siteOrigin}publications/${pub.slug}/`,
-    datePublished: pub.data.datePublished ?? String(pub.data.year),
-    identifier: pub.data.doi
-      ? { "@type": "PropertyValue", propertyID: "DOI", value: pub.data.doi }
+/** One link row per paper, so the list reads evenly instead of raggedly. */
+const publicationLinks = (entry: CollectionEntry<"publications">) =>
+  [
+    entry.data.pdf && { label: "PDF", href: entry.data.pdf },
+    entry.data.doi && { label: "DOI", href: `https://doi.org/${entry.data.doi}` },
+    !entry.data.pdf && !entry.data.doi && entry.data.external
+      ? { label: "Paper", href: entry.data.external }
       : undefined,
-    sameAs: sameAs.length > 0 ? sameAs : undefined,
-    publisher: pub.data.venue
-      ? {
-          "@type": "Organization",
-          name: pub.data.venue,
-        }
-      : undefined,
-    author: pub.data.authors.map((author) => ({
-      "@type": "Person",
-      name: author,
-    })),
-    isBasedOn: isBasedOn.length > 0 ? isBasedOn : undefined,
-  };
-});
+    entry.data.arxiv && { label: "arXiv", href: entry.data.arxiv },
+    entry.data.code && { label: "Code", href: entry.data.code },
+    { label: "Cite", href: `${import.meta.env.BASE_URL}publications/${entry.slug}.bib` },
+  ].filter(Boolean) as { label: string; href: string }[];
 
-const structuredData = [personSchema, ...publicationSchemas];
+// One connected graph: the ProfilePage is *about* the Person, and every paper's
+// author resolves to that same Person node rather than a bare name string.
+const structuredData = graph([
+  websiteNode(),
+  {
+    "@type": "ProfilePage",
+    "@id": `${siteOrigin}#profile`,
+    url: siteOrigin,
+    name: `${personName} — ${homeEditorial.hero.eyebrow}`,
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": PERSON_ID },
+    mainEntity: { "@id": PERSON_ID },
+    primaryImageOfPage: headshotUrl,
+    inLanguage: "en-US",
+  },
+  personNode(education),
+  ...publications.map(publicationNode),
+  ...artifactEntries.map(artifactNode),
+]);
 ---
 
 <BaseLayout
   title="Home"
-  description="Nick Kashani Motlagh — PhD candidate at Ohio State who successfully defended a dissertation on abstention, ambiguity, and recoverability in AI systems."
+  description="Nick Kashani Motlagh — PhD in machine learning at Ohio State, working on when models should abstain, weigh evidence, or revise their answers."
   structuredData={structuredData}
 >
-  <section class="section section--hero">
+  <section class="section section--hero" id="about">
     <div class="site-shell">
       <EditorialHero
         eyebrow={homeEditorial.hero.eyebrow}
         availability={homeEditorial.hero.availability}
         title={homeEditorial.hero.title}
-        ledeHtml="I build models that know <em>when not to answer.</em>"
+        ledeHtml={homeEditorial.hero.ledeHtml}
         supporting={homeEditorial.hero.supporting}
-        status={homeEditorial.hero.status}
         actions={[
           { label: "Resume (PDF)", href: resumeHref, external: true },
           { label: "Email me", href: emailHref, variant: "ghost" },
@@ -171,115 +122,65 @@ const structuredData = [personSchema, ...publicationSchemas];
     </div>
   </section>
 
-  <section class="section section--skills" id="toolkit">
+  <section class="section" id="research">
     <div class="site-shell">
-      <SkillsMatrix groups={skillGroups} />
-    </div>
-  </section>
-
-  <section class="section" id="dissertation">
-    <div class="site-shell">
-      <DissertationPillars
-        eyebrow={homeEditorial.dissertation.eyebrow}
-        title={homeEditorial.dissertation.title}
-        subtitle={homeEditorial.dissertation.subtitle}
-        summary={homeEditorial.dissertation.summary}
-        pillars={dissertationPillars}
+      <ResearchResults
+        eyebrow={homeEditorial.research.eyebrow}
+        title={homeEditorial.research.title}
+        subtitle={homeEditorial.research.subtitle}
+        summary={homeEditorial.research.summary}
+        meta={homeEditorial.research.meta}
+        results={researchResults}
       />
-    </div>
-  </section>
-
-  <section class="section section--current" id="current-work">
-    <div class="site-shell">
-      <article class="current-work surface surface--raised">
-        <p class="eyebrow">{homeEditorial.currentWork.eyebrow}</p>
-        <h2 class="current-work__title">{homeEditorial.currentWork.title}</h2>
-        <p class="current-work__body">{homeEditorial.currentWork.body}</p>
-        <p class="current-work__disclaimer">{homeEditorial.currentWork.disclaimer}</p>
-        <p class="current-work__venue">{homeEditorial.currentWork.venue}</p>
-        <div class="current-work__actions">
-          <a class="button" href={`${import.meta.env.BASE_URL}publications/adaptive-qa-abstention/`}>
-            Manuscript note
-          </a>
-          <a class="button button--ghost" href="#publications">
-            Related papers
-          </a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section" id="news">
-    <div class="site-shell">
-      <DispatchList newsItems={newsItems} posts={posts} />
-    </div>
-  </section>
-
-  <section class="section" id="projects">
-    <div class="site-shell stack">
-      <SectionHeading
-        eyebrow="Built"
-        title="Public research code and data."
-        description="Research implementations, calibration utilities, and dataset-collection tools, with their scope stated explicitly."
-      />
-
-      <div class="home-artifact-grid">
-        {featuredArtifacts.map((artifact) => (
-          <article class="home-artifact-card surface">
-            <p class="eyebrow">Repo</p>
-            <h3>
-              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                {artifact.data.name}
-              </a>
-            </h3>
-            <p>{artifact.data.summary}</p>
-            {artifact.data.stack && artifact.data.stack.length > 0 && (
-              <ul class="home-artifact-card__stack">
-                {artifact.data.stack.map((tech) => (
-                  <li>{tech}</li>
-                ))}
-              </ul>
-            )}
-            <ul>
-              {artifact.data.reproduce.slice(0, 3).map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-
-      <div>
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
-          All code and data
-        </a>
-      </div>
     </div>
   </section>
 
   <section class="section" id="publications">
     <div class="site-shell stack">
       <SectionHeading
-        eyebrow="Selected work"
-        title="Papers and reports."
-        description="Peer-reviewed papers, related public code and data, and a current manuscript note with explicit review status."
+        eyebrow="Publications"
+        title="Four peer-reviewed first-author papers."
       />
 
-      <div class="stack" style="gap: 1.15rem;">
-        {featuredPublications.map((entry, index) => (
-          <FeatureSlab
-            entry={entry}
-            artifacts={artifactMap.get(entry.slug)}
-            reverse={index % 2 === 1}
-          />
+      <ol class="pub-list">
+        {publications.map((entry) => (
+          <li class="pub-list__item">
+            <div class="pub-list__year">{entry.data.year}</div>
+            <div class="pub-list__body">
+              <h3 class="pub-list__title">
+                <a href={`${import.meta.env.BASE_URL}publications/${entry.slug}/`}>
+                  {entry.data.title}
+                </a>
+              </h3>
+              <p class="pub-list__authors">
+                {entry.data.authors.map((author, i) => (
+                  <>
+                    {i > 0 && ", "}
+                    {author.includes("Kashani Motlagh") ? <strong>{author}</strong> : author}
+                  </>
+                ))}
+              </p>
+              <p class="pub-list__venue">
+                <span>{entry.data.venue}</span>
+                {entry.data.award && <span class="pub-list__award">{entry.data.award}</span>}
+              </p>
+            </div>
+            <div class="pub-list__links">
+              {publicationLinks(entry).map((link) => (
+                <a
+                  class="badge badge--link"
+                  href={link.href}
+                  aria-label={`${link.label} — ${entry.data.title}`}
+                  target={link.href.startsWith("http") ? "_blank" : undefined}
+                  rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </li>
         ))}
-      </div>
-
-      <div>
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>
-          All publications
-        </a>
-      </div>
+      </ol>
     </div>
   </section>
 
@@ -287,14 +188,12 @@ const structuredData = [personSchema, ...publicationSchemas];
     <div class="site-shell stack">
       <SectionHeading
         eyebrow="Experience"
-        title="Roles."
-        description="Research, teaching, internships, and applied evaluation work."
+        title="Five summers of AFRL-sponsored research, five years in the Computer Vision Lab."
       />
 
       <div class="home-experience-grid">
         {experienceItems.slice(0, 4).map((item) => (
           <article class="home-experience-card surface">
-            <p class="eyebrow">Role</p>
             <h3>{item.role}</h3>
             <p class="home-experience-card__meta">
               {item.location ? `${item.location} / ${item.timeframe}` : item.timeframe}
@@ -309,6 +208,53 @@ const structuredData = [personSchema, ...publicationSchemas];
           </article>
         ))}
       </div>
+
+      <div>
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}experience/`}>
+          Full history
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="Code"
+        title="Reject-option thresholds, calibration tooling, satellite collection."
+      />
+
+      <div class="home-artifact-grid">
+        {featuredArtifacts.map((artifact) => (
+          <article class="home-artifact-card surface">
+            <h3>
+              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                {artifact.data.name}
+              </a>
+            </h3>
+            <p>{artifact.data.summary}</p>
+            {artifact.data.stack && artifact.data.stack.length > 0 && (
+              <ul class="home-artifact-card__stack">
+                {artifact.data.stack.map((tech) => (
+                  <li>{tech}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <div>
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
+          All code and data
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="news">
+    <div class="site-shell">
+      <DispatchList newsItems={newsItems} />
     </div>
   </section>
 
@@ -316,11 +262,7 @@ const structuredData = [personSchema, ...publicationSchemas];
     <div class="site-shell">
       <ContactRail
         facts={homeEditorial.recruiterFacts}
-        roles={experienceItems.slice(0, 4).map((item) => ({
-          role: item.role,
-          location: item.location,
-          timeframe: item.timeframe,
-        }))}
+        skillGroups={skillGroups}
         resumeHref={resumeHref}
         emailHref={emailHref}
         linkedInHref={linkedInHref}
@@ -333,139 +275,97 @@ const structuredData = [personSchema, ...publicationSchemas];
 </BaseLayout>
 
 <style>
-  .section--skills {
-    padding-bottom: clamp(0.4rem, 1.4vw, 0.9rem);
-  }
-
-  .section--current {
-    padding-top: clamp(0.85rem, 2vw, 1.35rem);
-  }
-
-  .current-work {
-    position: relative;
+  .pub-list {
     display: grid;
-    gap: 1.15rem;
-    padding: clamp(1.35rem, 3.5vw, 2.8rem);
-    overflow: hidden;
-    isolation: isolate;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--hairline-strong);
   }
 
-  .current-work::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-image: radial-gradient(
-      color-mix(in srgb, var(--color-text-soft) 26%, transparent) 1px,
-      transparent 1px
-    );
-    background-size: 1.6rem 1.6rem;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 62%);
-    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 62%);
+  .pub-list__item {
+    display: grid;
+    gap: 0.5rem 1.5rem;
+    padding: 1.35rem 0;
+    border-bottom: var(--hairline);
   }
 
-  .current-work::after {
-    content: '';
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 3px;
-    background: var(--color-positive);
-  }
-
-  @media (min-width: 920px) {
-    .current-work {
-      grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.38fr);
-      align-items: end;
-    }
-
-    .current-work > .eyebrow,
-    .current-work__title,
-    .current-work__body,
-    .current-work__disclaimer {
-      grid-column: 1;
-    }
-
-    .current-work__actions,
-    .current-work__venue {
-      grid-column: 2;
+  @media (min-width: 800px) {
+    .pub-list__item {
+      grid-template-columns: 4rem minmax(0, 1fr) auto;
+      align-items: baseline;
     }
   }
 
-  .current-work__title {
+  .pub-list__year {
+    color: var(--color-text-soft);
+    font: 600 var(--label-sm, 0.6875rem) / 1.4 var(--font-mono);
+    letter-spacing: 0.1em;
+  }
+
+  .pub-list__body {
+    min-width: 0;
+  }
+
+  .pub-list__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2rem, 1.25rem + 2.1vw, 3.65rem);
+    font-size: 1.35rem;
     font-weight: 400;
-    letter-spacing: -0.01em;
-    line-height: 0.95;
-    max-width: 42rem;
+    line-height: 1.2;
   }
 
-  .current-work__body {
-    margin: 0;
-    max-width: 55rem;
-    color: var(--color-text-muted);
-    font-size: 1.05rem;
-    line-height: 1.72;
-    overflow-wrap: break-word;
+  .pub-list__title a {
+    color: var(--color-text);
+    text-decoration: none;
   }
 
-  .current-work__disclaimer {
-    margin: 0;
-    padding: 0.8rem 1rem;
-    border: 1px solid color-mix(in srgb, var(--color-secondary) 34%, var(--color-border));
-    border-left: 3px solid var(--color-secondary);
-    background: color-mix(in srgb, var(--color-secondary-soft) 52%, var(--color-panel) 48%);
+  .pub-list__title a:hover,
+  .pub-list__title a:focus-visible {
+    color: var(--color-accent);
+  }
+
+  .pub-list__authors {
+    margin: 0.35rem 0 0;
+    max-width: 44rem;
     color: var(--color-text-muted);
-    font-size: 0.92rem;
+    font-size: var(--text-sm, 0.9375rem);
     line-height: 1.6;
-    border-radius: var(--radius-md);
-    overflow-wrap: break-word;
   }
 
-  .current-work__actions {
+  .pub-list__authors strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .pub-list__venue {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.65rem;
-    margin: 0;
+    align-items: baseline;
+    gap: 0.4rem 0.7rem;
+    margin: 0.3rem 0 0;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm, 0.9375rem);
+    line-height: 1.5;
   }
 
-  .current-work__venue {
-    margin: 0;
-    align-self: end;
-    color: var(--color-text);
-    font: 600 0.8rem/1.2 var(--font-mono);
+  .pub-list__award {
+    color: var(--color-secondary);
+    font: 600 var(--label-sm, 0.6875rem) / 1.4 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    overflow-wrap: break-word;
   }
 
-  @media (max-width: 640px) {
-    .current-work {
-      width: calc(100vw - 2rem);
-      inline-size: calc(100vw - 2rem);
-      max-width: calc(100vw - 2rem);
-      padding: 1.15rem;
-    }
+  .pub-list__award::before {
+    content: '★';
+    margin-right: 0.4em;
+    letter-spacing: 0;
+  }
 
-    .current-work__title {
-      max-width: 100%;
-      font-size: clamp(1.85rem, 7.5vw, 2.2rem);
-      overflow-wrap: normal;
-    }
-
-    .current-work__body,
-    .current-work__disclaimer,
-    .current-work__venue {
-      inline-size: 100%;
-      max-width: 100%;
-      min-width: 0;
-    }
-
-    .current-work__venue {
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      line-height: 1.35;
-    }
+  .pub-list__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
   }
 </style>

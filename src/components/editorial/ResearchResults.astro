@@ -1,0 +1,442 @@
+---
+import type { ResearchResult } from "../../data/editorial";
+
+interface MetaItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  meta?: MetaItem[];
+  results: ResearchResult[];
+}
+
+const { eyebrow, title, subtitle, summary, meta = [], results }: Props = Astro.props;
+---
+
+<section class="research" aria-labelledby="research-title">
+  <header class="research__header">
+    <div class="research__intro">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2 id="research-title" class="research__title">{title}</h2>
+      <p class="research__subtitle">{subtitle}</p>
+      <p class="research__summary">{summary}</p>
+    </div>
+
+    {meta.length > 0 && (
+      <dl class="research__meta">
+        {meta.map((item) => (
+          <div>
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+  </header>
+
+  <ol class="research__list">
+    {results.map((result) => (
+      <li class="result" data-action={result.action}>
+        <div class="result__marker">
+          <span class="result__index">{result.index}</span>
+          <span class="result__action">{result.actionLabel}</span>
+        </div>
+
+        <div class="result__body">
+          <p class="result__question">{result.question}</p>
+          <h3 class="result__title">{result.title}</h3>
+
+          <div class="result__prose">
+            <p>{result.problem}</p>
+            <p>{result.built}</p>
+          </div>
+
+          <figure class="result__stat">
+            <strong class="result__headline">{result.headline}</strong>
+            <p class="result__headline-label">{result.headlineLabel}</p>
+
+            {result.chart && (
+              <table class="chart">
+                <caption class="chart__caption">{result.chart.caption}</caption>
+                <tbody>
+                  {result.chart.bars.map((bar) => (
+                    <tr class="chart__row">
+                      <th scope="row" class="chart__label">{bar.label}</th>
+                      <td class="chart__track">
+                        <span
+                          class="chart__bar"
+                          style={`--bar-width: ${(bar.value / result.chart!.max) * 100}%`}
+                        />
+                      </td>
+                      <td class="chart__value">{bar.display}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td />
+                    <td class="chart__axis">
+                      <span>0</span>
+                      <span>{result.chart.axisLabel}</span>
+                      <span>{result.chart.max}</span>
+                    </td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            )}
+          </figure>
+
+          <p class="result__detail">{result.detail}</p>
+
+          <p class="result__venue">
+            <span>{result.venue}</span>
+            {result.publicationSlug && (
+              <a
+                class="result__link"
+                href={`${import.meta.env.BASE_URL}publications/${result.publicationSlug}/`}
+              >
+                Read the paper
+              </a>
+            )}
+          </p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .research {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3.25rem);
+  }
+
+  .research__header {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  /* Below 1000px the meta rail stacks; above it, it fills what would otherwise
+     be a dead column beside a 34rem-wide intro. */
+  @media (min-width: 1000px) {
+    .research__header {
+      grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+      align-items: end;
+    }
+  }
+
+  .research__intro {
+    max-width: 34rem;
+  }
+
+  .research__meta {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    border-top: var(--hairline-strong);
+  }
+
+  .research__meta > div {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.85rem 0;
+    border-bottom: var(--hairline);
+  }
+
+  @media (min-width: 560px) {
+    .research__meta > div {
+      grid-template-columns: minmax(8rem, 0.4fr) minmax(0, 1fr);
+      gap: 0 1.5rem;
+      align-items: baseline;
+    }
+  }
+
+  .research__meta dt {
+    color: var(--color-text-soft);
+    font: 600 var(--label-sm, 0.6875rem) / 1.5 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .research__meta dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm, 0.9375rem);
+    line-height: 1.55;
+  }
+
+  .research__title {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-display);
+    font-size: var(--display-2, clamp(2.2rem, 1.7rem + 2.1vw, 3.2rem));
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+  }
+
+  .research__subtitle {
+    margin: 0.45rem 0 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-style: italic;
+    line-height: 1.25;
+  }
+
+  .research__summary {
+    margin: 1.15rem 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-md, 1rem);
+    line-height: 1.65;
+  }
+
+  .research__list {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--hairline-strong);
+  }
+
+  .result {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 2.5rem);
+    padding: clamp(1.75rem, 4vw, 3.25rem) 0;
+    border-bottom: var(--hairline-strong);
+  }
+
+  @media (min-width: 880px) {
+    .result {
+      grid-template-columns: minmax(7rem, 0.16fr) minmax(0, 1fr);
+    }
+  }
+
+  .result__marker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 880px) {
+    .result__marker {
+      display: block;
+      align-self: start;
+    }
+  }
+
+  .result__index {
+    display: block;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    line-height: 0.9;
+  }
+
+  .result__action {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--color-accent);
+    font: 600 var(--label-sm, 0.6875rem) / 1.3 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .result__body {
+    min-width: 0;
+  }
+
+  .result__question {
+    margin: 0;
+    color: var(--color-text-soft);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .result__title {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-display);
+    font-size: var(--display-3, clamp(1.75rem, 1.5rem + 1.1vw, 2.3rem));
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  .result__prose {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.15rem;
+  }
+
+  @media (min-width: 1080px) {
+    .result__prose {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  .result__prose p {
+    margin: 0;
+    max-width: 36rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-md, 1rem);
+    line-height: 1.65;
+  }
+
+  .result__stat {
+    margin: 1.6rem 0 0;
+    padding: 1.15rem 0 0;
+    border-top: var(--hairline);
+  }
+
+  .result__headline {
+    display: block;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 1.5rem + 2.4vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .result__headline-label {
+    margin: 0.5rem 0 0;
+    max-width: 34rem;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm, 0.9375rem);
+    line-height: 1.5;
+  }
+
+  /* Two labelled bars on a shared 0–100% track. Length carries the comparison;
+     colour carries nothing, so every value is also written out. */
+  .chart {
+    width: 100%;
+    max-width: 34rem;
+    margin: 1.4rem 0 0;
+    border-collapse: collapse;
+    caption-side: bottom;
+    text-align: left;
+  }
+
+  .chart__row + .chart__row .chart__label,
+  .chart__row + .chart__row .chart__track,
+  .chart__row + .chart__row .chart__value {
+    padding-top: 0.7rem;
+  }
+
+  .chart__label {
+    width: 1%;
+    padding-right: 0.9rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm, 0.9375rem);
+    font-weight: 400;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
+  .chart__track {
+    width: 99%;
+    min-width: 4rem;
+    border-bottom: var(--hairline);
+  }
+
+  .chart__bar {
+    display: block;
+    width: var(--bar-width);
+    height: 9px;
+    border-radius: 0 3px 3px 0;
+    background: var(--color-accent);
+  }
+
+  .chart__value {
+    padding-left: 0.7rem;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm, 0.9375rem);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .chart__axis {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.3rem;
+    color: var(--color-text-soft);
+    font: 400 var(--label-sm, 0.6875rem) / 1.3 var(--font-mono);
+  }
+
+  .chart__axis span:nth-child(2) {
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .chart__caption {
+    padding-top: 0.8rem;
+    color: var(--color-text-soft);
+    font-size: var(--label-md, 0.75rem);
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  @media (max-width: 560px) {
+    .chart__label {
+      white-space: normal;
+      min-width: 7rem;
+    }
+  }
+
+  .result__detail {
+    margin: 1.15rem 0 0;
+    max-width: 44rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-md, 1rem);
+    line-height: 1.65;
+  }
+
+  .result__venue {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.1rem;
+    margin: 1.35rem 0 0;
+    color: var(--color-text-soft);
+    font: 600 var(--label-sm, 0.6875rem) / 1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .result__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .result__link:hover,
+  .result__link:focus-visible {
+    color: var(--color-accent-hover);
+  }
+
+  @media (max-width: 879px) {
+    .result__index {
+      font-size: 1.5rem;
+    }
+
+    .result__action {
+      margin-top: 0;
+    }
+  }
+</style>

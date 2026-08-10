@@ -2,13 +2,15 @@
   "name": "calibration",
   "repo": "https://github.com/osu-cvl/calibration",
   "summary": "PyTorch calibration utilities for histogram binning, global temperature scaling, and class-wise temperature scaling.",
-  "stack": ["Python", "PyTorch", "calibration"],
+  "stack": [
+    "Python",
+    "PyTorch",
+    "calibration"
+  ],
   "reproduce": [
     "Run global and class-wise temperature scaling on classifier logits.",
     "Produce the calibration plots and expected-calibration-error summaries implemented in the repository.",
-    "Use the utilities as building blocks; this repository is not the WMT evaluation harness."
+    "Use the utilities as building blocks for calibration experiments."
   ],
-  "tiesTo": [
-    "assessing-imagery-in-multimodal-mt"
-  ]
+  "tiesTo": []
 }

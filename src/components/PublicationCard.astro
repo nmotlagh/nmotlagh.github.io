@@ -34,7 +34,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   </div>
 
   <h3 class="publication-card__title">
-    <a href={detailHref} data-pretext-balance data-pretext-source={data.title}>
+    <a href={detailHref}>
       {data.title}
     </a>
   </h3>
@@ -127,7 +127,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   .publication-card__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.45rem, 1.8vw, 1.95rem);
+    font-size: var(--display-3);
     font-weight: 400;
     line-height: 1.05;
   }
@@ -142,15 +142,16 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   }
 
   .publication-card__authors {
-    font: 700 0.76rem/1.6 var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-text-soft);
+    font: 400 var(--text-sm)/1.6 var(--font-sans);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-text-muted);
     margin: 0;
   }
 
   .publication-card__authors .pub-author--lead {
     color: var(--color-text);
+    font-weight: 650;
   }
 
   .publication-card__role {
@@ -231,10 +232,6 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   @media (max-width: 640px) {
     .publication-card {
       padding: 1.05rem;
-    }
-
-    .publication-card__title {
-      font-size: clamp(1.3rem, 7vw, 1.55rem);
     }
   }
 </style>

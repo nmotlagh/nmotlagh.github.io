@@ -1,33 +1,59 @@
 ---
-title: "Manuscript Note: Knowing When to Answer, Refine, or Abstain"
+title: "When Retrieval Makes the Answer Worse"
 year: 2026
-venue: "Manuscript under review"
+venue: "Dissertation chapter · manuscript under review"
 authors:
-  - "Author list withheld during review"
-tldr: "Uses paired direct and evidence-refined outcomes to evaluate answer, refine, or abstain policies for a fixed retrieval-augmented QA stack."
+  - "Nick Kashani Motlagh"
+tldr: "Retrieval-based refinement repairs 10.8% of draft answers and destroys 8.1% that were already correct. Confidence cannot tell you which you are about to get."
 draft: false
 highlight: true
-metric: "Separates draft correctness from whether refinement is likely to repair or harm the answer."
+metric: "Repairs 10.8%, harms 8.1% — measured across 25,870 held-out questions."
 tags:
   - "selective prediction"
   - "adaptive QA"
   - "retrieval-augmented generation"
   - "abstention"
+citation:
+  type: "unpublished"
+  key: "kashanimotlagh2026retrieval"
+  note: "Manuscript under review at ACL Rolling Review"
 highlights:
-  - "Compares direct and evidence-refined answers on 25,870 held-out questions, distinguishing preserved, repaired, harmed, and unrecovered outcomes."
-  - "Evaluates answer, refine, or abstain policies for a fixed model-retriever-corpus stack instead of treating draft confidence as a complete estimate of recoverability."
+  - "Across 25,870 held-out questions on NQ-Open, TriviaQA and PopQA, retrieval-based refinement repairs 10.8% of answers and harms 8.1% — every dataset and retriever slice contains both."
+  - "Confidence does not predict recoverability: a verifier that sorts draft accuracy from 4.4% to 93.9% across deciles still values refinement at +23.7 points in the lowest decile and net negative in the top four."
+  - "An evidence-aware two-head policy holds the accuracy of always-refine while cutting wrong answers from 47.5% to 10.6%, closing two thirds of the gap to an oracle."
 ---
 
-This work studies retrieval-augmented selective QA. For each question, it
-compares the model's direct answer with the answer produced after retrieving
-evidence and refining, then records whether the outcome was preserved,
-repaired, harmed, or unrecovered.
+Retrieval-augmented QA systems revise their own draft answers, and average
+accuracy goes up — so the technique looks free. The average hides the trade.
+The same retrieval step that repairs one answer silently overwrites another
+that was already right.
 
-The analysis separates two questions: whether the draft is already correct and
-whether an available refinement process is likely to repair or harm it. The
-evaluation then compares answer, refine, or abstain policies for one recorded
-model-retriever-corpus stack. It spans 25,870 held-out questions from NQ-Open,
-TriviaQA, and PopQA, with DPR and BM25 retrieval over a shared Wikipedia source.
+This chapter measures the trade directly. For every question it runs both
+branches — answer directly, and answer again with retrieved evidence — scores
+both against the same answer set, and labels each outcome **preserved**,
+**repaired**, **harmed**, or **unrecovered**. On a 1/0 correctness scale the
+value of refining reduces exactly to repair minus harm.
 
-The manuscript is under review at ACL Rolling Review. Its submission title,
-author list, and preprint remain withheld during double-blind review.
+Across 25,870 held-out questions from NQ-Open, TriviaQA and PopQA, with DPR and
+BM25 retrieval over a shared Wikipedia source, refinement repairs 10.8% of
+answers and harms 8.1%. Roughly two thirds of all repairs are found by exactly
+one of the two retrievers, so recoverability is not a property of the question —
+it is a property of the question and the stack together.
+
+Confidence cannot substitute for this measurement. A learned verifier sorts
+draft accuracy from 4.4% in the lowest decile to 93.9% in the highest, so it
+works as a correctness signal — but the value of refining is +23.7 points in
+that lowest decile, crosses zero around the sixth, and is negative in the top
+four. Adding confidence proxies to the controller made it worse; only the
+retrieved passages themselves helped.
+
+The resulting two-head policy estimates each branch separately and routes every
+question to answer, refine, or abstain. It holds the same fraction correct as
+always-refine while cutting wrong answers from 47.5% to 10.6%, closing about two
+thirds of the gap between always-refine and an oracle with the paired labels.
+A 480-row blind human audit agrees with the automatic outcome labels 90.8% of
+the time.
+
+*This is chapter 5 of my dissertation, defended July 2026. A version is under
+review at ACL Rolling Review; the submission title and author list are not
+listed here during the anonymity period.*

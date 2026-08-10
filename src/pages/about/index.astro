@@ -1,25 +1,69 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { getEntry } from "astro:content";
+import { SITE_URL, links } from "../../data/site";
+import { PERSON_ID, breadcrumbNode, graph, personNode, websiteNode } from "../../utils/schema";
 
-const target = `${import.meta.env.BASE_URL}#about`;
+const about = await getEntry("pages", "about");
+if (!about) throw new Error("Missing content collection entry: pages/about");
+const { Content } = await about.render();
+
+const experience = await getEntry("pages", "experience");
+
+const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const emailHref = links.email;
+
+const structuredData = graph([
+  websiteNode(),
+  {
+    "@type": "AboutPage",
+    "@id": `${SITE_URL}/about/#page`,
+    url: `${SITE_URL}/about/`,
+    name: "About Nick Kashani Motlagh",
+    dateModified: about.data.updated,
+    mainEntity: { "@id": PERSON_ID },
+    inLanguage: "en-US",
+  },
+  personNode(experience?.data.education ?? []),
+  breadcrumbNode([
+    { name: "Home", url: `${SITE_URL}/` },
+    { name: "About", url: `${SITE_URL}/about/` },
+  ]),
+]);
 ---
 
-<BaseLayout title="About" description="Redirecting to the About section.">
-  <Fragment slot="head">
-    <meta name="robots" content="noindex" />
-    <meta http-equiv="refresh" content={`0;url=${target}`} />
-  </Fragment>
-  <section class="site-shell section">
-    <div class="stack">
-      <h1 class="hero__heading" style="font-size: clamp(2rem, 1.8rem + 1vw, 2.6rem);">
-        Redirecting to About
-      </h1>
-      <p class="prose" style="max-width: 52ch;">
-        The About section now lives on the homepage. If you are not redirected automatically, follow the link below.
-      </p>
-      <div class="hero__actions">
-        <a class="button" href={target}>Go to About</a>
+<BaseLayout
+  title="About"
+  description="Nick Kashani Motlagh — PhD in machine learning at Ohio State, working on when models should abstain, weigh evidence, or revise their answers."
+  structuredData={structuredData}
+>
+  <section class="section">
+    <div class="site-shell stack">
+      <SectionHeading as="h1" eyebrow="About" title="Nick Kashani Motlagh" />
+
+      <div class="prose about-page__body">
+        <Content />
+      </div>
+
+      <div class="about-page__actions">
+        <a class="button" href={emailHref}>Email me</a>
+        <a class="button button--ghost" href={resumeHref} target="_blank" rel="noopener noreferrer">
+          Resume (PDF)
+        </a>
       </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .about-page__body {
+    max-width: 36rem;
+  }
+
+  .about-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

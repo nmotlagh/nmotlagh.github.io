@@ -2,8 +2,17 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import PublicationCard from '../../components/PublicationCard.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { SITE_URL } from '../../data/site';
+import {
+  breadcrumbNode,
+  graph,
+  personNode,
+  publicationNode,
+  publicationUrl,
+  websiteNode,
+} from '../../utils/schema';
 
 const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.year - a.data.year,
@@ -24,40 +33,56 @@ artifactEntries.forEach((artifact) => {
     artifactMap.get(slug)?.push(artifact);
   });
 });
+
+const experience = await getEntry('pages', 'experience');
+
+const structuredData = graph([
+  websiteNode(),
+  {
+    '@type': 'CollectionPage',
+    '@id': `${SITE_URL}/publications/#page`,
+    url: `${SITE_URL}/publications/`,
+    name: 'Publications — Nick Kashani Motlagh',
+    inLanguage: 'en-US',
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListOrder: 'https://schema.org/ItemListOrderDescending',
+      numberOfItems: publications.length,
+      // Peer-reviewed first, matching the page order.
+      itemListElement: [...peerReviewedPublications, ...currentManuscripts].map((entry, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: publicationUrl(entry.slug),
+        name: entry.data.title,
+      })),
+    },
+  },
+  personNode(experience?.data.education ?? []),
+  ...publications.map(publicationNode),
+  breadcrumbNode([
+    { name: 'Home', url: `${SITE_URL}/` },
+    { name: 'Publications', url: `${SITE_URL}/publications/` },
+  ]),
+]);
 ---
 
-<BaseLayout title="Publications" description="Peer-reviewed papers and current manuscript notes spanning selective prediction, multimodal machine translation, and dependable LLM systems.">
+<BaseLayout
+  title="Publications"
+  description="Peer-reviewed papers and current manuscript notes spanning selective prediction, multimodal machine translation, and dependable LLM systems."
+  structuredData={structuredData}
+>
   <section class="section">
     <div class="site-shell archive-page">
       <div class="archive-page__header">
         <div>
           <SectionHeading
             as="h1"
-            eyebrow="Research archive"
-            title="Papers and manuscript notes"
-            description="A reading-friendly archive of peer-reviewed papers and current research notes on selective prediction, multimodal evidence, calibration, and recoverability in QA systems."
+            eyebrow="Publications"
+            title="Four peer-reviewed first-author papers."
           />
         </div>
 
-        <p class="archive-page__aside">
-          Status labels are explicit: current manuscript notes are separated
-          from peer-reviewed work, and public PDFs/code/data are linked where available.
-        </p>
       </div>
-
-      {currentManuscripts.length > 0 && (
-        <section class="publication-group" aria-labelledby="current-manuscripts-heading">
-          <div class="publication-group__heading">
-            <p class="eyebrow">Current manuscript</p>
-            <h2 id="current-manuscripts-heading">Under review</h2>
-          </div>
-          <div class="publication-grid grid grid--2 archive-page__grid">
-            {currentManuscripts.map((pub) => (
-              <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
-            ))}
-          </div>
-        </section>
-      )}
 
       <section class="publication-group" aria-labelledby="peer-reviewed-heading">
         <div class="publication-group__heading">
@@ -70,6 +95,20 @@ artifactEntries.forEach((artifact) => {
           ))}
         </div>
       </section>
+
+      {currentManuscripts.length > 0 && (
+        <section class="publication-group" aria-labelledby="current-manuscripts-heading">
+          <div class="publication-group__heading">
+            <p class="eyebrow">Not yet peer-reviewed</p>
+            <h2 id="current-manuscripts-heading">Under review</h2>
+          </div>
+          <div class="publication-grid grid grid--2 archive-page__grid">
+            {currentManuscripts.map((pub) => (
+              <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   </section>
 </BaseLayout>

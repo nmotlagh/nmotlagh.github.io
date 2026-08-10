@@ -1,71 +1,71 @@
-export interface ResearchArcStep {
+export interface ChartBar {
   label: string;
-  title: string;
-  description: string;
-  evidence: string;
+  value: number;
+  display: string;
 }
 
-export interface DissertationPillar {
+export interface ResultChart {
+  /** Upper bound of the shared track, in the same units as `value`. */
+  max: number;
+  axisLabel: string;
+  bars: ChartBar[];
+  caption: string;
+}
+
+export interface ResearchResult {
   index: string;
   action: "abstain" | "answer" | "refine";
   actionLabel: string;
-  failurePoint: string;
   question: string;
   title: string;
-  description: string;
-  evidence: string;
+  problem: string;
+  built: string;
+  headline: string;
+  headlineLabel: string;
+  /** Omitted for work that should not carry the same visual weight as a
+      peer-reviewed result — the headline figure still shows. */
+  chart?: ResultChart;
+  detail: string;
+  venue: string;
   publicationSlug?: string;
 }
 
 export const homeEditorial = {
   hero: {
-    eyebrow: "Seeking Research Scientist / Applied Scientist roles · LLM evaluation & reliability",
+    eyebrow: "LLM reliability · Selective prediction · Evaluation",
     availability: {
-      label: "Available August 2026",
+      label: "Available now",
       detail:
-        "Research Scientist, Applied Scientist & ML Engineer roles · U.S. citizen with five summers of AFRL research experience · Columbus, OH; open to relocation / remote",
+        "Research Scientist, Applied Scientist and ML Engineer roles · Columbus, OH — open to relocation or remote",
     },
     title: "Nick Kashani Motlagh",
-    lede: "I build models that know when not to answer.",
+    ledeHtml: "I build models that know <em>when not to answer.</em>",
     supporting:
-      "PhD candidate at Ohio State's Computer Vision Lab. I successfully defended my dissertation on July 8, 2026, with the degree expected in August. <em>Answering Under Uncertainty</em> studies three points where directly returning a model's current best answer may not be justified: abstention from an unreliable prediction, evidence use under ambiguity, and whether refining a draft is more likely to repair it than harm it.",
-    status:
-      "Current work: when should a QA system trust its draft answer, refine it with retrieved evidence, or abstain? The manuscript is under review at ACL Rolling Review; its title and author list remain withheld during review.",
+      "PhD from Ohio State's Computer Vision Lab, advised by Jim Davis. I work on when a system should answer, weigh evidence, revise, or stay quiet — writing the training code in PyTorch, the evaluation harnesses around it, and the distributed runs on Slurm that produce the numbers below.",
   },
-  dissertation: {
-    eyebrow: "PhD dissertation · successfully defended July 8, 2026",
+  research: {
+    eyebrow: "Research · three results",
     title: "Answering Under Uncertainty",
     subtitle: "Abstention, Ambiguity, and Recoverability",
     summary:
-      "The dissertation asks what an AI system should measure when direct return is not yet justified: whether to withhold an unreliable output, whether available evidence supports an intended interpretation, and whether refining a draft is more likely to repair it than harm it.",
+      "Every model ships with a confidence signal, and every one of them answers a slightly different question than the one the next decision depends on. Three studies, three places that gap bites.",
+    meta: [
+      { label: "Where it ran", value: "4 vision, 3 text and 8 synthetic datasets; 25,870 held-out questions" },
+      { label: "Peer review", value: "ISVC · MVA · WMT · ICCVW" },
+      { label: "Code", value: "Public for the reject-option and calibration work" },
+    ],
   },
-  currentWork: {
-    eyebrow: "Manuscript under review",
-    title: "Selective RAG-QA: answer, refine, or abstain",
-    body:
-      "This work compares direct and evidence-refined answers in retrieval-augmented QA, separating preserved, repaired, harmed, and unrecovered outcomes. It then evaluates answer, refine, or abstain policies without treating draft confidence as a complete estimate of recoverability. Results are reported for a fixed stack on NQ-Open, TriviaQA, and PopQA.",
-    venue: "Under review at ACL Rolling Review",
-    disclaimer:
-      "The submission title, author list, and preprint remain withheld during double-blind review.",
-  },
-  featuredPublicationSlugs: [
-    "adaptive-qa-abstention",
-    "learning-when-to-say-i-dont-know",
-    "naturally-constrained-reject-option-classification",
-    "assessing-imagery-in-multimodal-mt",
-  ],
   featuredArtifactIds: [
     "learning-idk",
     "calibration",
     "construction-site-satellite-imagery",
   ],
   recruiterFacts: [
-    "PhD candidate, The Ohio State University · dissertation defended July 8, 2026 · degree expected August 2026",
-    "Research Scientist / Applied Scientist / ML Engineer · selective prediction, calibration, LLM evaluation",
-    "First author on 4 published papers · 1 manuscript under review · Springer Best Paper Award at ISVC 2022",
-    "Current manuscript on retrieval-augmented selective QA · under review at ACL Rolling Review",
-    "Python · PyTorch · Hugging Face · Slurm/Singularity · RAG evaluation",
-    "U.S. citizen · five summers of AFRL research experience · Columbus OH, open to relocation / remote",
+    "PhD, The Ohio State University — conferred August 2026",
+    "4 first-author peer-reviewed papers · Springer Best Paper Award, ISVC 2022",
+    "Python · PyTorch · Hugging Face · Slurm · Singularity · FAISS · LoRA fine-tuning",
+    "Largest study: 25,870 held-out questions, ~400 H200-GPU-hours, 8× H200 training",
+    "U.S. citizen · five summers of AFRL-sponsored research · federal roles welcome",
   ],
 };
 
@@ -76,86 +76,95 @@ export interface SkillGroup {
 
 export const skillGroups: SkillGroup[] = [
   {
-    label: "Languages & ML",
-    items: ["Python", "PyTorch", "Hugging Face", "NumPy", "scikit-learn"],
+    label: "Build",
+    items: ["Python", "PyTorch", "Hugging Face", "scikit-learn", "FAISS"],
   },
   {
-    label: "Systems & scale",
-    items: ["Slurm", "Singularity", "Distributed training", "GPU clusters", "Git"],
+    label: "Run",
+    items: ["Slurm", "Singularity", "Multi-GPU training", "LoRA fine-tuning"],
   },
   {
-    label: "Research areas",
+    label: "Study",
     items: [
       "LLM evaluation",
       "Retrieval-augmented generation",
       "Selective prediction",
       "Calibration",
-      "Uncertainty quantification",
-      "Abstention",
       "Multimodal systems",
     ],
   },
 ];
 
-export const dissertationPillars: DissertationPillar[] = [
+export const researchResults: ResearchResult[] = [
   {
     index: "01",
     action: "abstain",
     actionLabel: "Abstain",
-    failurePoint: "Output uncertainty",
-    question: "Is the current prediction reliable enough to return?",
-    title: "Natural reject option",
-    description:
-      "Abstention when no rejection cost or coverage target is given: per-class thresholds that maximize selected accuracy while requiring the rejected region to behave like genuine confusion.",
-    evidence: "Springer Best Paper Award at ISVC 2022 · MVA 2025 journal extension",
+    question: "Should it answer at all?",
+    title: "Abstention without a budget",
+    problem:
+      "A classifier names a class for every input, including the ones it is plainly confused by. The standard fix — threshold the softmax — needs a rejection cost or coverage target that real deployments rarely have. On binary problems it rejects nothing at all, since one of two softmax scores is always at least 0.5.",
+    built:
+      "B-CDF learns per-class abstention thresholds from a validation set, post-hoc, with no retraining. The constraint is inverted: rather than targeting accuracy on what the model keeps, it requires the rejected set to look like a coin flip — so a model cannot inflate its score by quietly discarding answers it had right.",
+    headline: "88.3% → 97.8%",
+    headlineLabel: "CIFAR-100 selective accuracy, at 77.3% coverage",
+    chart: {
+      max: 15,
+      axisLabel: "mistakes per 100 predictions",
+      bars: [
+        { label: "Answering everything", value: 11.7, display: "11.7" },
+        { label: "Answering only what it keeps", value: 2.2, display: "2.2" },
+      ],
+      caption: "The same result read as errors, after abstaining on 22.7% of inputs.",
+    },
+    detail:
+      "ImageNet moves 88.4% → 97.4% at 79.7% coverage. Verified across four vision benchmarks, three text benchmarks and eight synthetic datasets, from 2 to 1,000 classes.",
+    venue: "Springer Best Paper Award, ISVC 2022 · extended in Machine Vision and Applications, 2025",
     publicationSlug: "learning-when-to-say-i-dont-know",
   },
   {
     index: "02",
     action: "answer",
-    actionLabel: "Use evidence",
-    failurePoint: "Input ambiguity",
-    question: "Does available evidence move the model toward the intended meaning?",
-    title: "Measuring evidence use",
-    description:
-      "ImageCoMMuTE-style metrics for multimodal translation: does the correct image lower the model's uncertainty for the correct translation, relative to a misleading image? The metrics test image dependence directly instead of inferring it from aggregate scores.",
-    evidence: "WMT 2024",
+    actionLabel: "Weigh evidence",
+    question: "Is it really using the evidence?",
+    title: "Measuring whether the image mattered",
+    problem:
+      "Multimodal translation systems get an image to resolve an ambiguous sentence — “that's lots of bucks” is about deer or about dollars. But a model that always guesses “dollars” still scores about 50%, so the benchmarks could not separate genuine evidence use from a lucky prior. The field largely concluded that images do not help.",
+    built:
+      "ImageCoMMuTE holds the translation fixed and swaps the image, then asks whether the correct image lowers the model's perplexity for the correct translation. That is an intervention on the evidence channel rather than an inference from aggregate scores. Group variants give credit only when a model resolves both readings of the same ambiguity.",
+    headline: "81% vs. 63%",
+    headlineLabel: "how often VGAMT reads the image correctly, vs. how often that changes its translation",
+    chart: {
+      max: 100,
+      axisLabel: "% of ambiguous sentences",
+      bars: [
+        { label: "Reads the image correctly", value: 81, display: "81%" },
+        { label: "…and changes the translation", value: 63, display: "63%" },
+      ],
+      caption: "VGAMT, English→French. Give it a perfect image and the gap widens: 92% vs. 34%.",
+    },
+    detail:
+      "Hand the model a perfect image and evidence use climbs to 92%, while translation accuracy barely moves — 26% → 34%. The images were working; the text prior was overriding them. A fusion problem, not an image problem, and aggregate BLEU hides it entirely.",
+    venue: "WMT 2024",
     publicationSlug: "assessing-imagery-in-multimodal-mt",
   },
   {
     index: "03",
     action: "refine",
     actionLabel: "Refine",
-    failurePoint: "Post-answer recoverability",
-    question: "Will a second look make the answer better or worse?",
-    title: "Measuring recoverability",
-    description:
-      "Compares direct and evidence-refined answers on the same questions, distinguishing preserved, repaired, harmed, and unrecovered outcomes for a fixed QA stack before evaluating answer, refine, or abstain policies.",
-    evidence: "Manuscript under review at ACL Rolling Review",
+    question: "Will a second pass help or hurt?",
+    title: "When retrieval makes the answer worse",
+    problem:
+      "RAG systems revise their own draft answers and average accuracy goes up, so refinement looks free. The average hides the trade: the same retrieval step that repairs one answer silently overwrites another that was already correct.",
+    built:
+      "Score both branches for every question and label each outcome preserved, repaired, harmed, or unrecovered — the value of refining is then exactly repair minus harm. A two-head policy routes each question to answer, refine, or abstain.",
+    headline: "repairs 10.8%, harms 8.1%",
+    headlineLabel: "across 25,870 held-out questions on NQ-Open, TriviaQA and PopQA",
+    // No chart here on purpose: this one is not peer-reviewed yet, so it should
+    // read lighter than the two results above it.
+    detail:
+      "Confidence cannot predict which you get, so the policy reads the retrieved passages instead — holding the accuracy of always-refine while cutting wrong answers from 47.5% to 10.6%.",
+    venue: "Dissertation chapter · manuscript under review",
     publicationSlug: "adaptive-qa-abstention",
-  },
-];
-
-export const researchArc: ResearchArcStep[] = [
-  {
-    label: "2021–24",
-    title: "Selective prediction for vision",
-    description:
-      "Class-conditional reject thresholds for image classifiers, estimated from validation statistics and evaluated with coverage/selective-accuracy tradeoffs.",
-    evidence: "Springer Best Paper Award at ISVC 2022; MVA 2025 journal extension.",
-  },
-  {
-    label: "2024",
-    title: "Multimodal machine translation",
-    description:
-      "Contrastive evaluation for measuring whether multimodal MT systems use paired image evidence rather than benefiting only from image-conditioned training.",
-    evidence: "WMT 2024.",
-  },
-  {
-    label: "2025–26",
-    title: "Selective QA with retrieval",
-    description:
-      "Evaluates when evidence-based refinement repairs a draft answer and when it harms one, supporting answer / refine / abstain decisions for a fixed retrieval-augmented QA stack.",
-    evidence: "Manuscript under review at ACL Rolling Review.",
   },
 ];

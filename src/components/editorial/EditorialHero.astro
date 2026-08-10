@@ -25,7 +25,6 @@ interface Props {
   title: string;
   ledeHtml: string;
   supporting: string;
-  status: string;
   actions: ActionLink[];
   stats: StatItem[];
   scholarHref: string;
@@ -40,7 +39,6 @@ const {
   title,
   ledeHtml,
   supporting,
-  status,
   actions,
   stats,
   scholarHref,
@@ -71,11 +69,6 @@ const profileLinks = [
 
     <p class="editorial-hero__supporting" set:html={supporting} />
 
-    <p class="editorial-hero__status">
-      <span class="editorial-hero__status-label">Now</span>
-      <span>{status}</span>
-    </p>
-
     <div class="editorial-hero__actions">
       {actions.map((action) => (
         <a
@@ -97,7 +90,7 @@ const profileLinks = [
         alt="Nick Kashani Motlagh"
         width={720}
         height={960}
-        sizes="(max-width: 960px) 100vw, 19rem"
+        sizes="(max-width: 960px) 90vw, 23rem"
         loading="eager"
       />
       <span class="editorial-hero__tick editorial-hero__tick--tl" aria-hidden="true"></span>
@@ -149,7 +142,6 @@ const profileLinks = [
     align-items: end;
     max-width: 100%;
     padding-top: clamp(1.5rem, 4vw, 3.5rem);
-    overflow-x: clip;
   }
 
   @media (min-width: 960px) {
@@ -162,7 +154,6 @@ const profileLinks = [
     position: relative;
     min-width: 0;
     max-width: 100%;
-    overflow-x: clip;
   }
 
   .editorial-hero__eyebrow {
@@ -185,10 +176,10 @@ const profileLinks = [
 
   .editorial-hero__title {
     margin: 0;
-    max-width: 12ch;
+    max-width: 14ch;
     color: var(--color-text);
     font-family: var(--font-display);
-    font-size: clamp(3.4rem, 8.6vw, 7.6rem);
+    font-size: var(--display-1, clamp(3.2rem, 2.2rem + 4.2vw, 6rem));
     font-weight: 400;
     letter-spacing: -0.015em;
     line-height: 0.9;
@@ -215,44 +206,16 @@ const profileLinks = [
 
   .editorial-hero__supporting {
     margin: clamp(1.2rem, 2.4vw, 1.7rem) 0 0;
-    max-width: 46rem;
+    max-width: 36rem;
     color: var(--color-text-muted);
-    font-size: 1.04rem;
-    line-height: 1.75;
+    font-size: var(--text-lg, 1.0625rem);
+    line-height: 1.65;
     overflow-wrap: break-word;
   }
 
   .editorial-hero__supporting :global(em) {
     font-style: italic;
     color: var(--color-text);
-  }
-
-  .editorial-hero__status {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    gap: 0.7rem;
-    max-width: 45rem;
-    margin: 1.45rem 0 0;
-    padding: 0.85rem 0;
-    border-block: var(--hairline);
-    color: var(--color-text-muted);
-    font-size: 0.94rem;
-    line-height: 1.6;
-  }
-
-  .editorial-hero__status-label {
-    display: inline-flex;
-    align-items: center;
-    margin-top: 0.12rem;
-    padding: 0.16rem 0.5rem;
-    border: 1px solid color-mix(in srgb, var(--color-accent) 36%, var(--color-border));
-    border-radius: var(--radius-sm);
-    background: var(--color-accent-soft);
-    color: var(--color-accent);
-    font: 600 0.68rem/1.4 var(--font-mono);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
   }
 
   .editorial-hero__actions {
@@ -445,7 +408,7 @@ const profileLinks = [
     }
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .editorial-hero__stats {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

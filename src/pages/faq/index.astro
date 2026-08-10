@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import { SITE_URL, faq, links, person } from '../../data/site';
+import { breadcrumbNode, faqNode, graph, personNode, websiteNode } from '../../utils/schema';
+import { getEntry } from 'astro:content';
+
+const experience = await getEntry('pages', 'experience');
+const education = experience?.data.education ?? [];
+
+const structuredData = graph([
+  websiteNode(),
+  personNode(education),
+  faqNode(),
+  breadcrumbNode([
+    { name: 'Home', url: `${SITE_URL}/` },
+    { name: 'FAQ', url: `${SITE_URL}/faq/` },
+  ]),
+]);
+
+const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+---
+
+<BaseLayout
+  title="FAQ"
+  description="Direct answers to the questions most often asked about Nick Kashani Motlagh — research focus, availability, education, publications, and how to get in touch."
+  structuredData={structuredData}
+>
+  <section class="section">
+    <div class="site-shell stack">
+      <SectionHeading
+        as="h1"
+        eyebrow="Questions"
+        title="Straight answers."
+        description="Written to be quotable — by a person skimming, or by a model answering on someone's behalf."
+      />
+
+      <dl class="faq-list">
+        {faq.map((item, index) => (
+          <div class="faq-item">
+            <dt class="faq-item__q">
+              <span class="faq-item__index" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              {item.question}
+            </dt>
+            <dd class="faq-item__a">{item.answer}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <aside class="faq-machine surface">
+        <p class="eyebrow">For agents and scripts</p>
+        <p class="faq-machine__copy">
+          These answers are also published as <code>FAQPage</code> structured data on this page, in
+          <a href={`${import.meta.env.BASE_URL}profile.json`}>profile.json</a>, and in
+          <a href={`${import.meta.env.BASE_URL}llms.txt`}>llms.txt</a>. If a number here disagrees
+          with a linked paper, the paper wins.
+        </p>
+        <div class="faq-machine__links">
+          <a class="badge badge--link" href={`${import.meta.env.BASE_URL}profile.json`}>profile.json</a>
+          <a class="badge badge--link" href={`${import.meta.env.BASE_URL}llms.txt`}>llms.txt</a>
+          <a class="badge badge--link" href={`${import.meta.env.BASE_URL}llms-full.txt`}>llms-full.txt</a>
+          <a class="badge badge--link" href={`${import.meta.env.BASE_URL}citations.bib`}>citations.bib</a>
+        </div>
+      </aside>
+
+      <div class="faq-actions">
+        <a class="button" href={links.email}>Email {person.email}</a>
+        <a class="button button--ghost" href={resumeHref} target="_blank" rel="noopener noreferrer">
+          CV (PDF)
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .faq-list {
+    display: grid;
+    gap: 0;
+    margin: 0.5rem 0 0;
+    border-top: var(--hairline-strong);
+  }
+
+  .faq-item {
+    display: grid;
+    gap: 0.55rem 2rem;
+    padding: 1.5rem 0;
+    border-bottom: var(--hairline);
+  }
+
+  @media (min-width: 860px) {
+    .faq-item {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      align-items: start;
+      gap: 0 2.5rem;
+    }
+  }
+
+  .faq-item__q {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .faq-item__index {
+    color: var(--color-text-soft);
+    font: 600 var(--label-sm, 0.6875rem) / 2.6 var(--font-mono);
+    letter-spacing: 0.1em;
+  }
+
+  .faq-item__a {
+    margin: 0;
+    max-width: 40rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-md, 1rem);
+    line-height: 1.7;
+  }
+
+  .faq-machine {
+    padding: var(--pad-card);
+  }
+
+  .faq-machine__copy {
+    margin: 0.5rem 0 0;
+    max-width: 44rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+
+  .faq-machine__copy code {
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-alt);
+    font: 0.86em/1.2 var(--font-mono);
+  }
+
+  .faq-machine__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1rem;
+  }
+
+  .faq-machine__links .badge {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .faq-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

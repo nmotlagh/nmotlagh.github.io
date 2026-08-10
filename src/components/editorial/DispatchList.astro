@@ -4,26 +4,24 @@ import { formatDate } from '../../utils/dates';
 
 interface Props {
   newsItems: CollectionEntry<'news'>[];
-  posts: CollectionEntry<'blog'>[];
 }
 
-const { newsItems, posts }: Props = Astro.props;
+const { newsItems }: Props = Astro.props;
 const dateFormat = {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
 } satisfies Intl.DateTimeFormatOptions;
 const newsHref = `${import.meta.env.BASE_URL}news/`;
-const blogHref = `${import.meta.env.BASE_URL}blog/`;
 const isExternalHref = (href: string) => /^https?:\/\//.test(href);
 ---
 
-<section class:list={['dispatch-list', posts.length === 0 && 'dispatch-list--single']}>
+<section class="dispatch-list">
   <article class="dispatch-list__panel surface">
     <div class="dispatch-list__header">
       <div>
         <p class="eyebrow">News</p>
-        <h3>Latest news</h3>
+        <h2>Latest news</h2>
       </div>
       <a href={newsHref}>View archive</a>
     </div>
@@ -47,40 +45,12 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
       ))}
     </ol>
   </article>
-
-  {posts.length > 0 && (
-    <article class="dispatch-list__panel surface">
-      <div class="dispatch-list__header">
-        <div>
-          <p class="eyebrow">Reports</p>
-          <h3>Research writing</h3>
-        </div>
-        <a href={blogHref}>Browse reports</a>
-      </div>
-
-      <ol class="dispatch-list__items">
-        {posts.map((post) => (
-          <li>
-            <time datetime={post.data.date}>{formatDate(post.data.date, dateFormat)}</time>
-            <a href={`${import.meta.env.BASE_URL}blog/${post.slug}/`}>{post.data.title}</a>
-            <p>{post.data.description}</p>
-          </li>
-        ))}
-      </ol>
-    </article>
-  )}
 </section>
 
 <style>
   .dispatch-list {
     display: grid;
     gap: 1rem;
-  }
-
-  @media (min-width: 900px) {
-    .dispatch-list:not(.dispatch-list--single) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 
   .dispatch-list__panel {
@@ -94,7 +64,6 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   .dispatch-list__panel:hover {
     border-color: var(--color-border-strong);
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-2px);
   }
 
   .dispatch-list__header {
@@ -105,17 +74,20 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     margin-bottom: 1rem;
   }
 
-  .dispatch-list__header h3 {
+  .dispatch-list__header h2 {
     margin: 0.2rem 0 0;
     font-family: var(--font-display);
-    font-size: 1.7rem;
+    font-size: var(--display-3, clamp(1.75rem, 1.5rem + 1.1vw, 2.3rem));
     font-weight: 400;
     line-height: 1.02;
   }
 
   .dispatch-list__header > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--color-text-muted);
-    font: 600 0.74rem/1.3 var(--font-mono);
+    font: 600 var(--label-sm, 0.6875rem) / 1.3 var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-decoration: none;
@@ -168,11 +140,4 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   .dispatch-list__items a:hover {
     color: var(--color-accent);
   }
-
-  .dispatch-list__items p {
-    margin: 0.45rem 0 0;
-    color: var(--color-text-muted);
-    line-height: 1.65;
-  }
-
 </style>

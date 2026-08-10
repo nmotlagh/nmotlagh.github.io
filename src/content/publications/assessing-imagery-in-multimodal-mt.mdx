@@ -8,9 +8,9 @@ authors:
   - "J. Gwinnup"
   - "G. Erdmann"
   - "T. Anderson"
-tldr: "Contrastive evaluation of WMT 2024 multimodal MT systems shows measurable dependence on paired visual context."
+tldr: "The best multimodal translation system reads the image correctly 81% of the time, but that only changes its translation 63% of the time. 'Images don't help' was partly a measurement artifact."
 highlight: true
-metric: "Image evidence can affect model uncertainty without changing the final translation preference."
+metric: "VGAMT: 81% image-conditioned evidence use vs. 63% final translation preference."
 datePublished: "2024-11-15"
 doi: "10.18653/v1/2024.wmt-1.130"
 pdf: "https://aclanthology.org/2024.wmt-1.130.pdf"
@@ -20,6 +20,12 @@ tags:
   - "vision-language models"
   - "evaluation"
   - "WMT"
+citation:
+  type: "inproceedings"
+  key: "kashanimotlagh2024assessing"
+  booktitle: "Proceedings of the Ninth Conference on Machine Translation (WMT)"
+  publisher: "Association for Computational Linguistics"
+  pages: "1428--1439"
 highlights:
   - "Introduced imagery-aware contrastive probes for testing whether model scores change under mismatched visual context."
   - "Evaluated three English-to-French multimodal model families, plus gated variants, under matched and mismatched visual context."

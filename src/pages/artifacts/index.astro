@@ -1,33 +1,51 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
+import { SITE_URL } from '../../data/site';
+import { artifactNode, breadcrumbNode, graph, personNode, websiteNode } from '../../utils/schema';
 
 const artifacts = (await getCollection('artifacts')).sort((a, b) =>
   a.data.name.localeCompare(b.data.name),
 );
 const publications = await getCollection('publications', ({ data }) => !data.draft);
 const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.title]));
+const experience = await getEntry('pages', 'experience');
+
+const structuredData = graph([
+  websiteNode(),
+  {
+    '@type': 'CollectionPage',
+    '@id': `${SITE_URL}/artifacts/#page`,
+    url: `${SITE_URL}/artifacts/`,
+    name: 'Code and data — Nick Kashani Motlagh',
+    inLanguage: 'en-US',
+  },
+  personNode(experience?.data.education ?? []),
+  ...artifacts.map(artifactNode),
+  breadcrumbNode([
+    { name: 'Home', url: `${SITE_URL}/` },
+    { name: 'Code & data', url: `${SITE_URL}/artifacts/` },
+  ]),
+]);
 ---
 
-<BaseLayout title="Code & Data" description="Public research repositories and datasets, with the scope of each artifact stated explicitly.">
+<BaseLayout
+  title="Code & Data"
+  description="Public research repositories and datasets from my papers, each with what it reproduces."
+  structuredData={structuredData}
+>
   <section class="section">
     <div class="site-shell archive-page">
       <div class="archive-page__header">
         <div>
           <SectionHeading
             as="h1"
-            eyebrow="Public research code"
-            title="Code and data"
-            description="A compact archive of the code, dashboards, and datasets that turn the papers into something runnable."
+            eyebrow="Code"
+            title="Research code and datasets."
           />
         </div>
 
-        <p class="archive-page__aside">
-          Each entry links the repository to the corresponding paper or report
-          and lists the main reproducibility path: scripts, reports, datasets,
-          or evaluation outputs.
-        </p>
       </div>
 
       <div class="grid grid--2 archive-page__grid">
@@ -38,11 +56,11 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
           return (
             <article class="artifact-archive-card surface">
               <div class="artifact-card__header">
-                <h3>
+                <h2>
                   <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
                     {artifact.data.name}
                   </a>
-                </h3>
+                </h2>
                 <a
                   class="badge badge--link"
                   href={artifact.data.repo}
@@ -54,7 +72,14 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
                 </a>
               </div>
               <p>{artifact.data.summary}</p>
-              <ul>
+              {artifact.data.stack && artifact.data.stack.length > 0 && (
+                <ul class="artifact-archive-card__stack">
+                  {artifact.data.stack.map((tech) => (
+                    <li>{tech}</li>
+                  ))}
+                </ul>
+              )}
+              <ul class="artifact-archive-card__steps">
                 {artifact.data.reproduce.map((item) => (
                   <li>{item}</li>
                 ))}
@@ -100,7 +125,7 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
     gap: 1rem;
   }
 
-  .artifact-card__header h3 {
+  .artifact-card__header h2 {
     margin: 0;
     font-family: var(--font-display);
     font-size: 1.55rem;
@@ -108,13 +133,13 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
     line-height: 1.08;
   }
 
-  .artifact-card__header h3 a {
+  .artifact-card__header h2 a {
     color: inherit;
     text-decoration: none;
   }
 
-  .artifact-card__header h3 a:hover,
-  .artifact-card__header h3 a:focus-visible {
+  .artifact-card__header h2 a:hover,
+  .artifact-card__header h2 a:focus-visible {
     color: var(--color-accent);
   }
 
@@ -123,7 +148,29 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
     line-height: 1.75;
   }
 
-  .artifact-archive-card ul {
+  .artifact-archive-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 0.9rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .artifact-archive-card__stack li {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.85rem;
+    padding: 0.22rem 0.55rem;
+    border: var(--hairline);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    font: 600 0.7rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .artifact-archive-card__steps {
     margin: 0;
     padding-left: 1.05rem;
     color: var(--color-text-muted);
@@ -131,7 +178,7 @@ const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.
     gap: 0.55rem;
   }
 
-  .artifact-archive-card li::marker {
+  .artifact-archive-card__steps li::marker {
     color: var(--color-accent);
   }
 

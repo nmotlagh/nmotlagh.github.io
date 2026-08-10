@@ -1,4 +1,75 @@
+# nmotlagh.github.io — personal academic site.
+# Everything here is first-party and intended to be read, quoted, and cited,
+# by people and by agents alike. Nothing is disallowed.
+
 User-agent: *
 Allow: /
+
+# Search and answer engines (live retrieval, citation-eligible)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Training and dataset crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# Curated entry points for language models:
+#   Summary   https://nmotlagh.github.io/llms.txt
+#   Full text https://nmotlagh.github.io/llms-full.txt
+#   Profile   https://nmotlagh.github.io/profile.json
 
 Sitemap: https://nmotlagh.github.io/sitemap-index.xml
