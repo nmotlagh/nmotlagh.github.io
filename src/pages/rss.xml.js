@@ -19,6 +19,8 @@ export async function GET(context) {
     title: 'Nick Kashani Motlagh · News',
     description: 'Latest publications, reports, code, and data from Nick Kashani Motlagh.',
     site,
+    xmlns: { atom: 'http://www.w3.org/2005/Atom' },
+    customData: `<atom:link href="${new URL('rss.xml', site).href}" rel="self" type="application/rss+xml"/>`,
     items: sorted.map((item) => ({
       title: item.data.title,
       pubDate: parseDateValue(item.data.date),

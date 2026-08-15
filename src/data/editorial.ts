@@ -164,7 +164,7 @@ export const researchResults: ResearchResult[] = [
     // read lighter than the two results above it.
     detail:
       "Confidence cannot predict which you get, so the policy reads the retrieved passages instead — holding the accuracy of always-refine while cutting wrong answers from 47.5% to 10.6%.",
-    venue: "Dissertation chapter · manuscript under review",
+    venue: "Dissertation chapter · arXiv preprint in preparation",
     publicationSlug: "adaptive-qa-abstention",
   },
 ];

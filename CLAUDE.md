@@ -23,7 +23,10 @@ The site uses Astro's typed content collections defined in `src/content/config.t
 - **`publications/`** - Research papers with rich metadata (authors, venue, year, DOI, links to PDF/arXiv/code/data)
 - **`news/`** - Data-only collection for recent updates (title, date, optional link)
 - **`artifacts/`** - Data-only collection for code repositories with reproduction steps
-- **`blog/`** - Content collection for blog posts with title, date, description, tags, and draft flag
+
+There is no blog collection. Structured page copy that isn't a content
+collection lives in `src/data/editorial.ts` (homepage editorial content) and
+`src/data/site.ts` (site metadata, FAQ, recruiter facts).
 
 All frontmatter is validated against Zod schemas at build time. When adding content, match the existing schema structure.
 
@@ -33,19 +36,21 @@ All frontmatter is validated against Zod schemas at build time. When adding cont
 - **`src/pages/about/`, `/experience/`, `/publications/`, etc.** - Legacy redirect stubs to preserve old URLs
 - **`src/pages/404.astro`** - Custom 404 page
 - **`src/pages/rss.xml.js`** - RSS feed generation
-- **`src/pages/blog/`** - Blog index and `[slug]` detail pages for the blog content collection
+- **`src/pages/{citations.bib,llms.txt,llms-full.txt,profile.json}.ts`** - Machine-readable endpoints
 
 ### Layout & Components
 
-- **`BaseLayout.astro`** - Global shell with theme toggle, metadata, structured data, and CSS custom properties for theming
-- **`Hero.astro`** - Homepage hero section with heading, description, action buttons, profile image, and stats
+- **`BaseLayout.astro`** - Global shell with theme toggle, metadata, structured data, and CSS custom properties for theming (`noindex` prop for error pages)
+- **`components/editorial/EditorialHero.astro`** - Homepage hero (content from `src/data/editorial.ts`)
+- **`components/editorial/ResearchResults.astro`** - Publications/results section
+- **`components/editorial/DispatchList.astro`** - News items
+- **`components/editorial/ContactRail.astro`** - Contact links
 - **`PublicationCard.astro`** - Displays publication with links, highlights, and optional image
-- **`NewsStrip.astro`** - Renders news items chronologically
-- **`HighlightsRow.astro`** - Grid of highlighted publications
+- **`CiteBlock.astro`** - Citation block
 - **`SectionHeading.astro`** - Consistent section headers
-- **`TechBadges.astro`** - Renders technology/skill badge chips
-- **`Callout.astro`** - Styled callout/highlight boxes
 - **`ThemeToggle.astro`** - Light/dark mode switcher with localStorage persistence and theme transition
+
+Styles: `src/styles/theme.css` (tokens) + `src/styles/editorial.css` (layout).
 
 ### Theming System
 
@@ -80,7 +85,7 @@ The site is configured for `https://nmotlagh.github.io` in `astro.config.mjs`.
 ## Code Style
 
 - **Indentation**: 2 spaces
-- **Components/Layouts**: PascalCase (e.g., `Hero.astro`, `BaseLayout.astro`)
+- **Components/Layouts**: PascalCase (e.g., `EditorialHero.astro`, `BaseLayout.astro`)
 - **Content files**: kebab-case slugs (e.g., `learning-when-to-say-i-dont-know.mdx`)
 - **Commit messages**: Short, lowercase (e.g., `add interactive water landing`, `refresh palette and layout`)
 

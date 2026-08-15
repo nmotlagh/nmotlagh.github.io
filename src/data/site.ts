@@ -72,7 +72,7 @@ export const faq: { question: string; answer: string }[] = [
   {
     question: 'What has he published?',
     answer:
-      'Four peer-reviewed first-author papers: “Naturally Constrained Reject Option Classification” (Machine Vision and Applications, 2025), “Assessing the Role of Imagery in Multimodal Machine Translation” (WMT 2024), “Learning When to Say I Don’t Know” (ISVC 2022, Springer Best Paper Award), and “A Framework for Semi-automatic Collection of Temporal Satellite Imagery” (ICCV Workshop 2021). A fifth manuscript, on retrieval-augmented selective QA, is under review and not yet accepted.',
+      'Four peer-reviewed first-author papers: “Naturally Constrained Reject Option Classification” (Machine Vision and Applications, 2025), “Assessing the Role of Imagery in Multimodal Machine Translation” (WMT 2024), “Learning When to Say I Don’t Know” (ISVC 2022, Springer Best Paper Award), and “A Framework for Semi-automatic Collection of Temporal Satellite Imagery” (ICCV Workshop 2021). A fifth manuscript, on retrieval-augmented selective QA, was revised after ACL Rolling Review and is being prepared as an arXiv preprint; it is not yet peer-review accepted.',
   },
   {
     question: 'Has he won any awards?',
