@@ -1,0 +1,17 @@
+{
+  "name": "nmotlagh.github.io",
+  "install": "set -euo pipefail; npm ci",
+  "terminals": [
+    {
+      "name": "astro dev",
+      "command": "npm run dev -- --host 0.0.0.0 --port 4321",
+      "description": "Local Astro preview of the personal site"
+    }
+  ],
+  "ports": [
+    {
+      "name": "astro dev",
+      "port": 4321
+    }
+  ]
+}

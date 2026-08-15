@@ -184,3 +184,17 @@ Concise rules for building accessible, fast, delightful UIs. Use MUST/SHOULD/NEV
 - MUST: Increase contrast on `:hover`/`:active`/`:focus`
 - SHOULD: Match browser UI to bg
 - SHOULD: Avoid dark color gradient banding (use background images when needed)
+
+## Cursor Cloud specific instructions
+
+Cloud Agents run on CPU Ubuntu VMs. They can install Node, build the static
+site, and preview it; they must not treat a Cloud VM as the live GitHub Pages
+host.
+
+- Use Node 20. Install with `npm ci`.
+- Verify with `npx astro check` and `npm run build`. Spot-check with
+  `npm run preview` or `npm run dev` (port 4321) when the change is visual.
+- Keep `public/resume.pdf` and personal contact details out of logs and PR
+  comments unless the change is specifically about that file.
+- Pushing to `main` deploys via `.github/workflows/deploy.yml`. Do not invent
+  a second deploy path.
