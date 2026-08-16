@@ -84,7 +84,25 @@ const emailAddress = emailHref.replace(/^mailto:/, "");
     position: relative;
     display: grid;
     gap: clamp(1.5rem, 3vw, 2.5rem);
-    padding: clamp(1.4rem, 3vw, 2.4rem);
+    padding: clamp(1.55rem, 3.2vw, 2.6rem);
+    overflow: hidden;
+  }
+
+  .contact-rail::before {
+    content: '';
+    position: absolute;
+    inset: auto -10% -40% 40%;
+    height: 70%;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--color-accent) 12%, transparent),
+      transparent 68%
+    );
+  }
+
+  .contact-rail > * {
+    position: relative;
   }
 
   @media (min-width: 960px) {

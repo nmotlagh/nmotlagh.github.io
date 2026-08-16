@@ -96,7 +96,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
-    padding: 1.25rem;
+    padding: 1.35rem;
     transition:
       border-color var(--transition-fast),
       box-shadow var(--transition-fast),
@@ -104,7 +104,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
   }
 
   .publication-card:hover {
-    border-color: var(--color-border-strong);
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
     box-shadow: var(--shadow-card-hover);
     transform: translateY(-2px);
   }
