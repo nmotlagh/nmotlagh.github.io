@@ -8,7 +8,7 @@
         "--",
         "bash",
         "-lc",
-        ". /home/nmotlagh/.nvm/nvm.sh >/dev/null 2>&1; nvm use 20 >/dev/null 2>&1; cd /home/nmotlagh/code/nmotlagh.github.io && npm run dev -- --host 127.0.0.1 --port 4321"
+        ". /home/nmotlagh/.nvm/nvm.sh >/dev/null 2>&1; nvm use 20 >/dev/null 2>&1; cd /home/nmotlagh/personal/nmotlagh.github.io && npm run dev -- --host 127.0.0.1 --port 4321"
       ],
       "port": 4321
     }
