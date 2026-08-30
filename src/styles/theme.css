@@ -1026,8 +1026,16 @@ h6 {
     font-size: 1.28rem;
   }
 
+  .site-header__nav {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
   .site-header__nav-list {
-    gap: 0.15rem;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 0.1rem;
   }
 
   .site-header__nav-item--mobile-hidden {
@@ -1035,7 +1043,8 @@ h6 {
   }
 
   .site-header__nav-link {
-    padding-inline: 0.55rem;
+    min-width: 44px;
+    padding-inline: 0.25rem;
     font-size: 0.7rem;
   }
 

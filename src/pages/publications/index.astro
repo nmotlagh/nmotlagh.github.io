@@ -18,9 +18,7 @@ const publications = (await getCollection('publications', ({ data }) => !data.dr
   (a, b) => b.data.year - a.data.year,
 );
 const isCurrentManuscript = (entry: CollectionEntry<'publications'>) =>
-  ['preparation', 'under review'].some((status) =>
-    entry.data.venue.toLowerCase().includes(status),
-  );
+  entry.data.citation?.type === 'unpublished';
 const currentManuscripts = publications.filter(isCurrentManuscript);
 const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
 const artifactEntries = await getCollection('artifacts');
@@ -100,7 +98,7 @@ const structuredData = graph([
         <section class="publication-group" aria-labelledby="current-manuscripts-heading">
           <div class="publication-group__heading">
             <p class="eyebrow">Not yet peer-reviewed</p>
-            <h2 id="current-manuscripts-heading">Under review</h2>
+            <h2 id="current-manuscripts-heading">Current manuscripts</h2>
           </div>
           <div class="publication-grid grid grid--2 archive-page__grid">
             {currentManuscripts.map((pub) => (

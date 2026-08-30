@@ -25,6 +25,8 @@ export async function GET(context) {
       title: item.data.title,
       pubDate: parseDateValue(item.data.date),
       link: resolveLink(item),
+      // Distinct updates can share a related link; identify the news item itself.
+      customData: `<guid isPermaLink="true">${new URL(`news/#${encodeURIComponent(item.id)}`, site).href}</guid>`,
     })),
   });
 }
