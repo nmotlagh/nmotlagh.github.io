@@ -116,7 +116,7 @@ export function publicationNode(entry: CollectionEntry<'publications'>): Json {
     url: publicationUrl(entry.slug),
     abstract: data.tldr,
     datePublished: isUnpublished ? undefined : (data.datePublished ?? String(data.year)),
-    creativeWorkStatus: isUnpublished ? 'Under review' : undefined,
+    creativeWorkStatus: isUnpublished ? 'Unpublished' : undefined,
     inLanguage: 'en',
     keywords: data.tags?.join(', '),
     pagination: data.citation?.pages?.replace('--', '-'),

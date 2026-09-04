@@ -9,7 +9,7 @@ import { parseDateValue } from '../utils/dates';
  * same content collections that render the HTML, so the two cannot diverge.
  */
 export const GET: APIRoute = async () => {
-  // Peer-reviewed first, then anything still under review, so an agent reading
+  // Peer-reviewed first, then unpublished manuscripts, so an agent reading
   // top-down sees the work that has cleared review before the work that has not.
   const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
     (a, b) =>
@@ -30,7 +30,7 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${person.name}
 
-> ${person.jobTitle}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one manuscript under review. ${person.availability} for ${person.seeking.join(', ')} roles.
+> ${person.jobTitle}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one unpublished manuscript. ${person.availability} for ${person.seeking.join(', ')} roles.
 
 Everything below is first-party and current as of ${new Date().toISOString().slice(0, 10)}. Facts an agent is most often asked for:
 
