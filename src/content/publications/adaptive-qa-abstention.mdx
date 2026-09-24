@@ -1,9 +1,12 @@
 ---
-title: "Evaluating Answer Revision in Retrieval-Augmented QA"
+title: "Measuring and Predicting Recoverability in Retrieval-Augmented Revision"
 year: 2026
 venue: "Dissertation research · Unpublished"
 authors:
-  - "Nick Kashani Motlagh"
+  - "N. Kashani Motlagh"
+  - "T. Anderson"
+  - "J. Gwinnup"
+  - "G. Erdmann"
 tldr: "Paired evaluations distinguish when retrieval-based revision repairs an incorrect answer from when it harms a correct one."
 draft: false
 highlight: false
@@ -16,9 +19,10 @@ citation:
   key: "kashanimotlagh2026retrieval"
   note: "Dissertation research; unpublished manuscript"
 highlights:
-  - "Evaluates direct and revised answers for the same questions."
+  - "Evaluates direct and revised answers for the same 25,870 held-out questions (NQ-Open, TriviaQA, PopQA)."
   - "Separates preserved, repaired, harmed, and unrecovered outcomes."
-  - "Studies policies that choose whether to answer, refine, or abstain."
+  - "Studies LoRA-trained policies that choose whether to answer, revise, or abstain."
+  - "3 training seeds with paired run-level t-tests; thresholds frozen on dev before test."
 ---
 
 A retrieval-augmented QA system can improve an incorrect answer, but it can also replace a correct answer with a mistake. Average accuracy alone does not describe this tradeoff.
@@ -26,5 +30,26 @@ A retrieval-augmented QA system can improve an incorrect answer, but it can also
 This dissertation research evaluates both branches for the same question: a direct answer and a revision using retrieved evidence. The paired outcomes distinguish answers that are **preserved**, **repaired**, **harmed**, or **unrecovered**. With binary correctness, the net change in accuracy is repair minus harm.
 
 The central distinction is between **confidence** in an initial answer and **recoverability** under a particular revision process. The work studies how these signals inform a choice between answering, refining, and abstaining.
+
+## Setup
+
+- **Data:** 25,870 held-out questions from NQ-Open, TriviaQA, and PopQA.
+- **Retrieval:** three setups over Wikipedia: DPR dense retrieval, BM25, and BM25 reranked with MonoT5.
+- **Models:** Llama 3.1 8B Instruct writes the drafts and the revisions. Llama 3.3 70B Instruct is the automated semantic judge. gpt-oss-20b and OLMo 3 7B are secondary generator families.
+- **Policies:** LoRA-trained scorers choose between answering and revising, and can also abstain in the three-action menu.
+
+## Rigor
+
+- Three training seeds, compared with paired run-level t-tests.
+- 10,000-replicate bootstrap intervals for the baselines.
+- Thresholds are selected on the dev split and frozen before test.
+
+## Stack
+
+PyTorch, Hugging Face Transformers, vLLM, FAISS, and GPU jobs on Slurm.
+
+## Status
+
+The manuscript was revised after ACL Rolling Review, and an arXiv version is in preparation. Code and artifacts will not be released.
 
 My contribution includes the evaluation pipeline, model training, and experiments comparing decision policies. This overview describes unpublished dissertation research; it is not a peer-reviewed publication or a released preprint.

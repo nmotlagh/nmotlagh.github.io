@@ -1,0 +1,200 @@
+---
+// Living hero background: a meadow at dusk (dark theme) or misty dawn (light).
+// Contract: fills its positioned parent (position: absolute; inset: 0), is
+// decorative (aria-hidden), and paints a usable static background with no JS.
+//
+// The stalks are the abstention demo's 1,000 sampled CIFAR-100 test predictions,
+// grown to their confidence. The camera sits at the height of the learned reject
+// threshold (the same default delta as AbstainDemo), so the horizon line is the
+// threshold: stalks that clear it catch the light, the rest stay in the mist.
+// Only the scores, right/wrong flags and threshold ship to the page (~2.7 KB).
+import demo from '../../data/abstain-demo.json';
+import { learnThreshold } from '../../lib/abstain';
+import { encodeMeadow } from '../../lib/meadow-data';
+
+// Keep in step with DEFAULT_DELTA in AbstainDemo.astro.
+const DEFAULT_DELTA = 0.05;
+const threshold = learnThreshold(demo.val.right, demo.val.wrong, DEFAULT_DELTA);
+const correct = demo.sample.pred.map((p, i) => p === demo.sample.label[i]);
+const payload = encodeMeadow(demo.sample.score, correct);
+---
+
+<div class="meadow-scene" aria-hidden="true" data-meadow={payload} data-threshold={threshold}>
+  <div class="meadow-scene__static"></div>
+</div>
+
+<script>
+  import { mountMeadow } from '../../lib/meadow';
+
+  const start = () => {
+    document.querySelectorAll<HTMLElement>('[data-meadow]').forEach((el) => {
+      try {
+        mountMeadow(el);
+      } catch (err) {
+        console.warn(err);
+      }
+    });
+  };
+  // Stay off the critical path: the CSS background is already painted.
+  if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 800 });
+  else setTimeout(start, 120);
+</script>
+
+<style>
+  .meadow-scene {
+    /* Composition shared with the canvas (see layoutFor in src/lib/meadow-look.ts):
+       horizon (= threshold line), light position, and the moon's radius. */
+    --mz-hz: 38%;
+    --mz-lx: 76%;
+    --mz-ly: 28.5%;
+    --mz-disc: min(2vh, 1.6vw);
+    --mz-disc-k: 1;
+    --mz-disc-edge: 1px;
+    --mz-sky-top: #03070a;
+    --mz-sky-mid: #08100f;
+    --mz-sky-hor: #1c2922;
+    --mz-ground-far: #141e18;
+    --mz-ground: #050806;
+    --mz-ridge: #0f1813;
+    --mz-forest: #060a08;
+    --mz-core: 233 238 203;
+    --mz-glow: 72 88 63;
+    --mz-mist: 127 146 124;
+    --mz-line: 226 245 156;
+    --mz-line-glow: 1;
+    --mz-scrim: 10 13 11;
+    --mz-scrim-a: 0.5;
+    --mz-vig: 1;
+    /* Text scrim: bottom-left on wide screens, a full-width lower band on phones. */
+    --mz-scrim-layer: radial-gradient(80% 75% at 0% 100%, rgb(var(--mz-scrim) / var(--mz-scrim-a)) 50%, transparent 100%);
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--mz-ground);
+    contain: strict;
+  }
+
+  :global(html[data-theme='light']) .meadow-scene {
+    --mz-disc-k: 1.56;
+    --mz-disc-edge: 8px;
+    --mz-sky-top: #c9d4ca;
+    --mz-sky-mid: #dbe3d8;
+    --mz-sky-hor: #eff0e4;
+    --mz-ground-far: #cbd6c3;
+    --mz-ground: #d5ddcc;
+    --mz-ridge: #b3c2b2;
+    --mz-forest: #a9b8a6;
+    --mz-core: 255 253 240;
+    --mz-glow: 251 243 214;
+    --mz-mist: 246 246 238;
+    --mz-line: 76 96 68;
+    --mz-line-glow: 0;
+    --mz-scrim: 238 241 234;
+    --mz-scrim-a: 0.62;
+    --mz-vig: 0;
+  }
+
+  @media (max-aspect-ratio: 5 / 4) {
+    .meadow-scene {
+      --mz-hz: 35.5%;
+      --mz-lx: 75%;
+      --mz-ly: 26.6%;
+    }
+  }
+
+  @media (max-aspect-ratio: 1 / 1) {
+    .meadow-scene {
+      --mz-hz: 32.5%;
+      --mz-lx: 73%;
+      --mz-ly: 24.7%;
+      --mz-disc: min(2.2vh, 2.2vw);
+    }
+  }
+
+  @media (max-aspect-ratio: 3 / 4) {
+    .meadow-scene {
+      --mz-hz: 30%;
+      --mz-lx: 72%;
+      --mz-ly: 23%;
+      --mz-disc: min(2.2vh, 2.56vw);
+      --mz-scrim-layer: linear-gradient(180deg, transparent 21%, rgb(var(--mz-scrim) / var(--mz-scrim-a)) 49%);
+    }
+  }
+
+  .meadow-scene__static {
+    position: absolute;
+    inset: 0;
+    background:
+      /* threshold line, brightest under the light */
+      radial-gradient(34% 1.5px at var(--mz-lx) var(--mz-hz), rgb(var(--mz-line) / 0.75), transparent),
+      radial-gradient(40% 26px at var(--mz-lx) var(--mz-hz), rgb(var(--mz-line) / calc(0.12 * var(--mz-line-glow))), transparent),
+      linear-gradient(
+          180deg,
+          transparent calc(var(--mz-hz) - 0.75px),
+          rgb(var(--mz-line) / 0.18) var(--mz-hz),
+          transparent calc(var(--mz-hz) + 0.75px)
+        ),
+      /* text scrim, bottom fade into the page, night vignette */
+      var(--mz-scrim-layer),
+      linear-gradient(180deg, transparent 80%, rgb(var(--mz-scrim) / 0.92) 100%),
+      linear-gradient(180deg, rgb(var(--mz-scrim) / calc(0.35 * var(--mz-vig))), transparent 35%),
+      linear-gradient(90deg, rgb(var(--mz-scrim) / calc(0.25 * var(--mz-vig))), transparent 25%),
+      /* haze straddling the horizon */
+      linear-gradient(
+          180deg,
+          transparent calc(var(--mz-hz) - 6%),
+          rgb(var(--mz-mist) / 0.16) var(--mz-hz),
+          transparent calc(var(--mz-hz) + 9%)
+        ),
+      /* the field: opaque below the horizon, so the woodland and ridge stand on it */
+      linear-gradient(
+          180deg,
+          transparent var(--mz-hz),
+          var(--mz-ground-far) var(--mz-hz),
+          var(--mz-ground) calc(var(--mz-hz) + 40%)
+        ),
+      /* woodland on the left, and a low far ridge to the right */
+      radial-gradient(22% 13% at 3% var(--mz-hz), var(--mz-forest) 60%, transparent 63%),
+      radial-gradient(30% 10% at 20% var(--mz-hz), var(--mz-forest) 60%, transparent 63%),
+      radial-gradient(60% 4.5% at 72% var(--mz-hz), var(--mz-ridge) 60%, transparent 66%),
+      /* the moon (night) or a sun lost in the mist (dawn), and its halo */
+      radial-gradient(
+          circle at var(--mz-lx) var(--mz-ly),
+          rgb(var(--mz-core) / 0.85) calc(var(--mz-disc) * var(--mz-disc-k) - 1px),
+          transparent calc(var(--mz-disc) * var(--mz-disc-k) + var(--mz-disc-edge))
+        ),
+      radial-gradient(
+          circle at var(--mz-lx) var(--mz-ly),
+          rgb(var(--mz-core) / 0.22) 0,
+          rgb(var(--mz-glow) / 0.3) 12%,
+          transparent 40%
+        ),
+      /* sky */
+      linear-gradient(
+          180deg,
+          var(--mz-sky-top) 0%,
+          var(--mz-sky-mid) calc(var(--mz-hz) * 0.55),
+          var(--mz-sky-hor) var(--mz-hz)
+        );
+  }
+
+  .meadow-scene :global(.meadow-scene__canvas) {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.4s cubic-bezier(0.2, 0.6, 0.2, 1);
+  }
+
+  .meadow-scene:global(.is-live) :global(.meadow-scene__canvas) {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .meadow-scene :global(.meadow-scene__canvas) {
+      transition-duration: 0.3s;
+    }
+  }
+</style>

@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
-import { links, person } from '../data/site';
+import { links, listOr, person } from '../data/site';
 import '../styles/theme.css';
 import '../styles/editorial.css';
 
@@ -14,9 +14,18 @@ interface LayoutProps {
   ogImage?: string | ImageMetadata;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
+  /** Float the header over a full-bleed first section (homepage hero). */
+  overlayHeader?: boolean;
 }
 
-const { title, description = defaultDescription, ogImage, structuredData, noindex = false }: LayoutProps = Astro.props;
+const {
+  title,
+  description = defaultDescription,
+  ogImage,
+  structuredData,
+  noindex = false,
+  overlayHeader = false,
+}: LayoutProps = Astro.props;
 
 const pageTitle = title ? `${title} · ${siteName}` : siteName;
 const canonicalUrl = !noindex && Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
@@ -56,16 +65,24 @@ const isActivePath = (href: string) => {
   return currentPath.startsWith(targetPath);
 };
 
+// Numbers match the homepage chapters: 01 about, 02 work, 03 research, 04 experience.
 const navLinks = [
-  { label: 'About', href: `${homeHref}about/` },
-  { label: 'Research', href: `${homeHref}publications/` },
-  { label: 'Code', href: `${homeHref}artifacts/` },
-  { label: 'Experience', href: `${homeHref}experience/` },
-].map((link) => ({ ...link, active: isActivePath(link.href) }));
+  { label: 'About', num: '01', href: `${homeHref}about/` },
+  { label: 'Work', num: '02', href: `${homeHref}#work` },
+  { label: 'Research', num: '03', href: `${homeHref}publications/` },
+  { label: 'Experience', num: '04', href: `${homeHref}experience/` },
+].map((link) => ({ ...link, active: !link.href.includes('#') && isActivePath(link.href) }));
 const footerLinks = [
   ...navLinks,
+  { label: 'Code & data', href: `${homeHref}artifacts/` },
   { label: 'News', href: `${homeHref}news/` },
   { label: 'FAQ', href: `${homeHref}faq/` },
+];
+const machineLinks = [
+  { label: 'RSS', href: rssHref },
+  { label: 'llms.txt', href: `${homeHref}llms.txt` },
+  { label: 'profile.json', href: `${homeHref}profile.json` },
+  { label: 'citations.bib', href: `${homeHref}citations.bib` },
 ];
 ---
 
@@ -74,8 +91,8 @@ const footerLinks = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4f3ee" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#eef1ea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0d0b" media="(prefers-color-scheme: dark)" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={siteName} />
@@ -91,7 +108,7 @@ const footerLinks = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Spline+Sans+Mono:wght@400..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap"
     />
     <link rel="icon" type="image/svg+xml" href={faviconHref} />
     <link rel="apple-touch-icon" href={`${homeHref}apple-touch-icon.png`} />
@@ -112,6 +129,7 @@ const footerLinks = [
     <link rel="alternate" type="application/rss+xml" title="News · Nick Kashani Motlagh" href={rssHref} />
     <link rel="alternate" type="text/plain" title="Site summary for language models" href={`${homeHref}llms.txt`} />
     <link rel="alternate" type="application/json" title="Structured profile" href={`${homeHref}profile.json`} />
+    <link rel="alternate" type="application/json" title="JSON Resume" href={`${homeHref}resume.json`} />
     <link rel="me" href={linkedInHref} />
     <link rel="me" href={githubHref} />
     <link rel="me" href={orcidHref} />
@@ -180,14 +198,26 @@ const footerLinks = [
     <a class="skip-link" href="#page-content">Skip to content</a>
 
     <div class="site-chrome">
-      <header class="site-header">
+      <header class="site-header" data-site-header data-overlay={overlayHeader ? '' : undefined}>
         <div class="site-shell site-header__bar">
           <a class="site-header__brand" href={homeHref}>
-            <span class="site-header__mark" aria-hidden="true">NKM</span>
+            <svg class="site-header__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                <path d="M6 21.5V9" />
+                <path d="M12 21.5V5" />
+                <path class="mark-low" d="M18 21.5V14.5" />
+              </g>
+              <g fill="currentColor">
+                <circle cx="6" cy="7.2" r="1.9" />
+                <circle cx="12" cy="3.4" r="1.9" />
+                <circle class="mark-low" cx="18" cy="12.8" r="1.9" />
+              </g>
+              <path class="mark-line" d="M2.5 10.2h19" stroke-width="1.2" />
+            </svg>
             <span class="site-header__title">{siteName}</span>
           </a>
 
-          <nav class="site-header__nav" aria-label="Primary navigation">
+          <nav class="site-header__nav" id="site-nav" aria-label="Primary navigation">
             <ul class="site-header__nav-list">
               {navLinks.map((link) => (
                 <li>
@@ -198,24 +228,37 @@ const footerLinks = [
                     aria-current={link.active ? 'page' : undefined}
                     data-astro-prefetch
                   >
-                    {link.label}
+                    <span>{link.label}</span>
+                    <span class="site-header__nav-num" aria-hidden="true">{link.num}</span>
                   </a>
                 </li>
               ))}
-              <li>
-                <a
-                  class="site-header__nav-link site-header__nav-link--cta"
-                  href={resumeHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Resume PDF"
-                >
-                  Resume
-                </a>
-              </li>
             </ul>
+            <a
+              class="button button--sm site-header__cta"
+              href={resumeHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Resume (PDF, opens in a new tab)"
+            >
+              Resume
+            </a>
           </nav>
-          <ThemeToggle />
+
+          <div class="site-header__tools">
+            <ThemeToggle />
+            <button
+              class="site-header__menu"
+              type="button"
+              aria-expanded="false"
+              aria-controls="site-nav"
+              data-menu-button
+              hidden
+            >
+              <span class="site-header__menu-icon" aria-hidden="true"></span>
+              <span class="sr-only">Menu</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -224,41 +267,132 @@ const footerLinks = [
       </main>
 
       <footer class="site-footer">
-        <div class="site-shell site-footer__grid">
-          <div>
-            <h2 class="site-footer__title">
-              Research with an <em>engineering mindset.</em>
-            </h2>
-            <p class="site-footer__copy">
-              {person.name} · PhD, Ohio State · Columbus, Ohio.
-            </p>
+        <div class="site-shell">
+          <div class="site-footer__top">
+            <a class="site-footer__brand" href={homeHref}>
+              <svg class="site-footer__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <path d="M6 21.5V9" />
+                  <path d="M12 21.5V5" />
+                  <path class="mark-low" d="M18 21.5V14.5" />
+                </g>
+                <g fill="currentColor">
+                  <circle cx="6" cy="7.2" r="1.9" />
+                  <circle cx="12" cy="3.4" r="1.9" />
+                  <circle class="mark-low" cx="18" cy="12.8" r="1.9" />
+                </g>
+                <path class="mark-line" d="M2.5 10.2h19" stroke-width="1.2" />
+              </svg>
+              <span>{siteName}</span>
+            </a>
+
+            <div class="site-footer__navs">
+              <nav class="site-footer__links" aria-label="All pages">
+                <p class="site-footer__links-label">Pages</p>
+                <ul>
+                  {footerLinks.map((link) => (
+                    <li><a href={link.href}>{link.label}</a></li>
+                  ))}
+                </ul>
+              </nav>
+
+              <nav class="site-footer__links" aria-label="Profiles and contact">
+                <p class="site-footer__links-label">Elsewhere</p>
+                <ul>
+                  <li><a href={emailHref}>Email</a></li>
+                  <li><a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a></li>
+                  <li><a href={orcidHref} target="_blank" rel="noopener noreferrer">ORCID</a></li>
+                  <li><a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                  <li><a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                  <li><a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a></li>
+                </ul>
+              </nav>
+
+              <nav class="site-footer__links" aria-label="Machine-readable files">
+                <p class="site-footer__links-label">Machine-readable</p>
+                <ul>
+                  {machineLinks.map((link) => (
+                    <li><a href={link.href}>{link.label}</a></li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
           </div>
 
-          <div class="site-footer__navs">
-            <nav class="site-footer__links" aria-label="All pages">
-              <p class="site-footer__links-label">Pages</p>
-              <ul>
-                {footerLinks.map((link) => (
-                  <li><a href={link.href}>{link.label}</a></li>
-                ))}
-              </ul>
-            </nav>
+          <h2 class="sr-only">{person.availability} for roles in the {listOr(person.targetLocations)}.</h2>
+          <p class="site-footer__display" aria-hidden="true">
+            <span>{person.availability}.</span>
+            <span>{person.targetLocationsShort.join(' or ')}.</span>
+          </p>
 
-            <nav class="site-footer__links" aria-label="Profiles and contact">
-              <p class="site-footer__links-label">Elsewhere</p>
-              <ul>
-                <li><a href={emailHref}>Email</a></li>
-                <li><a href={scholarHref} target="_blank" rel="noopener noreferrer">Scholar</a></li>
-                <li><a href={orcidHref} target="_blank" rel="noopener noreferrer">ORCID</a></li>
-                <li><a href={githubHref} target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                <li><a href={linkedInHref} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-                <li><a href={resumeHref} target="_blank" rel="noopener noreferrer">Resume</a></li>
-              </ul>
-            </nav>
+          <div class="site-footer__actions">
+            <a class="button" href={emailHref}>Email me</a>
+            <a class="button button--ghost" href={resumeHref} target="_blank" rel="noopener noreferrer">
+              Resume (PDF)
+            </a>
+          </div>
+
+          <div class="site-footer__base">
+            <p>{person.name} · PhD, Ohio State · Columbus, Ohio.</p>
+            <a href="#page-content">Back to top ↑</a>
           </div>
         </div>
       </footer>
     </div>
+
+    <script is:inline>
+      (function () {
+        const header = document.querySelector('[data-site-header]');
+        if (!header) return;
+        const button = header.querySelector('[data-menu-button]');
+        const nav = header.querySelector('#site-nav');
+
+        let ticking = false;
+        const syncScrolled = () => {
+          ticking = false;
+          if (window.scrollY > 8) header.setAttribute('data-scrolled', '');
+          else header.removeAttribute('data-scrolled');
+        };
+        syncScrolled();
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (ticking) return;
+            ticking = true;
+            window.requestAnimationFrame(syncScrolled);
+          },
+          { passive: true },
+        );
+
+        if (!button || !nav) return;
+        const setOpen = (open) => {
+          header.dataset.menu = open ? 'open' : 'closed';
+          button.setAttribute('aria-expanded', String(open));
+        };
+        button.hidden = false;
+        setOpen(false);
+
+        button.addEventListener('click', () => {
+          const open = header.dataset.menu !== 'open';
+          setOpen(open);
+          // The toggle follows the nav in DOM order, so Tab from it would skip
+          // the menu; move focus into it instead.
+          if (open) nav.querySelector('a')?.focus();
+        });
+        nav.addEventListener('click', (event) => {
+          if (event.target instanceof Element && event.target.closest('a')) setOpen(false);
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape' || header.dataset.menu !== 'open') return;
+          setOpen(false);
+          button.focus();
+        });
+        const wide = window.matchMedia('(min-width: 1000px)');
+        wide.addEventListener('change', (event) => {
+          if (event.matches) setOpen(false);
+        });
+      })();
+    </script>
 
     <script is:inline>
       window.addEventListener('DOMContentLoaded', () => {

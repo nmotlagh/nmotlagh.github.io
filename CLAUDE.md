@@ -32,25 +32,28 @@ All frontmatter is validated against Zod schemas at build time. When adding cont
 
 ### Routing & Pages
 
-- **`src/pages/index.astro`** - Homepage with hero, publications, news, and artifacts sections
-- **`src/pages/about/`, `/experience/`, `/publications/`, etc.** - Legacy redirect stubs to preserve old URLs
+- **`src/pages/index.astro`** - Homepage, ordered for hiring: hero (01) and the short-version/skills panels (1.1, 1.2), selected work (2.1), live demo (2.2), publications (03), experience (04), contact (05)
+- **`src/pages/about/`, `/publications/`, `/publications/[slug]`, `/artifacts/`, `/experience/`, `/news/`, `/faq/`** - Full pages with their own content (not redirects)
 - **`src/pages/404.astro`** - Custom 404 page
 - **`src/pages/rss.xml.js`** - RSS feed generation
 - **`src/pages/{citations.bib,llms.txt,llms-full.txt,profile.json}.ts`** - Machine-readable endpoints
 
 ### Layout & Components
 
-- **`BaseLayout.astro`** - Global shell with theme toggle, metadata, structured data, and CSS custom properties for theming (`noindex` prop for error pages)
-- **`components/editorial/EditorialHero.astro`** - Homepage hero (content from `src/data/editorial.ts`)
-- **`components/editorial/ResearchResults.astro`** - Publications/results section
-- **`components/editorial/DispatchList.astro`** - News items
-- **`components/editorial/ContactRail.astro`** - Contact links
-- **`PublicationCard.astro`** - Displays publication with links, highlights, and optional image
-- **`CiteBlock.astro`** - Citation block
-- **`SectionHeading.astro`** - Consistent section headers
-- **`ThemeToggle.astro`** - Light/dark mode switcher with localStorage persistence and theme transition
+- **`BaseLayout.astro`** - Global shell: header with numbered nav tabs matching the homepage chapters (About 01, Work 02 → `/#work`, Research 03, Experience 04), Resume CTA, theme toggle, and a menu panel below 1000px; footer; metadata and structured data. Props: `noindex` for error pages, `overlayHeader` to float a transparent header over a full-bleed hero (homepage only)
+- **`components/editorial/EditorialHero.astro`** - Homepage hero over `MeadowScene`: copy starts just below the scene's horizon line, plus the terminal line, FIG.0 caption, and the recruiter strip (availability, roles, locations, citizenship from `src/data/site.ts`; copy from `src/data/editorial.ts`)
+- **`components/editorial/ShortVersion.astro`** - Recruiter panels under the hero: 1.1 the short version (status, roles, locations, work authorization, education, contact) and 1.2 skills with evidence links (`skillGroups` in `src/data/editorial.ts`)
+- **`components/editorial/SelectedWork.astro`** - Case studies (`caseStudies`, `moreWork` in `src/data/editorial.ts`) with problem, what was built, stack, status and links; figures FIG.1–3 from `WorkFigure.astro`
+- **`components/editorial/MeadowScene.astro`** - Generative meadow background (WebGL with 2D and static CSS fallbacks; logic in `src/lib/meadow*.ts`). Its horizon is the threshold line; if the horizon moves, update `--hero-hz` in `EditorialHero.astro`
+- **`components/editorial/WorkFigure.astro`** - Line-art figures for the case studies (paired outcomes, the 2026 backbone re-test with real numbers, image swap)
+- **`components/editorial/AbstainDemo.astro`** - Live selective-prediction demo (FIG.4; `index` and `fig` props); logic in `src/lib/abstain.ts` and `src/lib/abstain-plot.ts`, data in `src/data/abstain-demo.json`
+- **`components/editorial/ContactRail.astro`** - Contact section with portrait (FIG.5), availability, profiles, and contact facts
+- **`PublicationCard.astro`** - Publication card for the archive page
+- **`CiteBlock.astro`** - BibTeX block with copy and download
+- **`SectionHeading.astro`** - Section header: optional `index` (chapter number such as `2.3`), eyebrow, title, and a gray `dim` clause
+- **`ThemeToggle.astro`** - Light/dark switcher with localStorage persistence
 
-Styles: `src/styles/theme.css` (tokens) + `src/styles/editorial.css` (layout).
+Styles: `src/styles/theme.css` (tokens, header, footer, buttons, labels) + `src/styles/editorial.css` (page layouts); component styles are scoped.
 
 ### Theming System
 
@@ -59,7 +62,10 @@ The site uses a dual-mode theme system implemented via CSS custom properties in 
 - Theme state is stored in `data-theme` attribute on `<html>` element (`"light"` or `"dark"`)
 - Initial theme derived from `localStorage` or system preference (`prefers-color-scheme`)
 - Script in `BaseLayout.astro` sets theme before first paint to prevent flash
-- Primary accent color: blue (`#2563eb` light / `#60a5fa` dark)
+- Two palettes: "night meadow" (dark: near-black green `#0a0d0b`, accent acid lime `#d4f25a`) and "dawn meadow" (light: pale sage `#eef1ea`, accent moss `#3b6516`)
+- Lime is used sparingly: focus rings, the demo threshold, the terminal prompt, active-tab bars, and the Best Paper block (`--color-lime*` tokens, dark ink on lime in both themes)
+- Type: Geist (`--font-sans`, also `--font-display`) and Geist Mono (`--font-mono`) from Google Fonts; mono uppercase labels (`.label`, `.eyebrow`, `.fig-label`)
+- Surfaces are hairline panels with square corners (`.surface`, `.fig-panel`, `--hairline`)
 - All theme-dependent colors defined as CSS custom properties that update based on `data-theme`
 
 When adding new UI elements, use existing CSS custom property tokens rather than hardcoded colors.

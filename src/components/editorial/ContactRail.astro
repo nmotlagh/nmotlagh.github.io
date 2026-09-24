@@ -1,73 +1,219 @@
 ---
-import { skillGroups } from '../../data/editorial';
-import { links, person } from '../../data/site';
+import { Image } from 'astro:assets';
+import headshot from '../../assets/headshot.jpg';
+import { links, listAnd, person } from '../../data/site';
+
+interface Props {
+  index?: string;
+  /** FIG number for the portrait. */
+  fig?: number;
+}
+const { index, fig = 5 }: Props = Astro.props;
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const profileLinks = [
+  { label: 'GitHub', href: links.github },
+  { label: 'Scholar', href: links.scholar },
+  { label: 'LinkedIn', href: links.linkedin },
+  { label: 'ORCID', href: links.orcid },
+];
 ---
 
-<section class="contact-rail" aria-labelledby="contact-title">
-  <div>
-    <p class="eyebrow">Get in touch</p>
-    <h2 id="contact-title">Let’s build reliable ML systems.</h2>
-    <p class="contact-rail__intro">
-      I’m exploring research engineering, ML software engineering, and applied
-      scientist roles in {person.targetLocations.join(' and ')}.
+<section class="contact" aria-labelledby="contact-title">
+  <figure class="contact__portrait">
+    <p class="fig-label" aria-hidden="true">FIG.{fig}</p>
+    <Image
+      src={headshot}
+      alt="Nick Kashani Motlagh"
+      width={600}
+      height={720}
+      widths={[240, 360, 600]}
+      sizes="(max-width: 640px) 12rem, 18rem"
+      loading="lazy"
+    />
+    <figcaption>{person.name} · Columbus, Ohio</figcaption>
+  </figure>
+
+  <div class="contact__body">
+    <p class="label">
+      {index && <span class="label__index">{index}</span>}
+      <span>Get in touch</span>
     </p>
-    <div class="contact-rail__actions">
+    <div class="contact__split">
+      <h2 id="contact-title">{person.availability}.</h2>
+      <p>
+        {listAnd(person.seekingShort)} roles in the {person.targetLocations.join(' or ')}.
+      </p>
+    </div>
+
+    <div class="contact__actions">
       <a class="button" href={links.email}>Email me</a>
       <a class="button button--ghost" href={resumeHref} target="_blank" rel="noopener noreferrer">Resume (PDF)</a>
     </div>
+
+    <ul class="contact__profiles" aria-label="Profiles">
+      {profileLinks.map((link) => (
+        <li>
+          <a class="badge badge--link" href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+        </li>
+      ))}
+    </ul>
+
+    <dl class="contact__params">
+      <div>
+        <dt>Email</dt>
+        <dd><a href={links.email}>{person.email}</a></dd>
+      </div>
+      <div>
+        <dt>Based in</dt>
+        <dd>Columbus, Ohio <span class="contact__sep" aria-hidden="true">/</span> open to relocating</dd>
+      </div>
+      <div>
+        <dt>Work auth</dt>
+        <dd>{person.citizenship} <span class="contact__sep" aria-hidden="true">/</span> no sponsorship needed</dd>
+      </div>
+    </dl>
   </div>
-  <dl class="contact-rail__toolkit">
-    {skillGroups.map((group) => (
-      <div><dt>{group.label}</dt><dd>{group.items.join(' · ')}</dd></div>
-    ))}
-  </dl>
 </section>
 
 <style>
-  .contact-rail {
+  .contact {
     display: grid;
-    gap: 2rem;
-    padding-top: clamp(1.75rem, 4vw, 3rem);
-    border-top: var(--hairline-strong);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    padding-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+    border-top: var(--hairline);
   }
-  .contact-rail h2 {
-    max-width: 23ch;
-    margin: 0.5rem 0 0;
-    font: 400 var(--display-2) / 1.05 var(--font-display);
-  }
-  .contact-rail__intro {
-    max-width: 34rem;
-    margin: 1rem 0 0;
-    color: var(--color-text-muted);
-  }
-  .contact-rail__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-  }
-  .contact-rail__toolkit {
-    display: grid;
-    gap: 1.2rem;
-    align-content: start;
+
+  .contact__portrait {
+    position: relative;
+    width: min(100%, 18rem);
     margin: 0;
+    padding: 2.5rem 0.75rem 0.75rem;
+    border: var(--hairline);
+    background: var(--color-bg-alt);
+    align-self: start;
   }
-  .contact-rail__toolkit dt {
+
+  .contact__portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 5 / 6;
+    object-fit: cover;
+    object-position: center 25%;
+  }
+
+  .contact__portrait figcaption {
+    margin-top: 0.7rem;
     color: var(--color-text-soft);
-    font: 600 0.7rem / 1.4 var(--font-mono);
-    letter-spacing: 0.1em;
+    font: 500 0.625rem / 1.4 var(--font-mono);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
-  .contact-rail__toolkit dd {
-    margin: 0.4rem 0 0;
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
+
+  .contact__body {
+    min-width: 0;
   }
+
+  .contact__body .label {
+    margin-bottom: 1.25rem;
+  }
+
+  .contact__split {
+    max-width: 46rem;
+  }
+
+  .contact__split h2,
+  .contact__split p {
+    display: inline;
+    margin: 0;
+    font: 500 var(--display-3) / 1.2 var(--font-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .contact__split h2 {
+    color: var(--color-text);
+  }
+
+  .contact__split h2::after {
+    content: ' ';
+  }
+
+  .contact__split p {
+    color: var(--color-text-soft);
+  }
+
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .contact__profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact__params {
+    max-width: 44rem;
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    border-bottom: var(--hairline);
+  }
+
+  .contact__params > div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.8rem 0;
+    border-top: var(--hairline);
+    font: 400 var(--label-md) / 1.6 var(--font-mono);
+    letter-spacing: 0.03em;
+  }
+
+  .contact__params dt {
+    color: var(--color-text-soft);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .contact__params dd {
+    min-width: 0;
+    margin: 0;
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+  }
+
+  .contact__params a {
+    color: var(--color-text);
+  }
+
+  .contact__sep {
+    color: var(--color-text-faint);
+  }
+
   @media (min-width: 900px) {
-    .contact-rail {
-      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-      gap: 4rem;
+    .contact {
+      grid-template-columns: 18rem minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .contact__portrait {
+      width: min(100%, 13rem);
+    }
+
+    .contact__params a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+
+    .contact__params > div {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
     }
   }
 </style>

@@ -75,7 +75,8 @@ const structuredData = graph([
         <div>
           <SectionHeading
             as="h1"
-            eyebrow="Publications"
+            index="03"
+            eyebrow="Research"
             title="Four peer-reviewed first-author papers."
           />
         </div>
@@ -84,7 +85,7 @@ const structuredData = graph([
 
       <section class="publication-group" aria-labelledby="peer-reviewed-heading">
         <div class="publication-group__heading">
-          <p class="eyebrow">Peer-reviewed</p>
+          <p class="eyebrow"><span class="label__index">3.1</span><span>Peer-reviewed</span></p>
           <h2 id="peer-reviewed-heading">Published papers</h2>
         </div>
         <div class="publication-grid grid grid--2 archive-page__grid">
@@ -97,7 +98,7 @@ const structuredData = graph([
       {currentManuscripts.length > 0 && (
         <section class="publication-group" aria-labelledby="current-manuscripts-heading">
           <div class="publication-group__heading">
-            <p class="eyebrow">Not yet peer-reviewed</p>
+            <p class="eyebrow"><span class="label__index">3.2</span><span>Not yet peer-reviewed</span></p>
             <h2 id="current-manuscripts-heading">Current manuscripts</h2>
           </div>
           <div class="publication-grid grid grid--2 archive-page__grid">
@@ -114,15 +115,18 @@ const structuredData = graph([
 <style>
   .publication-group {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
+  }
+
+  /* Two wide columns: four papers read as a 2 × 2 set, not 3 + 1. */
+  .publication-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
   }
 
   .publication-group__heading h2 {
     margin: 0;
     color: var(--color-text);
-    font-family: var(--font-display);
-    font-size: clamp(1.8rem, 3vw, 2.6rem);
-    font-weight: 400;
-    line-height: 1.02;
+    font: 500 var(--display-3) / 1.1 var(--font-display);
+    letter-spacing: -0.025em;
   }
 </style>

@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
-import { SITE_URL, faq, knowsAbout, links, person } from '../data/site';
-import { skillGroups } from '../data/editorial';
+import { SITE_URL, absoluteUrl, faq, knowsAbout, links, person, plainText } from '../data/site';
+import { caseStudies, moreWork, skillGroups } from '../data/editorial';
 import { parseDateValue } from '../utils/dates';
 
 /** Strip the inline HTML and Markdown emphasis used in the source content. */
@@ -43,11 +43,12 @@ export const GET: APIRoute = async () => {
       since: '2025-05',
     },
     availability: {
-      status: 'open to offers',
+      status: person.availability,
       seeking: [...person.seeking],
       preferredLocations: [...person.targetLocations],
       willingToRelocate: true,
-      note: 'Best fit: ML research engineering, LLM evaluation, calibration, and retrieval-augmented systems.',
+      workAuthorization: person.citizenship,
+      sponsorshipRequired: false,
     },
     links,
     education: (experience?.data.education ?? []).map((item) => ({
@@ -96,12 +97,35 @@ export const GET: APIRoute = async () => {
       summary: entry.data.summary,
       stack: entry.data.stack ?? [],
     })),
-    skills: Object.fromEntries(skillGroups.map((group) => [group.label.toLowerCase(), group.items])),
+    selectedWork: caseStudies.map((study) => ({
+      title: study.title,
+      url: `${SITE_URL}/#${study.id}`,
+      context: study.context,
+      problem: study.problem,
+      built: study.built.map((group) => ({ label: group.label, items: group.items.map(plainText) })),
+      stack: study.stack,
+      status: study.status,
+      links: study.links.map((link) => ({ label: link.label, url: absoluteUrl(link.href) })),
+    })),
+    alsoPublic: moreWork.map((item) => ({
+      title: item.title,
+      context: item.context,
+      summary: item.summary,
+      stack: item.stack,
+      links: item.links.map((link) => ({ label: link.label, url: absoluteUrl(link.href) })),
+    })),
+    skills: skillGroups.map((group) => ({
+      area: group.label,
+      items: group.items,
+      evidence: group.proof,
+      evidenceLinks: group.evidence.map((ev) => absoluteUrl(ev.href)),
+    })),
     researchInterests: [...knowsAbout],
     news: news.map((item) => ({ date: item.data.date, title: item.data.title })),
     faq,
     resources: {
       cv: `${SITE_URL}/resume.pdf`,
+      jsonResume: `${SITE_URL}/resume.json`,
       llms: `${SITE_URL}/llms.txt`,
       llmsFull: `${SITE_URL}/llms-full.txt`,
       bibtex: `${SITE_URL}/citations.bib`,

@@ -24,7 +24,7 @@ const isExternalHref = (href: string) => /^https?:\/\//.test(href);
         </div>
 
         <p class="archive-page__aside">
-          Also available via RSS.
+          Also available via <a href={`${import.meta.env.BASE_URL}rss.xml`}>RSS</a>.
         </p>
       </div>
 

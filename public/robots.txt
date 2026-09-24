@@ -71,5 +71,6 @@ Allow: /
 #   Summary   https://nmotlagh.github.io/llms.txt
 #   Full text https://nmotlagh.github.io/llms-full.txt
 #   Profile   https://nmotlagh.github.io/profile.json
+#   Resume    https://nmotlagh.github.io/resume.json (JSON Resume format)
 
 Sitemap: https://nmotlagh.github.io/sitemap-index.xml

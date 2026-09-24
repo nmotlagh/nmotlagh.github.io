@@ -1,0 +1,290 @@
+---
+/**
+ * Line-art figures for the Selected work case studies. Ink, hairlines and one
+ * accent, drawn in a 240 × 150 box so every figure shares a scale.
+ *
+ * - outcomes:  the paired-outcome grid (conceptual, no data).
+ * - backbones: the 2026 re-test, real numbers from the modern-backbones README
+ *              (δ = 0.05, per-class minus global select accuracy, in points).
+ * - imagery:   swap the image, measure the change (conceptual, no data).
+ */
+interface Props {
+  kind: 'outcomes' | 'backbones' | 'imagery';
+  id: string;
+}
+const { kind, id }: Props = Astro.props;
+const titleId = `${id}-fig-title`;
+
+// Re-test gaps at δ = 0.05 (github.com/nmotlagh/learning-idk, modern-backbones README).
+const gaps = [
+  { name: 'DINOv2 B/14', inSample: 0.62, test: -0.19 },
+  { name: 'DINOv2 S/14', inSample: 0.89, test: -0.38 },
+  { name: 'SigLIP 2 B/16', inSample: 0.7, test: -0.43 },
+  { name: 'DINOv3 S/16', inSample: 0.83, test: -0.3 },
+];
+const zeroX = 150;
+const unit = 70; // px per accuracy point
+const gx = (v: number) => zeroX + v * unit;
+const rowY = (i: number) => 40 + i * 20;
+const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
+
+const captions: Record<Props['kind'], string> = {
+  outcomes: 'Net accuracy change = repaired − harmed',
+  backbones: 'Per-class minus one global threshold, test vs. in-sample',
+  imagery: 'Swap the image, measure the change',
+};
+---
+
+<figure class="work-fig">
+  {kind === 'outcomes' && (
+    <svg viewBox="0 0 240 150" role="img" aria-labelledby={titleId}>
+      <title id={titleId}>
+        A two-by-two grid of paired outcomes. A right draft that stays right is preserved; a right draft
+        that revision makes wrong is harmed; a wrong draft that revision fixes is repaired; a wrong draft
+        that stays wrong is unrecovered.
+      </title>
+      <g class="fig-ink">
+        <rect class="fig-box" x="72" y="34" width="78" height="46" />
+        <rect class="fig-dashed" x="150" y="80" width="78" height="46" />
+      </g>
+      <rect class="fig-harm" x="150" y="34" width="78" height="46" />
+      <rect class="fig-repair" x="72" y="80" width="78" height="46" />
+      <text class="fig-text" x="150" y="12" text-anchor="middle">AFTER REVISION →</text>
+      <text class="fig-text" x="111" y="27" text-anchor="middle">RIGHT</text>
+      <text class="fig-text" x="189" y="27" text-anchor="middle">WRONG</text>
+      <text class="fig-text" x="64" y="27" text-anchor="end">DRAFT ↓</text>
+      <text class="fig-text" x="64" y="59" text-anchor="end">RIGHT</text>
+      <text class="fig-text" x="64" y="105" text-anchor="end">WRONG</text>
+      <text class="fig-text fig-text--strong" x="111" y="59" text-anchor="middle">PRESERVED</text>
+      <text class="fig-text fig-text--strong" x="189" y="59" text-anchor="middle">HARMED</text>
+      <text class="fig-text fig-text--strong" x="111" y="105" text-anchor="middle">REPAIRED</text>
+      <text class="fig-text" x="189" y="105" text-anchor="middle">UNRECOVERED</text>
+      <text class="fig-accent-text fig-sign" x="111" y="118" text-anchor="middle">+1</text>
+      <text class="fig-harm-text fig-sign" x="189" y="72" text-anchor="middle">−1</text>
+      <text class="fig-text" x="150" y="142" text-anchor="middle">BOTH BRANCHES, SAME QUESTION</text>
+    </svg>
+  )}
+
+  {kind === 'backbones' && (
+    <svg viewBox="0 0 240 150" role="img" aria-labelledby={titleId}>
+      <title id={titleId}>
+        {`Per-class minus global-threshold select accuracy, in points, at delta 0.05. ${gaps
+          .map((g) => `${g.name}: in-sample ${signed(g.inSample)}, test ${signed(g.test)}.`)
+          .join(' ')} Every backbone gains in-sample and loses on test.`}
+      </title>
+      <g class="fig-ink">
+        <path class="fig-axis" d={`M${gx(-1)} 114.5H${gx(1)}`} />
+        <path class="fig-axis" d={`M${gx(-1)} 111v7M${zeroX} 111v7M${gx(1)} 111v7`} />
+        <path class="fig-dashed" d={`M${zeroX} 28V112`} />
+        {gaps.map((g, i) => (
+          <path class="fig-line" d={`M${gx(g.test)} ${rowY(i)}H${gx(g.inSample)}`} />
+        ))}
+        {gaps.map((g, i) => (
+          <circle class="fig-hollow fig-hollow--strong" cx={gx(g.inSample)} cy={rowY(i)} r="2.8">
+            <title>{`${g.name}, in-sample: ${signed(g.inSample)} points`}</title>
+          </circle>
+        ))}
+      </g>
+      {gaps.map((g, i) => (
+        <circle class="fig-accent-fill" cx={gx(g.test)} cy={rowY(i)} r="2.8">
+          <title>{`${g.name}, test: ${signed(g.test)} points`}</title>
+        </circle>
+      ))}
+      {gaps.map((g, i) => (
+        <text class="fig-text fig-text--strong" x="72" y={rowY(i) + 2.3} text-anchor="end">{g.name}</text>
+      ))}
+      <text class="fig-text" x={gx(-1)} y="126" text-anchor="middle">−1</text>
+      <text class="fig-text" x={zeroX} y="126" text-anchor="middle">0</text>
+      <text class="fig-text" x={gx(1)} y="126" text-anchor="middle">+1</text>
+      <text class="fig-text" x={gx(-1)} y="139">← PER-CLASS WORSE</text>
+      <text class="fig-text" x={gx(1)} y="139" text-anchor="end">BETTER →</text>
+      <circle class="fig-accent-fill" cx="84" cy="10" r="2.8" />
+      <text class="fig-text fig-text--strong" x="90" y="12.3">TEST</text>
+      <circle class="fig-hollow fig-hollow--strong" cx="126" cy="10" r="2.8" />
+      <text class="fig-text fig-text--strong" x="132" y="12.3">IN-SAMPLE</text>
+    </svg>
+  )}
+
+  {kind === 'imagery' && (
+    <svg viewBox="0 0 240 150" role="img" aria-labelledby={titleId}>
+      <title id={titleId}>
+        An image and a swapped counterpart feed the same model; the figure asks how much the output
+        changes.
+      </title>
+      <defs>
+        <marker id={`${id}-arrow`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path class="fig-marker" d="M0 0.5L7.5 4L0 7.5" />
+        </marker>
+        <marker id={`${id}-arrow-a`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path class="fig-marker fig-marker--accent" d="M0 0.5L7.5 4L0 7.5" />
+        </marker>
+      </defs>
+      <g class="fig-ink">
+        <rect class="fig-dashed" x="28" y="34" width="56" height="56" />
+        <rect class="fig-box" x="18" y="46" width="56" height="56" />
+        <path class="fig-line" d="M24 94l14-16 9 9 7-7 14 14" />
+        <circle class="fig-line" cx="58" cy="62" r="5" />
+        <path class="fig-line" d="M92 74H124" marker-end={`url(#${id}-arrow)`} />
+        <rect class="fig-box" x="130" y="54" width="54" height="40" />
+        <path class="fig-line" d="M184 74H206" marker-end={`url(#${id}-arrow)`} />
+      </g>
+      <path
+        class="fig-accent"
+        d="M92 58c8-10 22-10 30 0"
+        marker-end={`url(#${id}-arrow-a)`}
+        marker-start={`url(#${id}-arrow-a)`}
+      />
+      <text class="fig-text" x="157" y="77" text-anchor="middle">MODEL</text>
+      <text class="fig-accent-text fig-big" x="222" y="80" text-anchor="middle">Δ</text>
+      <text class="fig-text" x="18" y="118">IMAGE</text>
+      <text class="fig-text" x="84" y="28" text-anchor="end">SWAPPED</text>
+      <text class="fig-text" x="107" y="42" text-anchor="middle">⇄</text>
+    </svg>
+  )}
+
+  <figcaption>
+    {kind === 'backbones' ? (
+      <>
+        {captions[kind]}, <span class="work-fig__sym">δ</span>&nbsp;=&nbsp;0.05
+      </>
+    ) : (
+      captions[kind]
+    )}
+  </figcaption>
+</figure>
+
+<style>
+  .work-fig {
+    width: 100%;
+    margin: 0;
+    color: var(--color-text-soft);
+  }
+
+  .work-fig svg {
+    width: 100%;
+    max-width: 26rem;
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .work-fig figcaption {
+    max-width: 26rem;
+    margin: 1rem auto 0;
+    color: var(--color-text-soft);
+    font: 500 0.625rem / 1.5 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* Keep Greek symbols lowercase: an uppercased δ reads as Δ. */
+  .work-fig__sym {
+    text-transform: none;
+  }
+
+  .fig-line,
+  .fig-axis,
+  .fig-dashed,
+  .fig-box,
+  .fig-hollow {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .fig-axis {
+    opacity: 0.7;
+  }
+
+  .fig-dashed {
+    stroke-dasharray: 3 3;
+    opacity: 0.75;
+  }
+
+  .fig-box {
+    fill: var(--color-bg);
+    stroke: var(--color-text-muted);
+  }
+
+  .fig-line {
+    stroke: var(--color-text-muted);
+  }
+
+  .fig-hollow--strong {
+    fill: var(--color-bg-alt);
+    stroke: var(--color-text);
+    stroke-width: 1.2;
+  }
+
+  .fig-marker {
+    fill: none;
+    stroke: var(--color-text-muted);
+    stroke-width: 1.2;
+  }
+
+  .fig-marker--accent {
+    stroke: var(--color-accent);
+  }
+
+  .fig-accent {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .fig-accent-fill {
+    fill: var(--color-accent);
+  }
+
+  /* Repaired and harmed: the two cells that move accuracy. Identity is also in
+     the words and the +1 / −1 signs, never color alone. */
+  .fig-repair,
+  .fig-harm {
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .fig-repair {
+    fill: var(--color-accent-soft);
+    stroke: var(--color-accent);
+  }
+
+  .fig-harm {
+    fill: var(--color-secondary-soft);
+    stroke: var(--color-secondary);
+  }
+
+  .fig-text,
+  .fig-accent-text,
+  .fig-harm-text {
+    fill: currentColor;
+    font: 500 6.5px var(--font-mono);
+    letter-spacing: 0.06em;
+  }
+
+  .fig-text--strong {
+    fill: var(--color-text);
+  }
+
+  .fig-accent-text {
+    fill: var(--color-accent);
+    font-size: 10px;
+  }
+
+  .fig-harm-text {
+    fill: var(--color-secondary);
+    font-size: 10px;
+  }
+
+  .fig-sign {
+    font-size: 8px;
+    font-weight: 600;
+  }
+
+  .fig-big {
+    font: 500 15px var(--font-sans);
+  }
+</style>

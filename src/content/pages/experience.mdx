@@ -1,6 +1,6 @@
 ---
 title: "Experience"
-updated: "2026-09-04"
+updated: "2026-09-24"
 intro: "Research, teaching, and internships in selective prediction, calibration, multimodal evaluation, and LLM reliability."
 education:
   - degree: "Ph.D."
@@ -44,9 +44,10 @@ items:
     location: "AFRL-sponsored · Dayton, OH"
     timeframe: "May 2025 — Present"
     bullets:
-      - "Build <strong>LLM evaluation pipelines</strong> that measure when retrieval-based revision repairs an answer and when it changes a correct answer into an error."
-      - "Develop and evaluate <strong>LoRA fine-tuned models</strong> for answer, refine, and abstain decisions using PyTorch, Hugging Face, and Slurm."
-      - "Maintain the evaluation harness comparing LLM policy variants across coverage, utility, and out-of-distribution behavior."
+      # Government-funded work: keep this at resume level (no results, datasets, or program details).
+      - "Build <strong>evidence-grounded QA systems</strong>: small open models answer from retrieved documents, cite the passage they used, and abstain when the evidence doesn’t support an answer. Uses synthetic training data from a teacher model, LoRA fine-tuning, and paired base-versus-adapted evaluation on held-out questions."
+      - "Build <strong>paired-outcome evaluation pipelines</strong> for retrieval-augmented QA that measure, on 25,870 held-out questions, when revision repairs a wrong answer and when it harms a right one."
+      - "Train and evaluate <strong>LoRA fine-tuned models</strong> for answer, refine, and abstain decisions with PyTorch, Hugging Face, and Slurm, comparing policy variants on coverage, utility, and out-of-distribution behavior."
   - role: "Graduate Research Associate — Computer Vision Lab"
     location: "Ohio State University · Columbus, OH"
     timeframe: "Aug 2021 — Aug 2026"

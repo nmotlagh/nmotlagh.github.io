@@ -4,19 +4,76 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="404" description="The page you’re looking for doesn’t exist." noindex>
-  <section class="site-shell section">
-    <div class="surface surface--muted stack" style="padding: clamp(2rem, 4vw, 3rem)">
-      <span class="tag">404</span>
-      <h1 class="hero__heading" style="font-size: clamp(2rem, 1.8rem + 1vw, 2.6rem);">
-        That page wandered off.
-      </h1>
-      <p class="prose" style="max-width: 48ch;">
-        Try heading back to the homepage or contact me if you think something’s broken.
-      </p>
-      <div class="hero__actions">
-        <a class="button" href={import.meta.env.BASE_URL}>Return home</a>
-        <a class="button button--ghost" href={links.email}>Email me</a>
+  <section class="section">
+    <div class="site-shell">
+      <div class="fig-panel error-page">
+        <p class="fig-label" aria-hidden="true">FIG.404</p>
+        <p class="error-page__code" aria-hidden="true">404</p>
+        <div class="error-page__body">
+          <p class="eyebrow"><span class="label__index">404</span><span>Not found</span></p>
+          <h1 class="error-page__title">That page wandered off.</h1>
+          <p class="error-page__copy">
+            Try heading back to the homepage or contact me if you think something’s broken.
+          </p>
+          <div class="error-page__actions">
+            <a class="button" href={import.meta.env.BASE_URL}>Return home</a>
+            <a class="button button--ghost" href={links.email}>Email me</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .error-page {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 3vw, 4rem);
+    align-items: end;
+  }
+
+  @media (min-width: 900px) {
+    .error-page {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  /* The same dot screen as the footer phrase. */
+  .error-page__code {
+    margin: 0;
+    color: transparent;
+    background-image: radial-gradient(circle, var(--color-text-soft) 1.2px, transparent 1.7px);
+    background-size: 5px 5px;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font: 600 clamp(7rem, 4rem + 14vw, 16rem) / 0.9 var(--font-mono);
+    letter-spacing: -0.06em;
+    user-select: none;
+  }
+
+  .error-page__body {
+    min-width: 0;
+  }
+
+  .error-page__title {
+    margin: 0;
+    color: var(--color-text);
+    font: 500 var(--display-1) / 1.02 var(--font-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .error-page__copy {
+    max-width: 36rem;
+    margin: 1.1rem 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    line-height: 1.55;
+  }
+
+  .error-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+</style>

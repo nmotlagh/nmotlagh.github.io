@@ -58,10 +58,12 @@ const structuredData = graph([
         ← Back to publications
       </a>
 
-      <header class="detail-page__hero surface surface--raised">
+      <header class="detail-page__hero">
         <div>
           <div class="detail-page__eyebrow-row">
-            <p class="eyebrow">{pub.data.venue} / {pub.data.year}</p>
+            <p class="eyebrow">
+              {pub.data.venue}{!pub.data.venue.includes(String(pub.data.year)) && ` / ${pub.data.year}`}
+            </p>
             {isFirstAuthor && <span class="detail-page__role">First author</span>}
           </div>
           <h1>{pub.data.title}</h1>
@@ -95,24 +97,22 @@ const structuredData = graph([
 
         <div class="detail-page__aside">
           {(pub.data.metric || pub.data.award) && (
-            <aside class="detail-note surface">
-              <p class="eyebrow">Signal</p>
-              <p style="margin: 0; color: var(--color-text); font-family: var(--font-display); font-size: 1.4rem; line-height: 1.08;">
-                {pub.data.metric ?? pub.data.award}
-              </p>
+            <aside class:list={['detail-note surface', !pub.data.metric && 'detail-note--award']}>
+              <p class="eyebrow">{pub.data.metric ? 'Signal' : '★ Award'}</p>
+              <p class="detail-note__signal">{pub.data.metric ?? pub.data.award}</p>
             </aside>
           )}
 
           <aside class="detail-note surface">
             <p class="eyebrow">Summary</p>
-            <p style="margin: 0;">{pub.data.tldr}</p>
+            <p class="detail-note__summary">{pub.data.tldr}</p>
           </aside>
         </div>
       </header>
 
       <div class="detail-page__grid">
         <div class="detail-page__main">
-          <section class="detail-page__content surface" style="padding: clamp(1.3rem, 3vw, 2.2rem);">
+          <section class="detail-page__content surface">
             <div class="prose">
               <rendered.Content />
             </div>
@@ -139,11 +139,10 @@ const structuredData = graph([
               <ul>
                 {relatedArtifacts.map((artifact) => (
                   <li>
-                    <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                      {artifact.data.name}
+                    <a class="detail-note__link" href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
+                      {artifact.data.name} <span aria-hidden="true">↗</span>
                     </a>
-                    <br />
-                    <span>{artifact.data.summary}</span>
+                    <span class="detail-note__sub">{artifact.data.summary}</span>
                   </li>
                 ))}
               </ul>

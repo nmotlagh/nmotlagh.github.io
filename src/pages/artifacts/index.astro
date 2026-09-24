@@ -41,7 +41,8 @@ const structuredData = graph([
         <div>
           <SectionHeading
             as="h1"
-            eyebrow="Code"
+            index="02"
+            eyebrow="Work · Code and data"
             title="Research code and datasets."
           />
         </div>
@@ -49,12 +50,14 @@ const structuredData = graph([
       </div>
 
       <div class="grid grid--2 archive-page__grid">
-        {artifacts.map((artifact) => {
+        {artifacts.map((artifact, i) => {
           const tiedPublications = artifact.data.tiesTo
             .map((slug) => ({ slug, title: publicationLookup.get(slug) }))
             .filter((item): item is { slug: string; title: string } => Boolean(item.title));
           return (
             <article class="artifact-archive-card surface">
+              <p class="fig-label" aria-hidden="true">2.{i + 1}</p>
+              <p class="artifact-archive-card__repo">{artifact.data.repo.replace('https://github.com/', '')}</p>
               <div class="artifact-card__header">
                 <h2>
                   <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
@@ -79,14 +82,14 @@ const structuredData = graph([
                   ))}
                 </ul>
               )}
-              <ul class="artifact-archive-card__steps">
+              <ol class="artifact-archive-card__steps">
                 {artifact.data.reproduce.map((item) => (
                   <li>{item}</li>
                 ))}
-              </ul>
+              </ol>
               {tiedPublications.length > 0 && (
                 <p class="artifact-card__ties">
-                  Supports:&nbsp;
+                  <span class="artifact-card__ties-label">Supports</span>
                   {tiedPublications.map((item, index) => (
                     <span>
                       <a href={`${import.meta.env.BASE_URL}publications/${item.slug}/`}>{item.title}</a>
@@ -105,17 +108,23 @@ const structuredData = graph([
 
 <style>
   .artifact-archive-card {
-    padding: 1.2rem;
-    transition:
-      border-color var(--transition-fast),
-      box-shadow var(--transition-fast),
-      transform var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: calc(var(--pad-slab) + 1.25rem) var(--pad-slab) var(--pad-slab);
+    transition: background-color var(--transition-fast);
   }
 
-  .artifact-archive-card:hover {
-    border-color: var(--color-border-strong);
-    box-shadow: var(--shadow-card-hover);
-    transform: translateY(-2px);
+  .artifact-archive-card:hover,
+  .artifact-archive-card:focus-within {
+    background: var(--color-bg-alt);
+  }
+
+  .artifact-archive-card__repo {
+    margin: 0 0 0.6rem;
+    color: var(--color-text-soft);
+    font: 400 var(--label-md) / 1.4 var(--font-mono);
+    overflow-wrap: anywhere;
   }
 
   .artifact-card__header {
@@ -127,32 +136,34 @@ const structuredData = graph([
 
   .artifact-card__header h2 {
     margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.55rem;
-    font-weight: 400;
-    line-height: 1.08;
+    font: 500 var(--display-3) / 1.15 var(--font-display);
+    letter-spacing: -0.025em;
   }
 
   .artifact-card__header h2 a {
-    color: inherit;
+    color: var(--color-text);
     text-decoration: none;
   }
 
   .artifact-card__header h2 a:hover,
   .artifact-card__header h2 a:focus-visible {
-    color: var(--color-accent);
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.12em;
   }
 
   .artifact-archive-card p {
     color: var(--color-text-muted);
-    line-height: 1.75;
+    line-height: 1.65;
   }
 
   .artifact-archive-card__stack {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 0 0 0.9rem;
+    gap: 0.3rem;
+    margin: 0 0 1.25rem;
     padding: 0;
     list-style: none;
   }
@@ -160,37 +171,71 @@ const structuredData = graph([
   .artifact-archive-card__stack li {
     display: inline-flex;
     align-items: center;
-    min-height: 1.85rem;
-    padding: 0.22rem 0.55rem;
+    min-height: 1.6rem;
+    padding: 0.2rem 0.5rem;
     border: var(--hairline);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-muted);
-    font: 600 0.7rem/1.2 var(--font-mono);
-    letter-spacing: 0.04em;
+    color: var(--color-text-soft);
+    font: 500 0.625rem / 1.2 var(--font-mono);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
   .artifact-archive-card__steps {
-    margin: 0;
-    padding-left: 1.05rem;
-    color: var(--color-text-muted);
     display: grid;
-    gap: 0.55rem;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--hairline);
+    counter-reset: step;
   }
 
-  .artifact-archive-card__steps li::marker {
-    color: var(--color-accent);
+  .artifact-archive-card__steps li {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: var(--hairline);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    counter-increment: step;
+  }
+
+  .artifact-archive-card__steps li::before {
+    content: counter(step, decimal-leading-zero);
+    color: var(--color-text-soft);
+    font: 500 var(--label-md) / 1.9 var(--font-mono);
   }
 
   .artifact-card__ties {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--color-border);
+    margin: auto 0 0;
+    padding-top: 1.25rem;
+    font-size: var(--text-sm);
+  }
+
+  .artifact-card__ties-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--color-text-soft);
+    font: 500 var(--label-sm) / 1.3 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
   }
 
   @media (max-width: 640px) {
+    .artifact-archive-card {
+      padding: calc(var(--pad-card) + 1.25rem) var(--pad-card) var(--pad-card);
+    }
+
     .artifact-card__header {
       display: grid;
+    }
+
+    .artifact-card__header h2 a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
     }
   }
 </style>

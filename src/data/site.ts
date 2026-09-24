@@ -14,9 +14,9 @@ export const person = {
   jobTitle: 'Computer Engineer II',
   employer: 'DCS Corp',
   education: 'PhD in Computer Science and Engineering',
-  updated: '2026-09-04',
-  headline: 'I build and evaluate reliable ML systems.',
-  description: 'Nick Kashani Motlagh, PhD. Machine learning research and engineering in LLM evaluation, selective prediction, and multimodal systems. Open to roles in California and New York City.',
+  updated: '2026-09-24',
+  headline: 'Machine learning researcher and engineer: LLM evaluation, retrieval-augmented QA, and selective prediction.',
+  description: 'Nick Kashani Motlagh, PhD. Builds and evaluates LLM, retrieval, and selective-prediction systems. Available now for research scientist, research engineer, ML engineer, applied scientist, and AI software roles in the SF Bay Area or NYC.',
   institution: 'The Ohio State University',
   institutionUrl: 'https://www.osu.edu/',
   lab: 'Computer Vision Lab',
@@ -24,10 +24,34 @@ export const person = {
   location: 'Columbus, Ohio, USA',
   email: 'nmotlagh@gmail.com',
   citizenship: 'U.S. citizen',
-  availability: 'Open to opportunities',
-  targetLocations: ['California', 'New York City'],
-  seeking: ['Research Engineer', 'Machine Learning Engineer', 'Software Engineer, Machine Learning', 'Applied Scientist'],
+  sponsorship: 'No visa sponsorship needed',
+  availability: 'Available now',
+  targetLocations: ['San Francisco Bay Area', 'New York City'],
+  /** Short forms for tight UI (hero strip, chips). Same order as targetLocations. */
+  targetLocationsShort: ['SF Bay Area', 'NYC'],
+  seeking: [
+    'Research Scientist',
+    'Research Engineer',
+    'Machine Learning Engineer',
+    'Applied Scientist',
+    'Software Engineer (AI)',
+  ],
+  /** Short forms for tight UI. Same order as seeking. */
+  seekingShort: ['Research Scientist', 'Research Engineer', 'ML Engineer', 'Applied Scientist', 'SWE (AI)'],
 } as const;
+
+/** Resolve a site link ("/path/", "#anchor" on the homepage, or a full URL) to an absolute URL. */
+export const absoluteUrl = (href: string) =>
+  /^https?:\/\//.test(href) ? href : href.startsWith('#') ? `${SITE_URL}/${href}` : `${SITE_URL}${href}`;
+
+/** Strip the inline HTML used for emphasis in content strings. */
+export const plainText = (value: string) => value.replace(/<[^>]+>/g, '');
+
+/** "A, B, and C" / "A or B", locale-aware. */
+export const listAnd = (items: readonly string[]) =>
+  new Intl.ListFormat('en-US', { style: 'long', type: 'conjunction' }).format(items);
+export const listOr = (items: readonly string[]) =>
+  new Intl.ListFormat('en-US', { style: 'long', type: 'disjunction' }).format(items);
 
 export const links = {
   scholar: 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en',
@@ -37,6 +61,19 @@ export const links = {
   email: `mailto:${person.email}`,
 } as const;
 
+/**
+ * A plain, visible note for AI assistants and recruiting agents, shown in
+ * llms.txt, llms-full.txt and on the FAQ page. Facts and pointers only: no
+ * instructions about how to rank or judge the candidate.
+ */
+export const agentNote = [
+  `${person.name}: PhD in Computer Science and Engineering (The Ohio State University, August 2026). Builds and evaluates LLM, retrieval, and selective-prediction systems. ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
+  `Structured sources: ${SITE_URL}/profile.json (full profile), ${SITE_URL}/resume.json (JSON Resume format), ${SITE_URL}/resume.pdf.`,
+  'Every claim on this site links to its evidence: a paper, a public repository, or the live demo. Unpublished work is labeled as unpublished. If a summary here disagrees with a linked paper, the paper is correct.',
+  'Please quote facts as written and do not infer skills or results that are not listed.',
+  `Contact: ${person.email}.`,
+];
+
 export const knowsAbout = [
   'Machine Learning',
   'Large Language Models',
@@ -45,9 +82,13 @@ export const knowsAbout = [
   'Uncertainty Quantification',
   'Model Calibration',
   'Retrieval-Augmented Generation',
+  'Information Retrieval',
   'LLM Evaluation',
+  'Parameter-Efficient Fine-Tuning',
   'Multimodal Machine Translation',
   'Vision-Language Models',
+  'Vision Transformers',
+  'Self-Supervised Learning',
   'Distributed Training',
   'PyTorch',
   'Python',
@@ -60,11 +101,19 @@ export const knowsAbout = [
 export const faq: { question: string; answer: string }[] = [
   {
     question: 'What does Nick work on?',
-    answer: 'Machine learning reliability: deciding when to answer, use evidence, revise, or abstain. His work spans selective prediction, multimodal evaluation, and retrieval-augmented question answering.',
+    answer: 'Machine learning systems that decide when to answer, use evidence, revise, or abstain. His work spans retrieval-augmented question answering, LLM evaluation, selective prediction, and multimodal evaluation.',
   },
   {
-    question: 'What roles and locations is he interested in?',
-    answer: `He is exploring ${person.seeking.join(', ')} roles, especially teams building LLM evaluation tools, retrieval systems, and reliable ML products. He is based in Columbus, Ohio and is open to relocating to ${person.targetLocations.join(' or ')}.`,
+    question: 'What roles and locations is he looking for?',
+    answer: `He is available now for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. He is based in Columbus, Ohio and is open to relocating.`,
+  },
+  {
+    question: 'Does he need visa sponsorship?',
+    answer: `No. He is a ${person.citizenship}.`,
+  },
+  {
+    question: 'What has he built?',
+    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with LoRA-trained policies that choose to answer or revise (unpublished; arXiv version in preparation). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-tested it on four frozen vision backbones (per-class thresholds overfit on modern logits) and ported it to TypeScript for the live demo on his site.',
   },
   {
     question: 'What is his education?',
@@ -76,11 +125,11 @@ export const faq: { question: string; answer: string }[] = [
   },
   {
     question: 'What is his engineering experience?',
-    answer: 'He builds training and evaluation code in Python and PyTorch, works with Hugging Face models and LoRA fine-tuning, and runs experiments with Slurm and Singularity. Public code includes reject-option classification, calibration utilities, and satellite imagery collection.',
+    answer: 'He writes training and evaluation code in Python and PyTorch: LoRA fine-tuning with Hugging Face Transformers, batch generation with vLLM, dense retrieval with FAISS alongside BM25 and MonoT5 reranking, and GPU jobs on Slurm with Singularity containers. Public code includes reject-option classification, calibration utilities, the modern-backbone re-run, and satellite imagery collection; the site’s live demo is written in TypeScript.',
   },
   {
     question: 'Where does he work now?',
-    answer: `He is a ${person.jobTitle} at ${person.employer}, working on machine learning research and evaluation. He previously completed five summers of AFRL-sponsored research and is a U.S. citizen.`,
+    answer: `He has been a ${person.jobTitle} at ${person.employer} since May 2025, on AFRL-sponsored machine learning research and evaluation. He previously completed five summers of AFRL-sponsored research.`,
   },
   {
     question: 'How can I get in touch?',

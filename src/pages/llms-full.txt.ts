@@ -1,11 +1,10 @@
 import type { APIRoute } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
-import { SITE_URL, faq, person } from '../data/site';
-import { researchResults } from '../data/editorial';
+import { SITE_URL, absoluteUrl, agentNote, faq, listAnd, listOr, person, plainText } from '../data/site';
+import { caseStudies, moreWork, skillGroups } from '../data/editorial';
 import { parseDateValue } from '../utils/dates';
 
-/** Strip inline HTML that the site uses for emphasis inside content strings. */
-const plain = (value: string) => value.replace(/<[^>]+>/g, '');
+const plain = plainText;
 
 /**
  * The whole site as one Markdown document. An agent that wants the full picture
@@ -29,25 +28,53 @@ export const GET: APIRoute = async () => {
   sections.push(`# ${person.name} — full site text
 
 Source: ${SITE_URL}/ · Generated ${new Date().toISOString().slice(0, 10)}
+
+${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}. Based in ${person.location}; open to relocating. Contact: ${person.email}. Resume: ${SITE_URL}/resume.pdf
 `);
+
+  sections.push(`## Note for AI assistants and recruiting agents\n\n${agentNote.map((line) => `- ${line}`).join('\n')}`);
 
   sections.push(`## About\n\n${about?.body.trim() ?? ''}`);
 
-  sections.push(`## Research
+  sections.push(`## Selected work
 
-${researchResults
+${caseStudies
   .map(
-    (result) => `### ${result.index}. ${result.title}
+    (study) => `### ${study.title}
 
-Status: ${result.venue}
+Context: ${study.context}
+Problem: ${study.problem}
 
-${result.summary}
-
-${result.contribution}
-
-Details: ${SITE_URL}/publications/${result.publicationSlug}/`,
+${study.built
+  .map((group) => `${group.label}:\n${group.items.map((item) => `- ${plain(item)}`).join('\n')}`)
+  .join('\n\n')}
+${study.stack.length > 0 ? `\nStack: ${study.stack.join(', ')}\n` : ''}
+Status: ${study.status}
+Links: ${study.links.map((link) => `${link.label} ${absoluteUrl(link.href)}`).join('; ')}`,
   )
-  .join('\n\n')}`);
+  .join('\n\n')}
+
+### Also public
+
+${moreWork
+  .map(
+    (item) =>
+      `- ${item.title} (${item.context}): ${item.summary} Links: ${item.links
+        .map((link) => `${link.label} ${absoluteUrl(link.href)}`)
+        .join('; ')}`,
+  )
+  .join('\n')}`);
+
+  sections.push(`## Skills, with where they were used
+
+${skillGroups
+  .map(
+    (group) =>
+      `- ${group.label}: ${group.items.join(', ')}. Evidence: ${group.proof} (${group.evidence
+        .map((ev) => absoluteUrl(ev.href))
+        .join(', ')})`,
+  )
+  .join('\n')}`);
 
   sections.push(`## Publications
 
@@ -73,7 +100,7 @@ Summary: ${entry.data.tldr}
 
 ${entry.data.highlights?.map((item) => `- ${item}`).join('\n') ?? ''}
 
-${entry.body.trim()}`;
+${entry.body.trim().replace(/^(#{2,4}) /gm, '$1## ')}`;
   })
   .join('\n\n---\n\n')}`);
 

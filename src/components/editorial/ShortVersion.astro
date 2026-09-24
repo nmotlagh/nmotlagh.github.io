@@ -1,0 +1,354 @@
+---
+/**
+ * The recruiter panel under the hero: who, which roles, where, status, work
+ * authorization, education, contact (1.1), and every skill group with the place
+ * it was used (1.2). Built to be read in ten seconds.
+ */
+import { skillGroups } from '../../data/editorial';
+import { links, person } from '../../data/site';
+
+const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
+const profiles = [
+  { label: 'LinkedIn', href: links.linkedin },
+  { label: 'GitHub', href: links.github },
+  { label: 'Scholar', href: links.scholar },
+];
+---
+
+<div class="brief">
+  <section class="brief__panel" aria-labelledby="brief-facts-title">
+    <h2 class="fig-label brief__title" id="brief-facts-title">
+      <span class="brief__num">1.1</span> The short version
+    </h2>
+
+    <dl class="brief__facts">
+      <div>
+        <dt>Status</dt>
+        <dd class="brief__status">
+          <span class="brief__dot" aria-hidden="true"></span>{person.availability}
+        </dd>
+      </div>
+      <div>
+        <dt>Roles</dt>
+        <dd>
+          {person.seeking.map((role, i) => (
+            <>
+              {i > 0 && <span class="brief__sep" aria-hidden="true"> · </span>}
+              <span class="brief__keep">{role}</span>
+            </>
+          ))}
+        </dd>
+      </div>
+      <div>
+        <dt>Where</dt>
+        <dd>
+          {person.targetLocations.join(' or ')}.
+          <span class="brief__soft">Based in Columbus, Ohio; open to relocating.</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Work auth</dt>
+        <dd>{person.citizenship}. <span class="brief__soft">No sponsorship needed.</span></dd>
+      </div>
+      <div>
+        <dt>Education</dt>
+        <dd>
+          PhD, Computer Science and Engineering, Ohio State, Aug 2026.
+          <span class="brief__soft">Advisor Prof. Jim Davis; minors in Mathematics and HPC.</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Now</dt>
+        <dd>
+          {person.jobTitle}, {person.employer}. <span class="brief__soft">AFRL-sponsored, since May 2025.</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Papers</dt>
+        <dd>
+          4 first-author, peer-reviewed.
+          <span class="brief__soft">Springer Best Paper Award, ISVC 2022.</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd><a class="brief__email" href={links.email}>{person.email}</a></dd>
+      </div>
+    </dl>
+
+    <div class="brief__actions">
+      <a class="button" href={links.email}>Email me</a>
+      <a class="button button--ghost" href={resumeHref} target="_blank" rel="noopener noreferrer">
+        Resume (PDF)
+      </a>
+    </div>
+    <ul class="brief__profiles" aria-label="Profiles">
+      {profiles.map((profile) => (
+        <li>
+          <a class="badge badge--link" href={profile.href} target="_blank" rel="noopener noreferrer">
+            {profile.label}
+            <span class="sr-only">(opens in a new tab)</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="brief__panel" aria-labelledby="brief-skills-title">
+    <h2 class="fig-label brief__title" id="brief-skills-title">
+      <span class="brief__num">1.2</span> Skills, and where I used them
+    </h2>
+
+    <dl class="brief__skills">
+      {skillGroups.map((group) => (
+        <div>
+          <dt>{group.label}</dt>
+          <dd>
+            <p class="brief__items">
+              {group.items.map((item, i) => (
+                <>
+                  {i > 0 && <span class="brief__sep" aria-hidden="true"> / </span>}
+                  <span class="brief__keep">{item}</span>
+                </>
+              ))}
+            </p>
+            <p class="brief__proof">
+              {group.proof}{' '}
+              <span class="brief__links">
+                <span class="sr-only">Evidence:</span>
+                {group.evidence.map((ev) => (
+                  <a class="brief__evidence" href={ev.href}>
+                    {ev.label}<span class="brief__arrow" aria-hidden="true">{ev.href.startsWith('#') ? '↓' : '→'}</span>
+                  </a>
+                ))}
+              </span>
+            </p>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+</div>
+
+<style>
+  .brief {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Two FIG-style hairline panels sharing one seam. */
+  .brief__panel {
+    position: relative;
+    min-width: 0;
+    margin: 0 -1px -1px 0;
+    padding: calc(var(--pad-card) + 1.9rem) var(--pad-slab) var(--pad-slab);
+    border: var(--hairline);
+    background: var(--color-bg-alt);
+  }
+
+  .brief__title {
+    display: flex;
+    gap: 0.7em;
+    top: 1rem;
+    left: var(--pad-slab);
+    color: var(--color-text);
+    font-size: var(--label-md);
+    letter-spacing: var(--tracking-label);
+  }
+
+  .brief__num {
+    color: var(--color-text-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .brief__facts,
+  .brief__skills {
+    margin: 0;
+    border-top: var(--hairline);
+  }
+
+  .brief__facts > div,
+  .brief__skills > div {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.25rem 1rem;
+    padding: 0.65rem 0;
+    border-bottom: var(--hairline);
+  }
+
+  .brief__skills > div {
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+    padding: 0.75rem 0;
+  }
+
+  .brief dt {
+    color: var(--color-text-soft);
+    font: 500 var(--label-sm) / 1.9 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .brief dd {
+    min-width: 0;
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: 1.55;
+  }
+
+  .brief__soft {
+    color: var(--color-text-soft);
+  }
+
+  .brief__sep {
+    color: var(--color-text-faint);
+  }
+
+  /* Keep "Machine Learning Engineer" or "HF Transformers" on one line when a row
+     wraps; on narrow phones a long item ("Linear probes on …") must wrap instead. */
+  @media (min-width: 480px) {
+    .brief__keep {
+      white-space: nowrap;
+    }
+  }
+
+  /* Touch screens of any width get a full-size email target. */
+  @media (pointer: coarse) {
+    .brief__email {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+  }
+
+  .brief__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 500;
+  }
+
+  .brief__dot {
+    flex: none;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--color-positive);
+    box-shadow: 0 0 0 3px var(--color-positive-soft);
+  }
+
+  .brief__email {
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+  }
+
+  .brief__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.4rem;
+  }
+
+  .brief__profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .brief__items,
+  .brief__proof {
+    max-width: none;
+    margin: 0;
+  }
+
+  .brief__proof {
+    margin-top: 0.2rem;
+    color: var(--color-text-soft);
+  }
+
+  .brief__evidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    min-height: 1.5rem;
+    margin-left: 0.3rem;
+    padding: 0.05rem 0.4rem;
+    vertical-align: middle;
+    background: var(--color-tab);
+    color: var(--color-text);
+    font: 500 0.625rem / 1.6 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--transition-fast);
+  }
+
+  .brief__evidence:hover,
+  .brief__evidence:focus-visible {
+    background: var(--color-tab-hover);
+    color: var(--color-text);
+  }
+
+  .brief__arrow {
+    color: var(--color-text-soft);
+  }
+
+  @media (min-width: 1100px) {
+    .brief {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .brief__panel {
+      padding: calc(var(--pad-card) + 1.75rem) var(--pad-card) var(--pad-card);
+    }
+
+    .brief__title {
+      left: var(--pad-card);
+    }
+
+    .brief__facts > div,
+    .brief__skills > div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.15rem;
+    }
+
+    .brief__actions .button {
+      flex: 1 1 auto;
+    }
+
+    .brief__email {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+
+    /* Evidence chips get their own row of full-size touch targets on phones. */
+    .brief__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .brief__evidence {
+      min-height: 2.75rem;
+      margin-left: 0;
+      padding-inline: 0.65rem;
+      font-size: 0.6875rem;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .brief__evidence {
+      min-height: 2.75rem;
+      padding-inline: 0.65rem;
+    }
+  }
+</style>

@@ -2,10 +2,11 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EditorialHero from "../components/editorial/EditorialHero.astro";
-import ResearchResults from "../components/editorial/ResearchResults.astro";
+import ShortVersion from "../components/editorial/ShortVersion.astro";
+import SelectedWork from "../components/editorial/SelectedWork.astro";
 import AbstainDemo from "../components/editorial/AbstainDemo.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
-import { homeEditorial, researchResults } from "../data/editorial";
+import { caseStudies, homeEditorial } from "../data/editorial";
 import { person as personProfile } from "../data/site";
 import {
   PERSON_ID,
@@ -27,12 +28,15 @@ const publicationEntries = await getCollection("publications", ({ data }) => !da
 const publications = publicationEntries
   .filter((entry) => entry.data.citation?.type !== "unpublished")
   .sort((a, b) => b.data.year - a.data.year);
+// The award paper gets the lime block; the rest list beside it, newest first.
+const awardPaper = publications.find((entry) => entry.data.award);
+const otherPapers = publications.filter((entry) => entry !== awardPaper);
+const publicationCount = publications.length;
+const latestYear = publications[0]?.data.year;
+const earliestYear = publications[publications.length - 1]?.data.year;
 const artifactEntries = await getCollection("artifacts");
-const artifactLookup = new Map(artifactEntries.map((entry) => [entry.id, entry]));
-
-const featuredArtifacts = homeEditorial.featuredArtifactIds
-  .map((id) => artifactLookup.get(id))
-  .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+// FIG.0 is the hero scene; the case-study figures follow, then the demo.
+const demoFig = caseStudies.length + 1;
 
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
 const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io/";
@@ -77,82 +81,87 @@ const structuredData = graph([
 <BaseLayout
   description={personProfile.description}
   structuredData={structuredData}
+  overlayHeader
 >
-  <section class="section section--hero" id="about">
+  <EditorialHero
+    eyebrow={homeEditorial.hero.eyebrow}
+    title={homeEditorial.hero.title}
+    ledeHtml={homeEditorial.hero.ledeHtml}
+    supporting={homeEditorial.hero.supporting}
+    resumeHref={resumeHref}
+    terminal={homeEditorial.hero.terminal}
+  />
+
+  <section class="section section--brief" id="short-version">
     <div class="site-shell">
-      <EditorialHero
-        eyebrow={homeEditorial.hero.eyebrow}
-        title={homeEditorial.hero.title}
-        ledeHtml={homeEditorial.hero.ledeHtml}
-        supporting={homeEditorial.hero.supporting}
-        resumeHref={resumeHref}
-        paperCount={publications.length}
-      />
+      <ShortVersion />
+    </div>
+  </section>
+
+  <section class="section" id="work" aria-labelledby="work-title">
+    <div class="site-shell">
+      <SelectedWork index="2.1" firstFig={1} />
     </div>
   </section>
 
   <section class="section" id="demo">
     <div class="site-shell">
-      <AbstainDemo />
+      <AbstainDemo index="2.2" fig={demoFig} />
     </div>
   </section>
 
   <section class="section" id="research">
     <div class="site-shell">
-      <ResearchResults
-        eyebrow={homeEditorial.research.eyebrow}
-        title={homeEditorial.research.title}
-        summary={homeEditorial.research.summary}
-        results={researchResults}
-      />
-    </div>
-  </section>
-
-  <section class="section" id="experience">
-    <div class="site-shell stack">
       <SectionHeading
-        eyebrow="Experience"
-        title="Machine learning research and engineering."
-      />
-
-      <div class="home-experience-grid">
-        {experienceItems.slice(0, 2).map((item) => (
-          <article class="home-experience-card surface">
-            <h3>{item.role}</h3>
-            <p class="home-experience-card__meta">
-              {item.location ? `${item.location} / ${item.timeframe}` : item.timeframe}
-            </p>
-            {item.bullets && item.bullets.length > 0 && (
-              <ul>
-                {item.bullets.slice(0, 2).map((bullet) => (
-                  <li set:html={bullet} />
-                ))}
-              </ul>
-            )}
-          </article>
-        ))}
-      </div>
-
-      <div>
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}experience/`}>
-          Full history
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="publications">
-    <div class="site-shell stack">
-      <SectionHeading
-        eyebrow="Publications"
+        index="03"
+        eyebrow="Research"
         title="Peer-reviewed publications."
+        dim={`${publicationCount}\u00a0first-author papers, ${earliestYear}–${latestYear}.`}
       />
 
-      <ol class="pub-list">
-        {publications.map((entry) => (
-          <li class="pub-list__item">
-            <div class="pub-list__year">{entry.data.year}</div>
-            <div class="pub-list__body">
+      <div class="pubs">
+        {awardPaper && (
+          <article class="pubs__award">
+            <p class="pubs__award-label">
+              <span aria-hidden="true">★</span> {awardPaper.data.award} · {awardPaper.data.venue}
+            </p>
+            <h3 class="pubs__award-title">
+              <a href={`${import.meta.env.BASE_URL}publications/${awardPaper.slug}/`}>
+                {awardPaper.data.title}
+              </a>
+            </h3>
+            <p class="pubs__award-tldr">{awardPaper.data.tldr}</p>
+            <p class="pubs__award-authors">
+              {awardPaper.data.authors.map((author, i) => (
+                <>
+                  {i > 0 && ", "}
+                  {author.includes("Kashani Motlagh") ? <strong>{author}</strong> : author}
+                </>
+              ))}
+            </p>
+            <div class="pubs__award-links">
+              {publicationLinks(awardPaper).map((link) => (
+                <a
+                  class="pubs__award-link"
+                  href={link.href}
+                  aria-label={`${link.label} — ${awardPaper.data.title}`}
+                  target={link.href.startsWith("http") ? "_blank" : undefined}
+                  rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                >
+                  {link.label} <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
+          </article>
+        )}
+
+        <ol class="pub-list">
+          {otherPapers.map((entry) => (
+            <li class="pub-list__item">
+              <p class="pub-list__meta">
+                <span class="pub-list__year">{entry.data.year}</span>
+                <span>{entry.data.venue}</span>
+              </p>
               <h3 class="pub-list__title">
                 <a href={`${import.meta.env.BASE_URL}publications/${entry.slug}/`}>
                   {entry.data.title}
@@ -166,60 +175,68 @@ const structuredData = graph([
                   </>
                 ))}
               </p>
-              <p class="pub-list__venue">
-                <span>{entry.data.venue}</span>
-                {entry.data.award && <span class="pub-list__award">{entry.data.award}</span>}
-              </p>
-            </div>
-            <div class="pub-list__links">
-              {publicationLinks(entry).map((link) => (
-                <a
-                  class="badge badge--link"
-                  href={link.href}
-                  aria-label={`${link.label} — ${entry.data.title}`}
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
+              <div class="pub-list__links">
+                {publicationLinks(entry).map((link) => (
+                  <a
+                    class="badge badge--link"
+                    href={link.href}
+                    aria-label={`${link.label} — ${entry.data.title}`}
+                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                    rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="section-more">
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}publications/`}>
+          All research
+        </a>
+      </div>
     </div>
   </section>
 
-  <section class="section" id="projects">
-    <div class="site-shell stack">
+  <section class="section" id="experience">
+    <div class="site-shell">
       <SectionHeading
-        eyebrow="Code"
-        title="Open-source tools."
+        index="04"
+        eyebrow="Experience"
+        title="AFRL-sponsored ML research every year since 2020."
+        dim="DCS Corp since May 2025; Ohio State’s Computer Vision Lab, 2021–2026."
       />
 
-      <div class="home-artifact-grid">
-        {featuredArtifacts.map((artifact) => (
-          <article class="home-artifact-card surface">
-            <h3>
-              <a href={artifact.data.repo} target="_blank" rel="noopener noreferrer">
-                {artifact.data.name}
-              </a>
-            </h3>
-            <p>{artifact.data.summary}</p>
-            {artifact.data.stack && artifact.data.stack.length > 0 && (
-              <ul class="home-artifact-card__stack">
-                {artifact.data.stack.map((tech) => (
-                  <li>{tech}</li>
-                ))}
-              </ul>
-            )}
+      <div class="home-experience-grid">
+        {experienceItems.slice(0, 2).map((item, i) => (
+          <article class="home-experience-card">
+            <p class="home-experience-card__index" aria-hidden="true">{String(i + 1).padStart(2, "0")}</p>
+            <div class="home-experience-card__body">
+              <h3>{item.role}</h3>
+              <p class="home-experience-card__meta">
+                {item.location ? `${item.location} / ${item.timeframe}` : item.timeframe}
+              </p>
+              {item.bullets && item.bullets.length > 0 && (
+                <ol>
+                  {item.bullets.slice(0, 4).map((bullet, j) => (
+                    <li>
+                      <span class="home-experience-card__num" aria-hidden="true">{i + 1}.{j + 1}</span>
+                      <span set:html={bullet} />
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
           </article>
         ))}
       </div>
 
-      <div>
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>
-          All code and data
+      <div class="section-more">
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}experience/`}>
+          Full history
         </a>
       </div>
     </div>
@@ -227,51 +244,154 @@ const structuredData = graph([
 
   <section class="section" id="contact">
     <div class="site-shell">
-      <ContactRail />
+      <ContactRail index="05" fig={demoFig + 1} />
     </div>
   </section>
 </BaseLayout>
 
 <style>
+  /* The recruiter panel sits close under the hero strip. */
+  .section--brief {
+    padding-top: clamp(1.5rem, 1rem + 2vw, 3rem);
+  }
+
+  .pubs {
+    display: grid;
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+    border: var(--hairline);
+  }
+
+  /* The one lime block: the award paper, always dark ink on lime. */
+  .pubs__award {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--pad-slab);
+    background: var(--color-lime);
+    color: var(--color-lime-ink);
+  }
+
+  .pubs__award-label {
+    margin: 0;
+    color: var(--color-lime-ink);
+    font: 500 var(--label-md) / 1.4 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .pubs__award-title {
+    margin: clamp(1.5rem, 1rem + 3vw, 4rem) 0 0;
+    font: 500 var(--display-2) / 1.06 var(--font-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .pubs__award-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pubs__award-title a:hover,
+  .pubs__award-title a:focus-visible {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--color-lime-line);
+    text-decoration-thickness: 2px;
+  }
+
+  .pubs__award-title a:focus-visible,
+  .pubs__award-link:focus-visible {
+    outline-color: var(--color-lime-ink);
+  }
+
+  .pubs__award-tldr {
+    max-width: 34rem;
+    margin: 1.1rem 0 0;
+    color: var(--color-lime-muted);
+    font-size: var(--text-lg);
+    line-height: 1.5;
+  }
+
+  .pubs__award-authors {
+    margin: auto 0 0;
+    padding-top: 2rem;
+    color: var(--color-lime-muted);
+    font: 400 var(--label-md) / 1.5 var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+
+  .pubs__award-authors strong {
+    color: var(--color-lime-ink);
+    font-weight: 600;
+  }
+
+  .pubs__award-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-lime-line);
+  }
+
+  .pubs__award-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 1.875rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--color-lime-line);
+    color: var(--color-lime-ink);
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+  }
+
+  .pubs__award-link:hover,
+  .pubs__award-link:focus-visible {
+    background: var(--color-lime-line);
+    color: var(--color-lime-ink);
+  }
+
   .pub-list {
     display: grid;
-    gap: 0;
     margin: 0;
     padding: 0;
     list-style: none;
-    border-top: var(--hairline-strong);
   }
 
   .pub-list__item {
     display: grid;
-    gap: 0.5rem 1.5rem;
-    padding: 1.35rem 0;
-    border-bottom: var(--hairline);
+    align-content: start;
+    gap: 0.55rem;
+    padding: var(--pad-card);
   }
 
-  @media (min-width: 800px) {
-    .pub-list__item {
-      grid-template-columns: 4rem minmax(0, 1fr) auto;
-      align-items: baseline;
-    }
+  .pub-list__item + .pub-list__item {
+    border-top: var(--hairline);
+  }
+
+  .pub-list__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    color: var(--color-text-soft);
+    font: 500 var(--label-sm) / 1.5 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
   }
 
   .pub-list__year {
-    color: var(--color-text-soft);
-    font: 600 var(--label-sm, 0.6875rem) / 1.4 var(--font-mono);
-    letter-spacing: 0.1em;
-  }
-
-  .pub-list__body {
-    min-width: 0;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
   }
 
   .pub-list__title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-    font-weight: 400;
-    line-height: 1.2;
+    margin: 0.2rem 0 0;
+    font: 500 1.125rem / 1.3 var(--font-display);
+    letter-spacing: -0.015em;
   }
 
   .pub-list__title a {
@@ -281,49 +401,50 @@ const structuredData = graph([
 
   .pub-list__title a:hover,
   .pub-list__title a:focus-visible {
-    color: var(--color-accent);
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-strong);
   }
 
   .pub-list__authors {
-    margin: 0.35rem 0 0;
+    margin: 0;
     max-width: 44rem;
-    color: var(--color-text-muted);
-    font-size: var(--text-sm, 0.9375rem);
-    line-height: 1.6;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+    line-height: 1.55;
   }
 
   .pub-list__authors strong {
-    color: var(--color-text);
-    font-weight: 600;
-  }
-
-  .pub-list__venue {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 0.7rem;
-    margin: 0.3rem 0 0;
-    color: var(--color-text-soft);
-    font-size: var(--text-sm, 0.9375rem);
-    line-height: 1.5;
-  }
-
-  .pub-list__award {
-    color: var(--color-secondary);
-    font: 600 var(--label-sm, 0.6875rem) / 1.4 var(--font-mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .pub-list__award::before {
-    content: '★';
-    margin-right: 0.4em;
-    letter-spacing: 0;
+    color: var(--color-text-muted);
+    font-weight: 500;
   }
 
   .pub-list__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.45rem;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+  }
+
+  @media (min-width: 1000px) {
+    .pubs {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    }
+
+    .pub-list {
+      border-left: var(--hairline);
+    }
+  }
+
+  @media (max-width: 999px) {
+    .pub-list {
+      border-top: var(--hairline);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pubs__award-link {
+      min-height: 44px;
+    }
   }
 </style>

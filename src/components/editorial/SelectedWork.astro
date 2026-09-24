@@ -1,0 +1,396 @@
+---
+import SectionHeading from '../SectionHeading.astro';
+import WorkFigure from './WorkFigure.astro';
+import { caseStudies, homeEditorial, moreWork, type WorkLink } from '../../data/editorial';
+
+interface Props {
+  index?: string;
+  /** FIG number of the first case study's figure. */
+  firstFig?: number;
+}
+const { index, firstFig = 1 }: Props = Astro.props;
+const { eyebrow, title, dim } = homeEditorial.work;
+
+const isExternal = (link: WorkLink) => /^https?:\/\//.test(link.href);
+const linkKind = (link: WorkLink) => (isExternal(link) ? 'external' : link.href.startsWith('#') ? 'down' : 'page');
+---
+
+<div class="work">
+  <SectionHeading index={index} eyebrow={eyebrow} title={title} dim={dim} id="work-title" />
+
+  <ol class="work__list">
+    {caseStudies.map((study, i) => (
+      <li class="work-case" id={study.id}>
+        <div class="work-case__figure">
+          <p class="fig-label" aria-hidden="true">FIG.{firstFig + i}</p>
+          <p class="corner-tag work-case__context">{study.context}</p>
+          <WorkFigure kind={study.figure} id={study.id} />
+        </div>
+
+        <div class="work-case__body">
+          <h3 class="work-case__title" id={`${study.id}-title`}>{study.title}</h3>
+          <p class="work-case__problem">{study.problem}</p>
+
+          {study.built.map((group) => (
+            <div class="work-case__group">
+              <p class="work-case__label">{group.label}</p>
+              <ul class="work-case__built">
+                {group.items.map((item) => (
+                  <li><span set:html={item} /></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          {study.stack.length > 0 && (
+            <ul class="work-case__stack" aria-label="Stack">
+              {study.stack.map((tech) => (
+                <li>{tech}</li>
+              ))}
+            </ul>
+          )}
+
+          <p class="work-case__status">
+            <span class="work-case__status-tag">{study.statusTag}</span>
+            <span>{study.status}</span>
+          </p>
+
+          <div class="work-case__links">
+            {study.links.map((link) => (
+              <a
+                class="badge badge--link work-link"
+                data-kind={linkKind(link)}
+                href={link.href}
+                target={isExternal(link) ? '_blank' : undefined}
+                rel={isExternal(link) ? 'noopener noreferrer' : undefined}
+              >
+                {link.label}
+                <span class="sr-only">: {study.title}{isExternal(link) ? ' (opens in a new tab)' : ''}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  <div class="work-more">
+    <p class="work-more__label">Also public</p>
+    <ul class="work-more__list">
+      {moreWork.map((item) => (
+        <li class="work-more__item">
+          <p class="work-more__context">{item.context}</p>
+          <h3 class="work-more__title">{item.title}</h3>
+          <p class="work-more__summary">{item.summary}</p>
+          <div class="work-more__foot">
+            <ul class="work-case__stack" aria-label="Stack">
+              {item.stack.map((tech) => (
+                <li>{tech}</li>
+              ))}
+            </ul>
+            <div class="work-case__links">
+              {item.links.map((link) => (
+                <a
+                  class="badge badge--link work-link"
+                  data-kind={linkKind(link)}
+                  href={link.href}
+                  target={isExternal(link) ? '_blank' : undefined}
+                  rel={isExternal(link) ? 'noopener noreferrer' : undefined}
+                >
+                  {link.label}
+                  <span class="sr-only">: {item.title}{isExternal(link) ? ' (opens in a new tab)' : ''}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="section-more">
+    <a class="button button--ghost" href={`${import.meta.env.BASE_URL}artifacts/`}>All code and data</a>
+  </div>
+</div>
+
+<style>
+  .work__list {
+    display: grid;
+    margin: clamp(2rem, 1.5rem + 2vw, 3.25rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* One hairline panel per case; seams collapse to a single hairline. */
+  .work-case {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    margin-bottom: -1px;
+    border: var(--hairline);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  .work-case__figure {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    padding: 3.25rem var(--pad-card) 1.5rem;
+    border-bottom: var(--hairline);
+    background: var(--color-bg-alt);
+  }
+
+  .work-case__context {
+    margin: 0;
+  }
+
+  .work-case__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--pad-slab);
+  }
+
+  .work-case__title {
+    margin: 0;
+    color: var(--color-text);
+    font: 500 var(--display-3) / 1.15 var(--font-display);
+    letter-spacing: -0.03em;
+  }
+
+  .work-case__problem {
+    max-width: 40rem;
+    margin: 0.6rem 0 0;
+    color: var(--color-text-soft);
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .work-case__group {
+    margin-top: 1.5rem;
+  }
+
+  .work-case__group + .work-case__group {
+    margin-top: 1.1rem;
+  }
+
+  .work-case__label {
+    margin: 0 0 0.35rem;
+    color: var(--color-text-soft);
+    font: 500 var(--label-sm) / 1.4 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .work-case__built {
+    display: grid;
+    max-width: 46rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--hairline);
+  }
+
+  .work-case__built li {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    padding: 0.7rem 0;
+    border-bottom: var(--hairline);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  /* A small hollow node, the same mark the figures use. */
+  .work-case__built li::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-top: 0.55em;
+    border: 1px solid var(--color-text-soft);
+  }
+
+  .work-case__built li :global(strong) {
+    color: var(--color-text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .work-case__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .work-case__stack li {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.6rem;
+    padding: 0.2rem 0.5rem;
+    border: var(--hairline);
+    color: var(--color-text-soft);
+    font: 500 0.625rem / 1.2 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .work-case__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.7rem;
+    max-width: 46rem;
+    margin: 1.25rem 0 0;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+    line-height: 1.55;
+  }
+
+  .work-case__status-tag {
+    flex: none;
+    padding: 0.2rem 0.45rem;
+    background: var(--color-tab);
+    color: var(--color-text);
+    font: 500 0.625rem / 1.3 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .work-case__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1.25rem;
+  }
+
+  /* Internal links point at a page (→) or further down this one (↓). */
+  .work-link[data-kind='page']::after {
+    content: '→';
+  }
+
+  .work-link[data-kind='down']::after {
+    content: '↓';
+  }
+
+  .work-link[data-kind='page']:hover::after {
+    transform: translateX(2px);
+  }
+
+  .work-link[data-kind='down']:hover::after {
+    transform: translateY(2px);
+  }
+
+  /* ---------------------------------------------------- also public */
+
+  .work-more {
+    margin-top: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
+  }
+
+  .work-more__label {
+    margin: 0 0 0.9rem;
+    color: var(--color-text-soft);
+    font: 500 var(--label-md) / 1.4 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .work-more__list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .work-more__item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0 -1px -1px 0;
+    padding: var(--pad-card);
+    border: var(--hairline);
+  }
+
+  .work-more__context {
+    margin: 0;
+    color: var(--color-text-soft);
+    font: 500 var(--label-sm) / 1.4 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .work-more__title {
+    margin: 0.55rem 0 0;
+    color: var(--color-text);
+    font: 500 var(--display-4) / 1.25 var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  .work-more__summary {
+    margin: 0.5rem 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+
+  .work-more__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+  }
+
+  .work-more__foot .work-case__stack,
+  .work-more__foot .work-case__links {
+    margin-top: 1rem;
+  }
+
+  @media (min-width: 760px) {
+    .work-more__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Wide screens: figure on the left, the write-up on the right. */
+  @media (min-width: 1000px) {
+    .work-case {
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    }
+
+    .work-case__figure {
+      padding: 3.5rem clamp(1.5rem, 3vw, 3rem) 2rem;
+      border-right: var(--hairline);
+      border-bottom: 0;
+    }
+
+    .work-case__figure :global(.work-fig) {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+      align-self: start;
+      margin-top: clamp(0.5rem, 2vw, 2rem);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .work-case__figure {
+      padding: 3rem 0.75rem 1.25rem;
+    }
+
+    .work-case__problem {
+      font-size: var(--text-md);
+    }
+
+    .work-case__status-tag,
+    .work-case__stack li {
+      font-size: 0.6875rem;
+    }
+  }
+</style>

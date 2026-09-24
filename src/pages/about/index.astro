@@ -2,6 +2,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 import { getEntry } from "astro:content";
+import { Image } from "astro:assets";
+import headshot from "../../assets/headshot.jpg";
 import { SITE_URL, links, person } from "../../data/site";
 import { PERSON_ID, breadcrumbNode, graph, personNode, websiteNode } from "../../utils/schema";
 
@@ -40,10 +42,25 @@ const structuredData = graph([
 >
   <section class="section">
     <div class="site-shell stack">
-      <SectionHeading as="h1" eyebrow="About" title="Nick Kashani Motlagh" />
+      <SectionHeading as="h1" index="01" eyebrow="About" title="Nick Kashani Motlagh" />
 
-      <div class="prose about-page__body">
-        <Content />
+      <div class="about-page__layout">
+        <div class="prose about-page__body">
+          <Content />
+        </div>
+
+        <figure class="about-page__portrait">
+          <p class="fig-label" aria-hidden="true">FIG.1</p>
+          <Image
+            src={headshot}
+            alt="Nick Kashani Motlagh"
+            width={600}
+            height={720}
+            widths={[240, 360, 600]}
+            sizes="(max-width: 640px) 12rem, 20rem"
+          />
+          <figcaption>{person.name} · Columbus, Ohio</figcaption>
+        </figure>
       </div>
 
       <div class="about-page__actions">
@@ -57,13 +74,65 @@ const structuredData = graph([
 </BaseLayout>
 
 <style>
+  .about-page__layout {
+    display: grid;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    padding-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-top: var(--hairline);
+  }
+
   .about-page__body {
-    max-width: 36rem;
+    max-width: 40rem;
+  }
+
+  .about-page__portrait {
+    position: relative;
+    width: min(100%, 20rem);
+    margin: 0;
+    padding: 2.5rem 0.75rem 0.75rem;
+    border: var(--hairline);
+    background: var(--color-bg-alt);
+  }
+
+  .about-page__portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 5 / 6;
+    object-fit: cover;
+    object-position: center 25%;
+  }
+
+  .about-page__portrait figcaption {
+    margin-top: 0.7rem;
+    color: var(--color-text-soft);
+    font: 500 0.625rem / 1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* After the base portrait rule, so sticky wins over position: relative. */
+  @media (min-width: 960px) {
+    .about-page__layout {
+      grid-template-columns: minmax(0, 40rem) minmax(16rem, 20rem);
+      justify-content: space-between;
+      align-items: start;
+    }
+
+    .about-page__portrait {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
   }
 
   .about-page__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 959px) {
+    .about-page__portrait {
+      order: -1;
+      width: min(100%, 13rem);
+    }
   }
 </style>

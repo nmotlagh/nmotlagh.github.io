@@ -52,7 +52,7 @@ const { bibtex, downloadHref }: Props = Astro.props;
 
 <style>
   .cite {
-    padding: 1.05rem 1.1rem;
+    padding: var(--pad-card);
   }
 
   .cite__header {
@@ -71,44 +71,42 @@ const { bibtex, downloadHref }: Props = Astro.props;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
 
   .cite__button {
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    padding: 0.32rem 0.7rem;
-    border: var(--hairline-strong);
-    border-radius: var(--radius-sm);
-    background: var(--color-panel);
+    padding: 0.35rem 0.8rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--color-tab);
     color: var(--color-text);
     cursor: pointer;
-    font: 600 0.74rem/1.2 var(--font-mono);
-    letter-spacing: 0.05em;
+    font: 500 var(--label-md) / 1.2 var(--font-mono);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     transition:
       background-color var(--transition-fast),
-      border-color var(--transition-fast),
       color var(--transition-fast);
   }
 
   .cite__button:hover,
   .cite__button:focus-visible {
-    border-color: var(--color-accent);
-    background: var(--color-accent-soft);
-    color: var(--color-accent);
+    background: var(--color-tab-hover);
+    color: var(--color-text);
   }
 
   .cite__code {
-    margin: 0.85rem 0 0;
-    padding: 0.9rem 1rem;
+    margin: 1rem 0 0;
+    padding: 1rem 1.1rem;
     overflow-x: auto;
     border: var(--hairline);
-    border-radius: var(--radius-sm);
+    border-radius: 0;
     background: var(--color-bg-alt);
     color: var(--color-text-muted);
-    font: 400 0.78rem/1.7 var(--font-mono);
+    font: 400 0.78rem / 1.7 var(--font-mono);
     tab-size: 2;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
