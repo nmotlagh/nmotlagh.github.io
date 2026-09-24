@@ -1,19 +1,18 @@
 ---
 import type { ImageMetadata } from 'astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import { links, person } from '../data/site';
 import '../styles/theme.css';
 import '../styles/editorial.css';
 
-const siteName = 'Nick Kashani Motlagh';
-const defaultDescription =
-  'PhD in machine learning at The Ohio State University, working on when models should abstain, weigh evidence, or revise their answers.';
+const siteName = person.name;
+const defaultDescription = person.description;
 
 interface LayoutProps {
   title?: string;
   description?: string;
   ogImage?: string | ImageMetadata;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
-  showSidebar?: boolean;
   noindex?: boolean;
 }
 
@@ -23,11 +22,11 @@ const pageTitle = title ? `${title} · ${siteName}` : siteName;
 const canonicalUrl = !noindex && Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const homeHref = import.meta.env.BASE_URL;
 const resumeHref = `${homeHref}resume.pdf`;
-const scholarHref = 'https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en';
-const githubHref = 'https://github.com/nmotlagh';
-const linkedInHref = 'https://www.linkedin.com/in/nicholas-kashani-motlagh';
-const emailHref = 'mailto:kashanimotlagh.1@osu.edu';
-const orcidHref = 'https://orcid.org/0000-0001-6229-6212';
+const scholarHref = links.scholar;
+const githubHref = links.github;
+const linkedInHref = links.linkedin;
+const emailHref = links.email;
+const orcidHref = links.orcid;
 const faviconHref = `${homeHref}favicon.svg`;
 const rssHref = `${homeHref}rss.xml`;
 const structured = Array.isArray(structuredData)
@@ -45,7 +44,7 @@ const ogImageUrl = ogImage
       ? new URL(ogImage.src, Astro.site).href
       : ogImage.src
   : defaultOgImage;
-const ogImageAlt = `${siteName} — Research Scientist, Applied Scientist & ML Engineer; PhD in computer science and engineering from Ohio State`;
+const ogImageAlt = `${siteName} — machine learning research and engineering; PhD, Ohio State`;
 
 const normalizePath = (path: string) => (path.endsWith('/') ? path : `${path}/`);
 const currentPath = normalizePath(Astro.url.pathname);
@@ -58,14 +57,16 @@ const isActivePath = (href: string) => {
 };
 
 const navLinks = [
-  { label: 'Home', href: homeHref, mobileHidden: true },
   { label: 'About', href: `${homeHref}about/` },
-  { label: 'Papers', href: `${homeHref}publications/` },
+  { label: 'Research', href: `${homeHref}publications/` },
   { label: 'Code', href: `${homeHref}artifacts/` },
   { label: 'Experience', href: `${homeHref}experience/` },
-  { label: 'FAQ', href: `${homeHref}faq/`, mobileHidden: true },
-  { label: 'News', href: `${homeHref}news/`, mobileHidden: true },
 ].map((link) => ({ ...link, active: isActivePath(link.href) }));
+const footerLinks = [
+  ...navLinks,
+  { label: 'News', href: `${homeHref}news/` },
+  { label: 'FAQ', href: `${homeHref}faq/` },
+];
 ---
 
 <!DOCTYPE html>
@@ -189,7 +190,7 @@ const navLinks = [
           <nav class="site-header__nav" aria-label="Primary navigation">
             <ul class="site-header__nav-list">
               {navLinks.map((link) => (
-                <li class:list={[link.mobileHidden && 'site-header__nav-item--mobile-hidden']}>
+                <li>
                   <a
                     class="site-header__nav-link"
                     href={link.href}
@@ -209,14 +210,12 @@ const navLinks = [
                   rel="noopener noreferrer"
                   aria-label="Resume PDF"
                 >
-                  CV
+                  Resume
                 </a>
-              </li>
-              <li>
-                <ThemeToggle />
               </li>
             </ul>
           </nav>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -228,10 +227,10 @@ const navLinks = [
         <div class="site-shell site-footer__grid">
           <div>
             <h2 class="site-footer__title">
-              Models should know <em>when not to answer.</em>
+              Research with an <em>engineering mindset.</em>
             </h2>
             <p class="site-footer__copy">
-              Nick Kashani Motlagh · The Ohio State University · Columbus, Ohio.
+              {person.name} · PhD, Ohio State · Columbus, Ohio.
             </p>
           </div>
 
@@ -239,11 +238,9 @@ const navLinks = [
             <nav class="site-footer__links" aria-label="All pages">
               <p class="site-footer__links-label">Pages</p>
               <ul>
-                {navLinks
-                  .filter((link) => link.label !== 'Home')
-                  .map((link) => (
-                    <li><a href={link.href}>{link.label}</a></li>
-                  ))}
+                {footerLinks.map((link) => (
+                  <li><a href={link.href}>{link.label}</a></li>
+                ))}
               </ul>
             </nav>
 
@@ -259,20 +256,6 @@ const navLinks = [
               </ul>
             </nav>
           </div>
-        </div>
-
-        <div class="site-shell site-footer__machine">
-          <p>
-            <span>Machine-readable</span>
-            This site publishes itself for agents as well as people.
-          </p>
-          <ul>
-            <li><a href={`${homeHref}llms.txt`}>llms.txt</a></li>
-            <li><a href={`${homeHref}llms-full.txt`}>llms-full.txt</a></li>
-            <li><a href={`${homeHref}profile.json`}>profile.json</a></li>
-            <li><a href={`${homeHref}citations.bib`}>citations.bib</a></li>
-            <li><a href={rssHref}>rss.xml</a></li>
-          </ul>
         </div>
       </footer>
     </div>

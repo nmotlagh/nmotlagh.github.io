@@ -1,0 +1,1343 @@
+---
+// Interactive companion to "Learning When to Say 'I Don't Know'" (ISVC 2022):
+// one global B-CDF reject threshold on real CIFAR-100 predictions. The plot and
+// the default readouts are rendered at build time from the demo data, so the
+// section reads correctly before (or without) the client script; the script
+// pulls the data in only once the section approaches the viewport.
+import demo from '../../data/abstain-demo.json';
+import { learnThreshold, looksLikeCoinFlip, splitAt } from '../../lib/abstain';
+import {
+  confidenceOf,
+  cutOf,
+  describe,
+  dotPath,
+  formatConfidence,
+  fracOf,
+  int,
+  layoutDots,
+  logit,
+  type PlotSpec,
+} from '../../lib/abstain-plot';
+
+const DEFAULT_DELTA = 0.05;
+const DELTAS = [0.05, 0.25, 0.5, 0.75, 0.95];
+const paperHref = `${import.meta.env.BASE_URL}publications/learning-when-to-say-i-dont-know/`;
+const spriteHref = `${import.meta.env.BASE_URL}demo/cifar100-sample.webp`;
+
+const learned = learnThreshold(demo.val.right, demo.val.wrong, DEFAULT_DELTA);
+const split = splitAt(demo.test.right, demo.test.wrong, learned);
+const baseAcc = demo.test.right.length / (demo.test.right.length + demo.test.wrong.length);
+const passes = looksLikeCoinFlip(split.declinedRight, split.declined, DEFAULT_DELTA);
+const words = describe(split, passes, baseAcc, DEFAULT_DELTA);
+const learnedConf = formatConfidence(confidenceOf(learned));
+const learnedLogOdds = learned / 1000;
+
+// Two dot layouts: a wide one for desktop and a squarer one for phones, so the
+// dots stay a sensible size at both widths. CSS shows one at a time.
+const specs: Record<'wide' | 'narrow', PlotSpec> = {
+  // The axis stops short of the very top of the range: a handful of dots sit
+  // above 14.4 log-odds (99.9999%+) and they share the last column, which
+  // keeps the interesting left third from being squeezed by an empty tail.
+  wide: { xMin: -2.4, xMax: 14.4, bin: 0.2, pitchX: 10, pitchY: 8.6, r: 3.5, padT: 6 },
+  narrow: { xMin: -2.4, xMax: 14.4, bin: 0.35, pitchX: 6, pitchY: 5.4, r: 2.2, padT: 4 },
+};
+const sampleLogOdds = demo.sample.score.map((s) => s / 1000);
+const sampleRight = demo.sample.pred.map((p, i) => p === demo.sample.label[i]);
+const rightIdx = sampleRight.flatMap((ok, i) => (ok ? [i] : []));
+const wrongIdx = sampleRight.flatMap((ok, i) => (ok ? [] : [i]));
+const RING = 1.1;
+
+const layouts = (Object.keys(specs) as Array<keyof typeof specs>).map((key) => {
+  const l = layoutDots(sampleLogOdds, sampleRight, specs[key]);
+  const { x: _x, y: _y, ...spec } = l;
+  return {
+    key,
+    l,
+    spec: JSON.stringify(spec),
+    pathRight: dotPath(l, rightIdx),
+    pathWrong: dotPath(l, wrongIdx),
+    cut: cutOf(l, learnedLogOdds),
+    lineX: fracOf(l, learnedLogOdds) * l.width,
+  };
+});
+
+const ticks = [
+  { p: 0.25, minor: true },
+  { p: 0.5 },
+  { p: 0.75, minor: true },
+  { p: 0.9 },
+  { p: 0.99 },
+  { p: 0.999 },
+  { p: 0.9999 },
+  { p: 0.99999, minor: true },
+].map((t) => ({
+  ...t,
+  label: formatConfidence(t.p, true),
+  left: (fracOf(specs.wide, logit(t.p)) * 100).toFixed(2),
+}));
+
+const learnedLeft = (fracOf(specs.wide, learnedLogOdds) * 100).toFixed(3);
+const sampleCount = int.format(demo.sample.score.length);
+const testCount = int.format(split.total);
+const valueText = `Answer above ${learnedConf} confidence; ${words.coverage} of test images answered.`;
+---
+
+<section
+  class="abstain"
+  aria-labelledby="abstain-title"
+  data-abstain
+  data-sprite={spriteHref}
+  data-learned={learned}
+  data-base-acc={baseAcc}
+>
+  <header class="abstain__header">
+    <div>
+      <p class="eyebrow">Live demo · ISVC 2022 Best Paper</p>
+      <h2 id="abstain-title">Stop answering where the answers become <em>coin flips.</em></h2>
+    </div>
+    <p class="abstain__lede">
+      Sort a classifier’s guesses by confidence and decline the least sure ones. The rule from
+      <a href={paperHref}>Learning When to Say “I&nbsp;Don’t&nbsp;Know”</a> keeps declining only
+      while the declined guesses are no better than a coin flip. The paper fits a line per class;
+      here one line covers all 100 classes. Drag it.
+    </p>
+  </header>
+
+  <div class="abstain__figure" data-el="figure">
+    <div class="abstain__strip" data-el="strip" aria-hidden="true">
+      <span class="abstain__tag" data-el="tag" style={`left: ${learnedLeft}%`}>
+        ← declined · <b data-el="tagValue">{learnedConf}</b> · answered →
+      </span>
+    </div>
+
+    <div
+      class="abstain__canvas"
+      data-el="canvas"
+      tabindex="0"
+      role="group"
+      aria-label={`Confidence plot of ${sampleCount} sampled test images. Press the left and right arrow keys to inspect individual images.`}
+    >
+      {layouts.map(({ key, l, spec, pathRight, pathWrong, cut, lineX }) => (
+        <svg
+          class={`abstain__svg abstain__svg--${key}`}
+          viewBox={`0 0 ${l.width} ${l.height}`}
+          data-layout={key}
+          data-spec={spec}
+          aria-hidden="true"
+          focusable="false"
+          style={`--dot: ${2 * l.r}; --core: ${2 * l.r - 2 * RING};`}
+        >
+          <defs>
+            <path id={`abstain-${key}-right`} d={pathRight} />
+            <path id={`abstain-${key}-wrong`} d={pathWrong} />
+            <clipPath id={`abstain-${key}-declined`}>
+              <rect data-el="clipDeclined" x="-8" y="-8" width={cut + 8} height={l.height + 16} />
+            </clipPath>
+            <clipPath id={`abstain-${key}-answered`}>
+              <rect data-el="clipAnswered" x={cut} y="-8" width={l.width - cut + 8} height={l.height + 16} />
+            </clipPath>
+          </defs>
+          <g clip-path={`url(#abstain-${key}-declined)`}>
+            <use href={`#abstain-${key}-right`} class="abstain__dots abstain__dots--right abstain__dots--ring" />
+            <use href={`#abstain-${key}-right`} class="abstain__dots abstain__dots--core" />
+            <use href={`#abstain-${key}-wrong`} class="abstain__dots abstain__dots--wrong abstain__dots--ring" />
+            <use href={`#abstain-${key}-wrong`} class="abstain__dots abstain__dots--core" />
+          </g>
+          <g clip-path={`url(#abstain-${key}-answered)`}>
+            <use href={`#abstain-${key}-right`} class="abstain__dots abstain__dots--right" />
+            <use href={`#abstain-${key}-wrong`} class="abstain__dots abstain__dots--wrong" />
+          </g>
+          <line class="abstain__learned" data-el="learnedLine" x1={lineX} x2={lineX} y1="0" y2={l.height} />
+          <line class="abstain__line" data-el="line" x1={lineX} x2={lineX} y1="0" y2={l.height} />
+          <circle class="abstain__hit" data-el="hit" r={l.r + 2.5} cx="0" cy="0" />
+        </svg>
+      ))}
+    </div>
+
+    <div class="abstain__axis" data-el="axis">
+      <input
+        class="abstain__rail"
+        data-el="rail"
+        type="range"
+        min={specs.wide.xMin * 1000}
+        max={specs.wide.xMax * 1000}
+        step="1"
+        value={learned}
+        aria-label="Confidence threshold: answer only above this confidence"
+        aria-valuetext={valueText}
+      />
+      <span class="abstain__handle" data-el="handle" style={`left: ${learnedLeft}%`} aria-hidden="true"></span>
+      <span class="abstain__learned-mark" data-el="learnedMark" style={`left: ${learnedLeft}%`} aria-hidden="true"></span>
+      <ol class="abstain__ticks" aria-hidden="true">
+        {ticks.map((t) => (
+          <li style={`left: ${t.left}%`} data-minor={t.minor ? '' : undefined}>{t.label}</li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="abstain__card" data-el="card" hidden aria-live="polite">
+      <span class="abstain__thumb" data-el="thumb" aria-hidden="true"></span>
+      <div class="abstain__card-body">
+        <p class="abstain__card-row"><span>Guess</span> <b data-el="cardGuess"></b> <em data-el="cardConf"></em></p>
+        <p class="abstain__card-row"><span>Truth</span> <b data-el="cardTruth"></b></p>
+        <p class="abstain__card-verdict"><b data-el="cardRight"></b> · <span data-el="cardState"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="abstain__caption">
+    <p id="abstain-hint">
+      {sampleCount} of the {testCount} test images, one dot each, placed by the model’s confidence.
+      Mistakes stack at the bottom of each column; hollow dots are declined. The dashed line is
+      where the rule put the threshold. Hover or press the arrow keys to inspect an image.
+    </p>
+    <button class="abstain__reset" data-el="reset" type="button">
+      <span aria-hidden="true">↺</span> Learned line · <b data-el="learnedValue">{learnedConf}</b>
+    </button>
+  </div>
+
+  <div class="abstain__panel">
+    <dl class="abstain__readouts">
+      <div>
+        <dt>Answers</dt>
+        <dd class="abstain__num" data-out="coverage">{words.coverage}</dd>
+        <dd class="abstain__sub" data-out="coverageSub">{words.coverageSub}</dd>
+      </div>
+      <div>
+        <dt>Right when it answers</dt>
+        <dd class="abstain__num" data-out="selectAcc">{words.selectAcc}</dd>
+        <dd class="abstain__sub" data-out="selectSub">{words.selectSub}</dd>
+      </div>
+      <div>
+        <dt>Right when it declines</dt>
+        <dd class="abstain__num" data-out="rejectAcc">{words.rejectAcc}</dd>
+        <dd class="abstain__sub" data-out="rejectSub">{words.rejectSub}</dd>
+      </div>
+    </dl>
+
+    <fieldset class="abstain__delta" data-el="delta">
+      <legend>Coin-flip test · <span>δ</span></legend>
+      <div class="abstain__delta-options">
+        {DELTAS.map((d) => (
+          <label>
+            <input type="radio" name="abstain-delta" value={d} checked={d === DEFAULT_DELTA} />
+            <span>{String(d).replace(/^0/, '')}</span>
+          </label>
+        ))}
+      </div>
+      <p class="abstain__delta-ends" aria-hidden="true"><span>declines more</span><span>declines less</span></p>
+      <p class="abstain__delta-hint">
+        δ is the test’s significance level. Low: decline anything not clearly better than a coin
+        flip. High: decline only what is clearly worse than one.
+      </p>
+    </fieldset>
+  </div>
+
+  <p class="abstain__status" data-el="status" data-tone={words.tone}>
+    <span class="abstain__status-dot" aria-hidden="true"></span>
+    <span data-el="statusText">{words.status}</span>
+  </p>
+  <p class="sr-only" data-el="live" aria-live="polite"></p>
+
+  <p class="abstain__provenance">
+    Model: {demo.model}, temperature-scaled. Data: {demo.dataset}. The line is learned on
+    {int.format(demo.val.right.length + demo.val.wrong.length)} held-out training images; every
+    number here is measured on the {testCount} test images, of which the plot shows {sampleCount}.
+  </p>
+</section>
+
+<style>
+  .abstain {
+    position: relative;
+  }
+
+  /* ------------------------------------------------------------- header */
+
+  .abstain__header {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .abstain h2 {
+    max-width: 18ch;
+    margin: 0.5rem 0 0;
+    font: 400 var(--display-2) / 1.02 var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  .abstain h2 em {
+    color: var(--color-accent);
+    font-style: italic;
+  }
+
+  .abstain__lede {
+    max-width: 34rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    text-wrap: pretty;
+  }
+
+  .abstain__lede a {
+    color: var(--color-text);
+    font-style: italic;
+  }
+
+  .abstain__lede a:hover,
+  .abstain__lede a:focus-visible {
+    color: var(--color-accent);
+  }
+
+  /* -------------------------------------------------------------- figure */
+
+  .abstain__figure {
+    position: relative;
+    margin-top: 2.25rem;
+  }
+
+  .abstain__strip {
+    position: relative;
+    height: 1.6rem;
+  }
+
+  .abstain__tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--color-accent);
+    font: 600 var(--label-sm) / 1.6rem var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    will-change: transform;
+  }
+
+  .abstain__tag b {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .abstain__canvas {
+    position: relative;
+    line-height: 0;
+    touch-action: manipulation;
+    outline-offset: 6px;
+  }
+
+  .abstain__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .abstain__svg--narrow {
+    display: none;
+  }
+
+  .abstain__dots {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: var(--dot);
+  }
+
+  .abstain__dots--right {
+    stroke: var(--color-text);
+  }
+
+  .abstain__dots--wrong {
+    stroke: var(--color-secondary);
+  }
+
+  .abstain__dots--ring {
+    opacity: 0.55;
+  }
+
+  .abstain__dots--core {
+    stroke: var(--color-bg);
+    stroke-width: var(--core);
+  }
+
+  .abstain__line,
+  .abstain__learned {
+    stroke: var(--color-accent);
+    vector-effect: non-scaling-stroke;
+  }
+
+  .abstain__line {
+    stroke-width: 1.5px;
+  }
+
+  .abstain__learned {
+    stroke-width: 1px;
+    stroke-dasharray: 2 5;
+    opacity: 0.7;
+  }
+
+  .abstain__hit {
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 1.5px;
+    vector-effect: non-scaling-stroke;
+    visibility: hidden;
+  }
+
+  .abstain__hit[data-on] {
+    visibility: visible;
+  }
+
+  /* The axis doubles as the drag rail: a native range input, made invisible,
+     covers the strip so pointer, touch and keyboard all drive the same value. */
+  .abstain__axis {
+    position: relative;
+    height: 2.75rem;
+    border-top: var(--hairline-strong);
+  }
+
+  .abstain__rail {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    height: calc(2.75rem + 1px);
+    margin: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: ew-resize;
+    touch-action: pan-y;
+    outline: none;
+  }
+
+  .abstain__rail::-webkit-slider-runnable-track {
+    height: 100%;
+    background: transparent;
+  }
+
+  .abstain__rail::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0;
+    height: 0;
+  }
+
+  .abstain__rail::-moz-range-track {
+    height: 100%;
+    background: transparent;
+  }
+
+  .abstain__rail::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .abstain__handle {
+    position: absolute;
+    top: -11px;
+    left: 0;
+    z-index: 2;
+    width: 10px;
+    height: 21px;
+    border-radius: 3px;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 2px var(--color-bg);
+    transform: translateX(-50%) scale(var(--grow, 1));
+    transition: transform var(--transition-fast);
+    pointer-events: none;
+  }
+
+  .abstain__rail:hover + .abstain__handle,
+  .abstain__rail:active + .abstain__handle {
+    --grow: 1.18;
+  }
+
+  .abstain__rail:focus-visible + .abstain__handle {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .abstain__learned-mark {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    z-index: 1;
+    width: 11px;
+    height: 11px;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 50%;
+    background: var(--color-bg);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .abstain__ticks {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+  }
+
+  .abstain__ticks li {
+    position: absolute;
+    top: 0;
+    padding-top: 0.6rem;
+    color: var(--color-text-soft);
+    font: 600 var(--label-sm) / 1 var(--font-mono);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .abstain__ticks li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 0.35rem;
+    background: var(--color-border-strong);
+  }
+
+  /* ---------------------------------------------------------- hover card */
+
+  .abstain__card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    gap: 0.75rem;
+    width: max-content;
+    max-width: min(17rem, calc(100vw - 2rem));
+    padding: 0.55rem;
+    border: var(--hairline-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-panel);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: 1.35;
+    pointer-events: none;
+  }
+
+  .abstain__card[hidden] {
+    display: none;
+  }
+
+  .abstain__thumb {
+    flex: none;
+    /* px, not rem: the sprite offsets in fillCard assume a 64px cell (32px x 2). */
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-alt);
+    background-repeat: no-repeat;
+    background-size: 2560px 1600px;
+    image-rendering: pixelated;
+  }
+
+  .abstain__card-body {
+    display: grid;
+    align-content: center;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .abstain__card-row {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .abstain__card-row > span {
+    display: inline-block;
+    min-width: 3.1em;
+    color: var(--color-text-soft);
+    font: 600 var(--label-sm) / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .abstain__card-row b {
+    font-weight: 600;
+  }
+
+  .abstain__card-row em {
+    color: var(--color-text-muted);
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .abstain__card-verdict {
+    margin: 0.15rem 0 0;
+    color: var(--color-text-muted);
+    font: 600 var(--label-sm) / 1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .abstain__card-verdict b {
+    font-weight: 700;
+  }
+
+  .abstain__card[data-right='true'] .abstain__card-verdict b {
+    color: var(--color-positive);
+  }
+
+  .abstain__card[data-right='false'] .abstain__card-verdict b {
+    color: var(--color-secondary);
+  }
+
+  /* ------------------------------------------------------------- caption */
+
+  .abstain__caption {
+    display: grid;
+    gap: 0.75rem 2rem;
+    align-items: start;
+    margin-top: 0.9rem;
+  }
+
+  .abstain__caption p {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--color-text-soft);
+    font-size: var(--label-md);
+    line-height: 1.6;
+  }
+
+  .abstain__reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-panel);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font: 600 0.72rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    touch-action: manipulation;
+    transition:
+      background-color var(--transition-fast),
+      border-color var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .abstain__reset b {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .abstain__reset[data-away] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .abstain__reset:hover,
+  .abstain__reset:focus-visible {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  /* --------------------------------------------------- readouts + delta */
+
+  .abstain__panel {
+    display: grid;
+    gap: 1.75rem 3rem;
+    margin-top: 1.75rem;
+    padding-top: 1.6rem;
+    border-top: var(--hairline-strong);
+  }
+
+  .abstain__readouts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .abstain__readouts > div {
+    min-width: 0;
+  }
+
+  .abstain__readouts dt,
+  .abstain__delta legend {
+    color: var(--color-text-soft);
+    font: 600 0.68rem / 1.4 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .abstain__readouts dd {
+    margin: 0;
+  }
+
+  .abstain__num {
+    margin-top: 0.5rem;
+    font: 400 clamp(2rem, 1.35rem + 2vw, 3.1rem) / 1 var(--font-display);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .abstain__sub {
+    margin-top: 0.45rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .abstain__delta {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .abstain__delta legend {
+    padding: 0;
+  }
+
+  .abstain__delta legend span {
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .abstain__delta-options {
+    display: flex;
+    margin-top: 0.6rem;
+    border: var(--hairline-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-panel);
+    overflow: hidden;
+  }
+
+  .abstain__delta-options label {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .abstain__delta-options label + label {
+    border-left: var(--hairline);
+  }
+
+  .abstain__delta-options input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .abstain__delta-options span {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    font: 600 0.78rem / 1 var(--font-mono);
+    letter-spacing: 0.04em;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .abstain__delta-options label:hover span {
+    color: var(--color-text);
+    background: var(--color-accent-soft);
+  }
+
+  .abstain__delta-options input:checked + span {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  .abstain__delta-options input:focus-visible + span {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -3px;
+  }
+
+  .abstain__delta-ends {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.45rem 0 0;
+    color: var(--color-text-soft);
+    font: 600 0.62rem / 1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .abstain__delta-hint {
+    max-width: 24rem;
+    margin: 0.7rem 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /* ---------------------------------------------------- status + fine print */
+
+  .abstain__status {
+    display: flex;
+    gap: 0.65rem;
+    align-items: baseline;
+    max-width: 46rem;
+    margin: 1.6rem 0 0;
+    color: var(--color-text);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .abstain__status-dot {
+    flex: none;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-positive);
+    transform: translateY(-0.05rem);
+  }
+
+  .abstain__status[data-tone='warn'] .abstain__status-dot {
+    background: var(--color-secondary);
+  }
+
+  .abstain__status[data-tone='neutral'] .abstain__status-dot {
+    background: var(--color-border-strong);
+  }
+
+  .abstain__provenance {
+    max-width: 46rem;
+    margin: 1rem 0 0;
+    color: var(--color-text-soft);
+    font-size: var(--label-md);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  /* --------------------------------------------------------- breakpoints */
+
+  @media (min-width: 720px) {
+    .abstain__caption {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .abstain__header {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      align-items: end;
+      column-gap: 4rem;
+    }
+
+    .abstain__lede {
+      justify-self: end;
+    }
+
+    .abstain__panel {
+      grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .abstain__svg--wide {
+      display: none;
+    }
+
+    .abstain__svg--narrow {
+      display: block;
+    }
+
+    .abstain__ticks li[data-minor] {
+      display: none;
+    }
+
+    .abstain__ticks li {
+      font-size: 0.6rem;
+      letter-spacing: 0.03em;
+    }
+
+    .abstain__tag {
+      font-size: 0.62rem;
+    }
+
+    .abstain__reset {
+      justify-self: start;
+    }
+
+    /* On phones the three readouts stack as rows: label and note on the
+       left, the number on the right, so nothing has to wrap awkwardly. */
+    .abstain__readouts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      border-top: var(--hairline);
+    }
+
+    .abstain__readouts > div {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      align-items: center;
+      column-gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: var(--hairline);
+    }
+
+    .abstain__num {
+      grid-row: 1 / span 2;
+      grid-column: 2;
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .abstain__sub {
+      grid-row: 2;
+      grid-column: 1;
+      margin-top: 0.2rem;
+      font-size: 0.82rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .abstain__handle {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { learnThreshold, looksLikeCoinFlip, splitAt } from '../../lib/abstain';
+  import {
+    clamp,
+    confidenceOf,
+    cutOf,
+    describe,
+    formatConfidence,
+    fracOf,
+    layoutDots,
+    type PlotLayout,
+  } from '../../lib/abstain-plot';
+
+  type Demo = typeof import('../../data/abstain-demo.json');
+
+  interface Plot {
+    svg: SVGSVGElement;
+    spec: Omit<PlotLayout, 'x' | 'y'>;
+    layout: PlotLayout | null;
+    clipDeclined: SVGRectElement;
+    clipAnswered: SVGRectElement;
+    line: SVGLineElement;
+    learnedLine: SVGLineElement;
+    hit: SVGCircleElement;
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-abstain]');
+  if (root) setup(root);
+
+  function setup(root: HTMLElement) {
+    const el = <T extends Element>(name: string, from: ParentNode = root) => {
+      const node = from.querySelector<T>(`[data-el="${name}"]`);
+      if (!node) throw new Error(`abstain demo: missing ${name}`);
+      return node;
+    };
+    const out = (name: string) => root.querySelector<HTMLElement>(`[data-out="${name}"]`)!;
+
+    const figure = el<HTMLElement>('figure');
+    const strip = el<HTMLElement>('strip');
+    const tag = el<HTMLElement>('tag');
+    const tagValue = el<HTMLElement>('tagValue');
+    const canvas = el<HTMLElement>('canvas');
+    const axis = el<HTMLElement>('axis');
+    const rail = el<HTMLInputElement>('rail');
+    const handle = el<HTMLElement>('handle');
+    const learnedMark = el<HTMLElement>('learnedMark');
+    const card = el<HTMLElement>('card');
+    const thumb = el<HTMLElement>('thumb');
+    const reset = el<HTMLButtonElement>('reset');
+    const learnedValue = el<HTMLElement>('learnedValue');
+    const status = el<HTMLElement>('status');
+    const statusText = el<HTMLElement>('statusText');
+    const live = el<HTMLElement>('live');
+    const deltaInputs = Array.from(root.querySelectorAll<HTMLInputElement>('input[name="abstain-delta"]'));
+    const outs = {
+      coverage: out('coverage'),
+      coverageSub: out('coverageSub'),
+      selectAcc: out('selectAcc'),
+      selectSub: out('selectSub'),
+      rejectAcc: out('rejectAcc'),
+      rejectSub: out('rejectSub'),
+    };
+
+    const plots: Plot[] = Array.from(root.querySelectorAll<SVGSVGElement>('svg[data-layout]')).map((svg) => ({
+      svg,
+      spec: JSON.parse(svg.dataset.spec ?? '{}'),
+      layout: null,
+      clipDeclined: el<SVGRectElement>('clipDeclined', svg),
+      clipAnswered: el<SVGRectElement>('clipAnswered', svg),
+      line: el<SVGLineElement>('line', svg),
+      learnedLine: el<SVGLineElement>('learnedLine', svg),
+      hit: el<SVGCircleElement>('hit', svg),
+    }));
+    const axisSpec = plots[0].spec;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let data: Demo | null = null;
+    let sampleLogOdds: number[] = [];
+    let sampleRight: boolean[] = [];
+    let baseAcc = Number(root.dataset.baseAcc);
+    let delta = Number(deltaInputs.find((i) => i.checked)?.value ?? 0.05);
+    let learned = Number(root.dataset.learned);
+    let t = Number(rail.value);
+    let inspected = -1;
+    let frame = 0;
+    let tween = 0;
+
+    // ------------------------------------------------------------ render
+
+    const activePlot = () => plots.find((p) => p.svg.getClientRects().length > 0) ?? plots[0];
+
+    const render = () => {
+      frame = 0;
+      const lo = t / 1000;
+      const frac = fracOf(axisSpec, lo);
+      const learnedFrac = fracOf(axisSpec, learned / 1000);
+      for (const p of plots) {
+        const cut = cutOf(p.spec, lo);
+        const x = frac * p.spec.width;
+        const lx = learnedFrac * p.spec.width;
+        p.clipDeclined.setAttribute('width', String(cut + 8));
+        p.clipAnswered.setAttribute('x', String(cut));
+        p.clipAnswered.setAttribute('width', String(p.spec.width - cut + 8));
+        p.line.setAttribute('x1', String(x));
+        p.line.setAttribute('x2', String(x));
+        p.learnedLine.setAttribute('x1', String(lx));
+        p.learnedLine.setAttribute('x2', String(lx));
+      }
+
+      const conf = formatConfidence(confidenceOf(t));
+      tagValue.textContent = conf;
+      const stripW = strip.clientWidth;
+      const tagW = tag.offsetWidth;
+      tag.style.left = '0';
+      tag.style.transform = `translateX(${clamp(frac * stripW - tagW / 2, 0, Math.max(0, stripW - tagW))}px)`;
+      handle.style.left = `${(frac * 100).toFixed(3)}%`;
+      learnedMark.style.left = `${(learnedFrac * 100).toFixed(3)}%`;
+      learnedValue.textContent = formatConfidence(confidenceOf(learned));
+      if (t !== learned) reset.setAttribute('data-away', '');
+      else reset.removeAttribute('data-away');
+
+      if (!data) return;
+      const split = splitAt(data.test.right, data.test.wrong, t);
+      const passes = looksLikeCoinFlip(split.declinedRight, split.declined, delta);
+      const words = describe(split, passes, baseAcc, delta);
+      outs.coverage.textContent = words.coverage;
+      outs.coverageSub.textContent = words.coverageSub;
+      outs.selectAcc.textContent = words.selectAcc;
+      outs.selectSub.textContent = words.selectSub;
+      outs.rejectAcc.textContent = words.rejectAcc;
+      outs.rejectSub.textContent = words.rejectSub;
+      status.dataset.tone = words.tone;
+      statusText.textContent = words.status;
+      rail.setAttribute('aria-valuetext', `Answer above ${conf} confidence; ${words.coverage} of test images answered.`);
+      if (inspected >= 0) fillCard(inspected);
+    };
+
+    const scheduleRender = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+
+    const announce = () => {
+      if (!data) return;
+      const split = splitAt(data.test.right, data.test.wrong, t);
+      const passes = looksLikeCoinFlip(split.declinedRight, split.declined, delta);
+      const words = describe(split, passes, baseAcc, delta);
+      live.textContent = `Answering ${words.coverage} of images, ${words.selectAcc} right. Declined guesses ${words.rejectAcc} right: ${words.rejectSub}.`;
+    };
+
+    const setT = (value: number) => {
+      t = clamp(Math.round(value), Number(rail.min), Number(rail.max));
+      rail.value = String(t);
+      scheduleRender();
+    };
+
+    const goTo = (target: number) => {
+      cancelAnimationFrame(tween);
+      tween = 0;
+      if (reducedMotion.matches || Math.abs(target - t) < 2) {
+        setT(target);
+        announce();
+        return;
+      }
+      const from = t;
+      const start = performance.now();
+      const duration = 360;
+      const step = (now: number) => {
+        const k = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - k, 3);
+        setT(from + (target - from) * eased);
+        if (k < 1) tween = requestAnimationFrame(step);
+        else {
+          tween = 0;
+          announce();
+        }
+      };
+      tween = requestAnimationFrame(step);
+    };
+
+    // -------------------------------------------------------------- data
+
+    let loading: Promise<void> | null = null;
+    const load = () => {
+      if (loading) return loading;
+      loading = import('../../data/abstain-demo.json').then((mod) => {
+        data = mod.default as Demo;
+        baseAcc = data.test.right.length / (data.test.right.length + data.test.wrong.length);
+        sampleLogOdds = data.sample.score.map((s) => s / 1000);
+        sampleRight = data.sample.pred.map((p, i) => p === data!.sample.label[i]);
+        for (const p of plots) p.layout = layoutDots(sampleLogOdds, sampleRight, p.spec);
+        learned = learnThreshold(data.val.right, data.val.wrong, delta);
+        t = Number(rail.value);
+        scheduleRender();
+      });
+      return loading;
+    };
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io.disconnect();
+            load();
+          }
+        },
+        { rootMargin: '600px 0px' },
+      );
+      io.observe(root);
+    } else {
+      load();
+    }
+    root.addEventListener('pointerenter', () => load(), { once: true });
+    root.addEventListener('focusin', () => load(), { once: true });
+
+    // ------------------------------------------------------- threshold rail
+
+    rail.addEventListener('input', () => {
+      cancelAnimationFrame(tween);
+      tween = 0;
+      t = Number(rail.value);
+      scheduleRender();
+    });
+    rail.addEventListener('change', announce);
+    rail.addEventListener('keydown', (event) => {
+      const fine = 100; // 0.1 log-odds per arrow press
+      const coarse = 1000;
+      const moves: Record<string, number> = {
+        ArrowLeft: -fine,
+        ArrowDown: -fine,
+        ArrowRight: fine,
+        ArrowUp: fine,
+        PageDown: -coarse,
+        PageUp: coarse,
+      };
+      let target: number | undefined;
+      if (event.key in moves) target = t + moves[event.key] * (event.shiftKey ? 5 : 1);
+      else if (event.key === 'Home') target = Number(rail.min);
+      else if (event.key === 'End') target = Number(rail.max);
+      if (target === undefined) return;
+      event.preventDefault();
+      cancelAnimationFrame(tween);
+      tween = 0;
+      setT(target);
+      announce();
+    });
+
+    reset.addEventListener('click', () => {
+      load();
+      goTo(learned);
+      rail.focus({ preventScroll: true });
+    });
+
+    for (const input of deltaInputs) {
+      input.addEventListener('change', async () => {
+        if (!input.checked) return;
+        delta = Number(input.value);
+        await load();
+        learned = learnThreshold(data!.val.right, data!.val.wrong, delta);
+        goTo(learned);
+      });
+    }
+
+    // --------------------------------------------------------- inspection
+
+    let spriteReady = false;
+    const loadSprite = () => {
+      if (spriteReady) return;
+      spriteReady = true;
+      const src = root.dataset.sprite ?? '';
+      const img = new Image();
+      img.onload = () => {
+        thumb.style.backgroundImage = `url("${src}")`;
+      };
+      img.src = src;
+    };
+
+    const fillCard = (i: number) => {
+      if (!data) return;
+      const cols = data.sample.cols;
+      thumb.style.backgroundPosition = `${-(i % cols) * 64}px ${-Math.floor(i / cols) * 64}px`;
+      el<HTMLElement>('cardGuess').textContent = data.classes[data.sample.pred[i]];
+      el<HTMLElement>('cardConf').textContent = formatConfidence(confidenceOf(data.sample.score[i]));
+      el<HTMLElement>('cardTruth').textContent = data.classes[data.sample.label[i]];
+      const right = sampleRight[i];
+      el<HTMLElement>('cardRight').textContent = right ? 'Right' : 'Wrong';
+      el<HTMLElement>('cardState').textContent = data.sample.score[i] > t ? 'answered' : 'declined';
+      card.dataset.right = String(right);
+    };
+
+    const placeCard = (i: number) => {
+      const p = activePlot();
+      if (!p.layout) return;
+      const svgRect = p.svg.getBoundingClientRect();
+      const figRect = figure.getBoundingClientRect();
+      const scale = svgRect.width / p.spec.width;
+      const dotX = svgRect.left - figRect.left + p.layout.x[i] * scale;
+      const dotY = svgRect.top - figRect.top + p.layout.y[i] * scale;
+      const gap = 14;
+      const cardW = card.offsetWidth;
+      const cardH = card.offsetHeight;
+      const left = dotX + gap + cardW <= figRect.width ? dotX + gap : Math.max(0, dotX - gap - cardW);
+      const top = clamp(dotY - cardH / 2, 0, Math.max(0, figRect.height - cardH));
+      card.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
+    };
+
+    const inspect = (i: number) => {
+      if (!data || i < 0 || i >= sampleLogOdds.length) return;
+      loadSprite();
+      inspected = i;
+      fillCard(i);
+      card.hidden = false;
+      placeCard(i);
+      for (const p of plots) {
+        if (!p.layout) continue;
+        p.hit.setAttribute('cx', String(p.layout.x[i]));
+        p.hit.setAttribute('cy', String(p.layout.y[i]));
+        p.hit.setAttribute('data-on', '');
+      }
+    };
+
+    const uninspect = () => {
+      if (inspected < 0) return;
+      inspected = -1;
+      card.hidden = true;
+      for (const p of plots) p.hit.removeAttribute('data-on');
+    };
+
+    /** Sample index of the dot nearest a client point, within `radiusPx`. */
+    const nearest = (clientX: number, clientY: number, radiusPx: number) => {
+      const p = activePlot();
+      if (!p.layout) return -1;
+      const rect = p.svg.getBoundingClientRect();
+      const scale = rect.width / p.spec.width;
+      const px = (clientX - rect.left) / scale;
+      const py = (clientY - rect.top) / scale;
+      const limit = Math.max(radiusPx / scale, p.spec.r * 1.6) ** 2;
+      let best = -1;
+      let bestD = limit;
+      const { x, y } = p.layout;
+      for (let i = 0; i < x.length; i++) {
+        const d = (x[i] - px) ** 2 + (y[i] - py) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      return best;
+    };
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse') return;
+      const i = nearest(event.clientX, event.clientY, 16);
+      if (i >= 0) inspect(i);
+      else uninspect();
+    });
+    canvas.addEventListener('pointerleave', (event) => {
+      if (event.pointerType === 'mouse') uninspect();
+    });
+    // Touch and pen select on tap. Listening for `click` rather than
+    // `pointerdown` means a swipe that starts on a dot scrolls the page
+    // without opening the card.
+    let lastPointerType = 'mouse';
+    canvas.addEventListener('pointerdown', (event) => {
+      lastPointerType = event.pointerType;
+    });
+    canvas.addEventListener('click', (event) => {
+      if (lastPointerType === 'mouse') return;
+      load().then(() => {
+        const i = nearest(event.clientX, event.clientY, 28);
+        if (i >= 0) inspect(i);
+        else uninspect();
+      });
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'mouse' && !figure.contains(event.target as Node)) uninspect();
+    });
+
+    canvas.addEventListener('keydown', (event) => {
+      if (!data) return;
+      const n = sampleLogOdds.length;
+      const jumps: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowDown: -10, ArrowUp: 10 };
+      let next: number | undefined;
+      if (event.key in jumps) {
+        // Start from the first answered dot, i.e. just right of the line.
+        const start = inspected >= 0 ? inspected : sampleLogOdds.findIndex((lo) => lo * 1000 > t);
+        next = clamp((inspected >= 0 ? start + jumps[event.key] : start < 0 ? n - 1 : start), 0, n - 1);
+      } else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = n - 1;
+      else if (event.key === 'Escape') {
+        uninspect();
+        return;
+      }
+      if (next === undefined) return;
+      event.preventDefault();
+      inspect(next);
+    });
+    canvas.addEventListener('blur', uninspect);
+
+    // ----------------------------------------------------------- resizing
+
+    let resizeFrame = 0;
+    const onResize = () => {
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        render();
+        if (inspected >= 0) placeCard(inspected);
+      });
+    };
+    window.addEventListener('resize', onResize);
+    if ('ResizeObserver' in window) new ResizeObserver(onResize).observe(axis);
+
+    render();
+  }
+</script>

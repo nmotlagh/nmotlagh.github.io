@@ -11,18 +11,22 @@ export const person = {
   formalName: 'Nicholas Kashani Motlagh',
   familyName: 'Kashani Motlagh',
   givenName: 'Nicholas',
-  jobTitle: 'PhD in Computer Science and Engineering',
-  headline: 'I build models that know when not to answer.',
+  jobTitle: 'Computer Engineer II',
+  employer: 'DCS Corp',
+  education: 'PhD in Computer Science and Engineering',
+  updated: '2026-09-04',
+  headline: 'I build and evaluate reliable ML systems.',
+  description: 'Nick Kashani Motlagh, PhD. Machine learning research and engineering in LLM evaluation, selective prediction, and multimodal systems. Open to roles in California and New York City.',
   institution: 'The Ohio State University',
   institutionUrl: 'https://www.osu.edu/',
   lab: 'Computer Vision Lab',
   advisor: 'Jim Davis',
   location: 'Columbus, Ohio, USA',
-  email: 'kashanimotlagh.1@osu.edu',
+  email: 'nmotlagh@gmail.com',
   citizenship: 'U.S. citizen',
-  availableFrom: '2026-08',
-  availability: 'Available now',
-  seeking: ['Research Scientist', 'Applied Scientist', 'Machine Learning Engineer'],
+  availability: 'Open to opportunities',
+  targetLocations: ['California', 'New York City'],
+  seeking: ['Research Engineer', 'Machine Learning Engineer', 'Software Engineer, Machine Learning', 'Applied Scientist'],
 } as const;
 
 export const links = {
@@ -55,42 +59,31 @@ export const knowsAbout = [
  */
 export const faq: { question: string; answer: string }[] = [
   {
-    question: 'What does Nick Kashani Motlagh work on?',
-    answer:
-      'Reliability of machine learning systems under uncertainty — specifically when a model should answer, weigh evidence, revise its answer, or abstain. The work spans selective prediction and reject-option classification for classifiers, evidence-use metrics for multimodal systems, and answer/refine/abstain policies for retrieval-augmented question answering with large language models.',
+    question: 'What does Nick work on?',
+    answer: 'Machine learning reliability: deciding when to answer, use evidence, revise, or abstain. His work spans selective prediction, multimodal evaluation, and retrieval-augmented question answering.',
   },
   {
-    question: 'Is he available for hire, and when?',
-    answer:
-      'Yes. He is available now for Research Scientist, Applied Scientist, and Machine Learning Engineer roles. He is based in Columbus, Ohio and is open to relocation or remote work.',
+    question: 'What roles and locations is he interested in?',
+    answer: `He is exploring ${person.seeking.join(', ')} roles, especially teams building LLM evaluation tools, retrieval systems, and reliable ML products. He is based in Columbus, Ohio and is open to relocating to ${person.targetLocations.join(' or ')}.`,
   },
   {
     question: 'What is his education?',
-    answer:
-      'A PhD in Computer Science and Engineering from The Ohio State University, conferred August 2026 (dissertation defended July 8, 2026), advised by Prof. Jim Davis, with graduate minors in Mathematics and High-Performance Computing. He also holds an M.S. (2025) and a B.S. with Honors (2021) in Computer Science and Engineering from Ohio State.',
+    answer: 'A PhD in Computer Science and Engineering from The Ohio State University, conferred August 2026, advised by Prof. Jim Davis, with graduate minors in Mathematics and High-Performance Computing. He also holds an M.S. (2025) and a B.S. with Honors (2021) from Ohio State.',
   },
   {
     question: 'What has he published?',
-    answer:
-      'Four peer-reviewed first-author papers: “Naturally Constrained Reject Option Classification” (Machine Vision and Applications, 2025), “Assessing the Role of Imagery in Multimodal Machine Translation” (WMT 2024), “Learning When to Say I Don’t Know” (ISVC 2022, Springer Best Paper Award), and “A Framework for Semi-automatic Collection of Temporal Satellite Imagery” (ICCV Workshop 2021). A fifth manuscript, on retrieval-augmented selective QA, was revised after ACL Rolling Review and is being prepared as an arXiv preprint; it is not yet peer-review accepted.',
+    answer: 'Four first-author peer-reviewed papers: Naturally Constrained Reject Option Classification (MVA 2025), Assessing the Role of Imagery in Multimodal Machine Translation (WMT 2024), Learning When to Say I Don’t Know (ISVC 2022, Springer Best Paper Award), and a temporal satellite imagery collection framework (ICCV Workshop 2021). His dissertation also studies retrieval-augmented answer revision; that work is listed separately as unpublished research.',
   },
   {
-    question: 'Has he won any awards?',
-    answer:
-      'Yes — the Springer Best Paper Award at ISVC 2022 for “Learning When to Say I Don’t Know,” the reject-option classification work later extended into the Machine Vision and Applications journal version.',
+    question: 'What is his engineering experience?',
+    answer: 'He builds training and evaluation code in Python and PyTorch, works with Hugging Face models and LoRA fine-tuning, and runs experiments with Slurm and Singularity. Public code includes reject-option classification, calibration utilities, and satellite imagery collection.',
   },
   {
-    question: 'What is his engineering experience, as opposed to research output?',
-    answer:
-      'He writes the training code, the evaluation harnesses, and the cluster orchestration himself. Recent work includes LoRA fine-tuning of answer/refine/abstain controllers on 8× NVIDIA H200 GPUs (roughly 400 GPU-hours for a clean reproduction) and a paired-outcome evaluation harness over 25,870 held-out questions. Day-to-day stack: Python, PyTorch, Hugging Face, FAISS, Slurm, and Singularity.',
+    question: 'Where does he work now?',
+    answer: `He is a ${person.jobTitle} at ${person.employer}, working on machine learning research and evaluation. He previously completed five summers of AFRL-sponsored research and is a U.S. citizen.`,
   },
   {
-    question: 'Can he work on U.S. federal or defense contracts?',
-    answer:
-      'Yes. He is a U.S. citizen and has completed five summers of AFRL-sponsored research, and currently works as a Technical Analyst II at DCS Corp on AFRL-sponsored LLM reliability work. Federal and cleared-adjacent roles are welcome.',
-  },
-  {
-    question: 'How should someone contact him?',
-    answer: `By email at ${person.email}. His CV is at ${SITE_URL}/resume.pdf, code at ${links.github}, and publication record at ${links.scholar} and ORCID ${links.orcid}.`,
+    question: 'How can I get in touch?',
+    answer: `Email ${person.email}. His resume is at ${SITE_URL}/resume.pdf, code at ${links.github}, and publications at ${links.scholar}.`,
   },
 ];

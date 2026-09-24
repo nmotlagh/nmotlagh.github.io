@@ -3,9 +3,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EditorialHero from "../components/editorial/EditorialHero.astro";
 import ResearchResults from "../components/editorial/ResearchResults.astro";
-import DispatchList from "../components/editorial/DispatchList.astro";
+import AbstainDemo from "../components/editorial/AbstainDemo.astro";
 import ContactRail from "../components/editorial/ContactRail.astro";
-import { homeEditorial, researchResults, skillGroups } from "../data/editorial";
+import { homeEditorial, researchResults } from "../data/editorial";
 import { person as personProfile } from "../data/site";
 import {
   PERSON_ID,
@@ -16,7 +16,6 @@ import {
   publicationNode,
   websiteNode,
 } from "../utils/schema";
-import { parseDateValue } from "../utils/dates";
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import headshot from "../assets/headshot.jpg";
@@ -25,13 +24,9 @@ const experience = await getEntry("pages", "experience");
 const experienceItems = experience?.data.items ?? [];
 
 const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
-const isUnderReview = (entry: CollectionEntry<"publications">) =>
-  entry.data.citation?.type === "unpublished";
-// Peer-reviewed first, newest to oldest; anything still under review sorts to the
-// bottom so the list leads with work that has actually cleared review.
-const publications = publicationEntries.sort(
-  (a, b) => Number(isUnderReview(a)) - Number(isUnderReview(b)) || b.data.year - a.data.year,
-);
+const publications = publicationEntries
+  .filter((entry) => entry.data.citation?.type !== "unpublished")
+  .sort((a, b) => b.data.year - a.data.year);
 const artifactEntries = await getCollection("artifacts");
 const artifactLookup = new Map(artifactEntries.map((entry) => [entry.id, entry]));
 
@@ -39,26 +34,10 @@ const featuredArtifacts = homeEditorial.featuredArtifactIds
   .map((id) => artifactLookup.get(id))
   .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
-const newsItems = (await getCollection("news", ({ data }) => !data.draft))
-  .sort((a, b) => parseDateValue(b.data.date).getTime() - parseDateValue(a.data.date).getTime())
-  .slice(0, 4);
-
 const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`;
-const scholarHref = "https://scholar.google.com/citations?user=srZXFMcAAAAJ&hl=en";
-const githubHref = "https://github.com/nmotlagh";
-const linkedInHref = "https://www.linkedin.com/in/nicholas-kashani-motlagh";
-const emailHref = "mailto:kashanimotlagh.1@osu.edu";
-const orcidHref = "https://orcid.org/0000-0001-6229-6212";
 const siteOrigin = Astro.site?.href ?? "https://nmotlagh.github.io/";
 const headshotUrl = Astro.site ? new URL(headshot.src, Astro.site).href : headshot.src;
 const personName = personProfile.name;
-
-const stats = [
-  { label: "First-author papers", value: "4 peer-reviewed" },
-  { label: "Best paper", value: "ISVC 2022" },
-  { label: "Largest study", value: "25,870 questions" },
-  { label: "Available", value: "Now" },
-];
 
 const education = experience?.data.education ?? [];
 
@@ -72,7 +51,6 @@ const publicationLinks = (entry: CollectionEntry<"publications">) =>
       : undefined,
     entry.data.arxiv && { label: "arXiv", href: entry.data.arxiv },
     entry.data.code && { label: "Code", href: entry.data.code },
-    { label: "Cite", href: `${import.meta.env.BASE_URL}publications/${entry.slug}.bib` },
   ].filter(Boolean) as { label: string; href: string }[];
 
 // One connected graph: the ProfilePage is *about* the Person, and every paper's
@@ -97,28 +75,25 @@ const structuredData = graph([
 ---
 
 <BaseLayout
-  title="Home"
-  description="Nick Kashani Motlagh — PhD in machine learning at Ohio State, working on when models should abstain, weigh evidence, or revise their answers."
+  description={personProfile.description}
   structuredData={structuredData}
 >
   <section class="section section--hero" id="about">
     <div class="site-shell">
       <EditorialHero
         eyebrow={homeEditorial.hero.eyebrow}
-        availability={homeEditorial.hero.availability}
         title={homeEditorial.hero.title}
         ledeHtml={homeEditorial.hero.ledeHtml}
         supporting={homeEditorial.hero.supporting}
-        actions={[
-          { label: "Resume (PDF)", href: resumeHref, external: true },
-          { label: "Email me", href: emailHref, variant: "ghost" },
-        ]}
-        stats={stats}
-        scholarHref={scholarHref}
-        githubHref={githubHref}
-        linkedInHref={linkedInHref}
-        emailHref={emailHref}
+        resumeHref={resumeHref}
+        paperCount={publications.length}
       />
+    </div>
+  </section>
+
+  <section class="section" id="demo">
+    <div class="site-shell">
+      <AbstainDemo />
     </div>
   </section>
 
@@ -127,11 +102,42 @@ const structuredData = graph([
       <ResearchResults
         eyebrow={homeEditorial.research.eyebrow}
         title={homeEditorial.research.title}
-        subtitle={homeEditorial.research.subtitle}
         summary={homeEditorial.research.summary}
-        meta={homeEditorial.research.meta}
         results={researchResults}
       />
+    </div>
+  </section>
+
+  <section class="section" id="experience">
+    <div class="site-shell stack">
+      <SectionHeading
+        eyebrow="Experience"
+        title="Machine learning research and engineering."
+      />
+
+      <div class="home-experience-grid">
+        {experienceItems.slice(0, 2).map((item) => (
+          <article class="home-experience-card surface">
+            <h3>{item.role}</h3>
+            <p class="home-experience-card__meta">
+              {item.location ? `${item.location} / ${item.timeframe}` : item.timeframe}
+            </p>
+            {item.bullets && item.bullets.length > 0 && (
+              <ul>
+                {item.bullets.slice(0, 2).map((bullet) => (
+                  <li set:html={bullet} />
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <div>
+        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}experience/`}>
+          Full history
+        </a>
+      </div>
     </div>
   </section>
 
@@ -139,7 +145,7 @@ const structuredData = graph([
     <div class="site-shell stack">
       <SectionHeading
         eyebrow="Publications"
-        title="Four peer-reviewed first-author papers."
+        title="Peer-reviewed publications."
       />
 
       <ol class="pub-list">
@@ -184,44 +190,11 @@ const structuredData = graph([
     </div>
   </section>
 
-  <section class="section" id="experience">
-    <div class="site-shell stack">
-      <SectionHeading
-        eyebrow="Experience"
-        title="Machine learning research and engineering."
-      />
-
-      <div class="home-experience-grid">
-        {experienceItems.slice(0, 4).map((item) => (
-          <article class="home-experience-card surface">
-            <h3>{item.role}</h3>
-            <p class="home-experience-card__meta">
-              {item.location ? `${item.location} / ${item.timeframe}` : item.timeframe}
-            </p>
-            {item.bullets && item.bullets.length > 0 && (
-              <ul>
-                {item.bullets.slice(0, 2).map((bullet) => (
-                  <li set:html={bullet} />
-                ))}
-              </ul>
-            )}
-          </article>
-        ))}
-      </div>
-
-      <div>
-        <a class="button button--ghost" href={`${import.meta.env.BASE_URL}experience/`}>
-          Full history
-        </a>
-      </div>
-    </div>
-  </section>
-
   <section class="section" id="projects">
     <div class="site-shell stack">
       <SectionHeading
         eyebrow="Code"
-        title="Reject-option thresholds, calibration tooling, satellite collection."
+        title="Open-source tools."
       />
 
       <div class="home-artifact-grid">
@@ -252,24 +225,9 @@ const structuredData = graph([
     </div>
   </section>
 
-  <section class="section" id="news">
+  <section class="section" id="contact">
     <div class="site-shell">
-      <DispatchList newsItems={newsItems} />
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="site-shell">
-      <ContactRail
-        facts={homeEditorial.recruiterFacts}
-        skillGroups={skillGroups}
-        resumeHref={resumeHref}
-        emailHref={emailHref}
-        linkedInHref={linkedInHref}
-        githubHref={githubHref}
-        scholarHref={scholarHref}
-        orcidHref={orcidHref}
-      />
+      <ContactRail />
     </div>
   </section>
 </BaseLayout>

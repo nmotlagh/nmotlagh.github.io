@@ -12,7 +12,7 @@ const { bibtex, downloadHref }: Props = Astro.props;
     <p class="eyebrow">Cite</p>
     <div class="cite__actions">
       <button class="cite__button" type="button" data-cite-copy>
-        <span data-cite-label>Copy BibTeX</span>
+        <span data-cite-label aria-live="polite">Copy BibTeX</span>
       </button>
       <a class="badge badge--link" href={downloadHref} download>.bib</a>
     </div>
@@ -35,7 +35,7 @@ const { bibtex, downloadHref }: Props = Astro.props;
         await navigator.clipboard.writeText(source.textContent ?? '');
         label.textContent = 'Copied';
       } catch {
-        label.textContent = 'Press ⌘C to copy';
+        label.textContent = 'Text selected; use your copy shortcut';
         const range = document.createRange();
         range.selectNodeContents(source);
         const selection = window.getSelection();
@@ -110,6 +110,7 @@ const { bibtex, downloadHref }: Props = Astro.props;
     color: var(--color-text-muted);
     font: 400 0.78rem/1.7 var(--font-mono);
     tab-size: 2;
-    white-space: pre;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 </style>

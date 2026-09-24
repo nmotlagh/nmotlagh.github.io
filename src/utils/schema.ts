@@ -53,11 +53,7 @@ export function personNode(educationEntries: EducationEntry[] = []): Json {
         addressCountry: 'US',
       },
     },
-    affiliation: {
-      '@type': 'CollegeOrUniversity',
-      name: person.institution,
-      url: person.institutionUrl,
-    },
+    worksFor: { '@type': 'Organization', name: person.employer },
     alumniOf: educationEntries.map((entry) => ({
       '@type': 'CollegeOrUniversity',
       name: entry.institution,
@@ -83,8 +79,7 @@ export function personNode(educationEntries: EducationEntry[] = []): Json {
     seeks: {
       '@type': 'Demand',
       name: `${person.seeking.join(', ')} roles`,
-      availabilityStarts: person.availableFrom,
-      areaServed: 'US',
+      areaServed: [...person.targetLocations],
     },
     sameAs: [links.github, links.linkedin, links.scholar, links.orcid],
   });

@@ -1,8 +1,12 @@
 {
-  "name": "construction-site-satellite-imagery-collection",
+  "name": "Satellite imagery collection",
   "repo": "https://github.com/osu-cvl/Construction-Site-Satellite-Imagery-Collection",
   "summary": "Companion code for OpenStreetMap-guided temporal satellite imagery collection and annotation.",
-  "stack": ["Python", "OpenStreetMap", "remote sensing"],
+  "stack": [
+    "Python",
+    "OpenStreetMap",
+    "remote sensing"
+  ],
   "reproduce": [
     "Extract candidate construction-site polygons from OpenStreetMap data.",
     "Download temporal satellite imagery for the extracted regions.",

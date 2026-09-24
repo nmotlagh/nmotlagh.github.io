@@ -28,6 +28,7 @@ export const GET: APIRoute = async () => {
   const profile = {
     $schema: 'https://schema.org/Person',
     generated: new Date().toISOString().slice(0, 10),
+    reviewed: person.updated,
     canonical: `${SITE_URL}/`,
     name: person.name,
     formalName: person.formalName,
@@ -37,17 +38,16 @@ export const GET: APIRoute = async () => {
     email: person.email,
     citizenship: person.citizenship,
     currentRole: {
-      title: 'Technical Analyst II',
-      organization: 'DCS Corp (AFRL-sponsored)',
+      title: person.jobTitle,
+      organization: person.employer,
       since: '2025-05',
     },
     availability: {
       status: 'open to offers',
-      availableFrom: person.availableFrom,
       seeking: [...person.seeking],
-      remote: true,
+      preferredLocations: [...person.targetLocations],
       willingToRelocate: true,
-      note: 'Best fit: LLM evaluation, calibration, retrieval-augmented systems, reliability infrastructure. U.S. federal roles welcome.',
+      note: 'Best fit: ML research engineering, LLM evaluation, calibration, and retrieval-augmented systems.',
     },
     links,
     education: (experience?.data.education ?? []).map((item) => ({

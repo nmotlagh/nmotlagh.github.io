@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f4f3ee"/>
+  <path d="M72 76H1128M72 504H1128" stroke="#b3b0a0"/>
+  <text x="72" y="124" font-family="sans-serif" font-size="19" font-weight="600" letter-spacing="3" fill="#494c55">MACHINE LEARNING · RESEARCH &amp; ENGINEERING</text>
+  <text x="67" y="252" font-family="Georgia, serif" font-size="77" fill="#17181d">Nick Kashani Motlagh</text>
+  <text x="72" y="347" font-family="Georgia, serif" font-size="46" fill="#17181d">I build and evaluate</text>
+  <text x="72" y="408" font-family="Georgia, serif" font-size="52" font-style="italic" fill="#2342c8">reliable ML systems.</text>
+  <text x="72" y="554" font-family="sans-serif" font-size="21" fill="#494c55">PhD, Ohio State · LLM evaluation · Selective prediction · Multimodal ML</text>
+  <text x="72" y="591" font-family="monospace" font-size="19" fill="#5f616a">nmotlagh.github.io</text>
+</svg>

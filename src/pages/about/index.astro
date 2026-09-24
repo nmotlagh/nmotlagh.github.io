@@ -2,7 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 import { getEntry } from "astro:content";
-import { SITE_URL, links } from "../../data/site";
+import { SITE_URL, links, person } from "../../data/site";
 import { PERSON_ID, breadcrumbNode, graph, personNode, websiteNode } from "../../utils/schema";
 
 const about = await getEntry("pages", "about");
@@ -35,7 +35,7 @@ const structuredData = graph([
 
 <BaseLayout
   title="About"
-  description="Nick Kashani Motlagh — PhD in machine learning at Ohio State, working on when models should abstain, weigh evidence, or revise their answers."
+  description={person.description}
   structuredData={structuredData}
 >
   <section class="section">

@@ -1,49 +1,54 @@
 # nmotlagh.github.io
 
-Modern Astro rebuild of my personal site with a hero-first homepage, dual-mode theming, and typed content collections.
+Personal research and engineering website built with Astro, MDX, and typed content collections.
 
-## Getting started
+## Development and validation
+
+Use Node 20 and the checked-in lockfile:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-- Dev server: `http://localhost:4321/`
-- Static build: `npm run build`
-- Preview the production build locally: `npm run preview`
+The development server runs at `http://localhost:4321/`. Before publishing:
 
-## Project structure
+```bash
+npx astro check
+npm audit --audit-level=critical
+npm run build
+npm run preview
+```
 
-- `src/pages/` – Astro page routes (homepage, legacy redirects, 404)
-- `src/layouts/BaseLayout.astro` – Global chrome, theme toggle, and metadata
-- `src/components/` – UI pieces (`Hero`, `SectionHeading`, `ThemeToggle`)
-- `src/content/` – Zod-typed collections for long-form copy and publications
-- `public/` – Static assets shipped verbatim (`resume.pdf`, `.nojekyll`, favicon)
-- `.github/workflows/deploy.yml` – GitHub Pages workflow using `withastro/action`
+Inspect the production preview on mobile and desktop, in light and dark themes. Check navigation, keyboard focus, the theme toggle, publication links, and the resume download.
 
-## Content updates
+## Content map
 
-- **About / Experience**: edit the MDX files in `src/content/pages/`
-- **Publications**: add MDX files to `src/content/publications/` (frontmatter is validated)
-- **Hero copy**: tweak props in `src/pages/index.astro`
-- **Resume**: replace `public/resume.pdf`
+- `src/data/site.ts`: shared identity, role interests, location preferences, profile links, and FAQ. Update the review date when reviewing this copy.
+- `src/data/editorial.ts`: homepage introduction, concise research summaries, and toolkit.
+- `src/content/pages/`: biography, experience, education, and service.
+- `src/content/publications/`: paper metadata and detail pages. Unpublished work uses `citation.type: unpublished` and is kept separate from peer-reviewed publications.
+- `src/content/artifacts/`: public code and data links.
+- `src/content/news/`: dated historical updates, available through the news archive and RSS.
+- `src/layouts/BaseLayout.astro`: navigation, footer, and shared metadata.
+- `src/styles/`: responsive layout and light/dark theme tokens.
+
+The profile JSON, JSON-LD, text summaries, publication Markdown, BibTeX, RSS, and sitemap are generated from these sources. Their routes remain available without adding technical links to the main navigation.
+
+## Public assets
+
+`public/resume.pdf` is the selected public one-page resume. Application variants are maintained separately in the private job-search workspace. The September 2026 website refresh retained the current public variant, updated the DCS title, moved current employment first, and removed unverified audit/result claims. It did not change the private application variants. Review those sources before replacing the public PDF; an older generated resume can reintroduce stale copy.
+
+`src/assets/social-card.svg` is the editable source for the social preview. After changing it, regenerate the static PNG with the Sharp installation supplied by Astro:
+
+```bash
+node --input-type=module -e 'import sharp from "sharp"; await sharp("src/assets/social-card.svg").png().toFile("public/og-card.png");'
+```
+
+Keep public research descriptions tied to published evidence. Describe unpublished work as unpublished; add preprint links and detailed results when an appropriate public source is available. Application plans, interview details, private audits, and employer-specific research details do not belong in this repository.
 
 ## Deployment
 
-Push to `main` and GitHub Actions will:
+Pushing to `main` triggers `.github/workflows/deploy.yml`, which installs dependencies, runs the type check and security audit, builds `dist/`, and deploys it to GitHub Pages. Local builds and previews do not publish the site.
 
-1. Install dependencies and run the Astro build (`withastro/action@v5`)
-2. Publish the static `dist/` output to GitHub Pages via `actions/deploy-pages@v4`
-
-GitHub Pages serves the `dist/` bundle. The repo includes:
-
-- `public/.nojekyll` to keep the `_astro/` assets untouched
-- `astro.config.mjs` with `site` configured for `https://nmotlagh.github.io`
-- Redirect stubs (`/about`, `/experience`, `/publications`) so legacy links continue to work
-
-## Tooling
-
-- Astro 5 with MDX and sitemap integrations
-- Prefetch enabled for snappy navigation
-- Dual-mode theme tokens using OSU Scarlet (`#BA0C2F`) as the primary accent
+The canonical URL is `https://nmotlagh.github.io`. Keep this GitHub Pages deployment path.

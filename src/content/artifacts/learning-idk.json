@@ -1,8 +1,12 @@
 {
-  "name": "learning-idk",
+  "name": "Reject-option classification",
   "repo": "https://github.com/osu-cvl/learning-idk",
   "summary": "Companion code for ISVC 2022 / MVA 2025: per-class reject-option classification with binomial threshold search.",
-  "stack": ["Python", "PyTorch", "selective prediction"],
+  "stack": [
+    "Python",
+    "PyTorch",
+    "selective prediction"
+  ],
   "reproduce": [
     "Learn per-class reject thresholds from precomputed classifier logits and labels.",
     "Evaluate select accuracy, reject accuracy, and coverage for the learned thresholds.",

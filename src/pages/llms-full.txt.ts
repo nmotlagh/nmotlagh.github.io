@@ -37,28 +37,15 @@ Source: ${SITE_URL}/ · Generated ${new Date().toISOString().slice(0, 10)}
 
 ${researchResults
   .map(
-    (result) => `### ${result.index}. ${result.title} (${result.actionLabel})
+    (result) => `### ${result.index}. ${result.title}
 
-Question: ${result.question}
-Venue: ${result.venue}
+Status: ${result.venue}
 
-Problem: ${result.problem}
+${result.summary}
 
-Approach: ${result.built}
+${result.contribution}
 
-Headline result: ${result.headline} — ${result.headlineLabel}
-
-${
-      result.chart
-        ? `${result.chart.bars
-            .map((bar) => `- ${bar.label}: ${bar.display} (${result.chart!.axisLabel})`)
-            .join('\n')}
-
-${result.chart.caption}
-
-`
-        : ''
-    }${result.detail}`,
+Details: ${SITE_URL}/publications/${result.publicationSlug}/`,
   )
   .join('\n\n')}`);
 

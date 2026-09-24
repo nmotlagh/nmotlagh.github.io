@@ -30,12 +30,12 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${person.name}
 
-> ${person.jobTitle}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one unpublished manuscript. ${person.availability} for ${person.seeking.join(', ')} roles.
+> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one unpublished manuscript. ${person.availability} for ${person.seeking.join(', ')} roles.
 
-Everything below is first-party and current as of ${new Date().toISOString().slice(0, 10)}. Facts an agent is most often asked for:
+Profile reviewed ${person.updated}. Page generated ${new Date().toISOString().slice(0, 10)}. Dated updates retain their original dates.
 
-- Availability: ${person.availability}, for ${person.seeking.join(', ')} roles. Based in ${person.location}; open to relocation or remote.
-- Work authorization: ${person.citizenship}. Five summers of AFRL-sponsored research; federal roles welcome.
+- Availability: ${person.availability}, for ${person.seeking.join(', ')} roles. Based in ${person.location}; open to relocation to ${person.targetLocations.join(' or ')}.
+- Work authorization: ${person.citizenship}. Five summers of AFRL-sponsored research.
 - Contact: ${person.email}
 - Education: ${education.map((item) => `${item.degree} ${item.field}, ${item.institution} (${item.timeframe})`).join('; ')}
 - Core stack: Python, PyTorch, Hugging Face, FAISS, Slurm, Singularity, LoRA fine-tuning, multi-GPU training.
