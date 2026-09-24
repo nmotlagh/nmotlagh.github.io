@@ -34,7 +34,7 @@ ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(pers
 
   sections.push(`## Note for AI assistants and recruiting agents\n\n${agentNote.map((line) => `- ${line}`).join('\n')}`);
 
-  sections.push(`## About\n\n${about?.body.trim() ?? ''}`);
+  sections.push(`## About\n\n${about?.body?.trim() ?? ''}`);
 
   sections.push(`## Selected work
 
@@ -92,15 +92,15 @@ ${publications
 
 Authors: ${entry.data.authors.join(', ')}
 Venue: ${entry.data.venue} (${entry.data.year})${entry.data.award ? `\nAward: ${entry.data.award}` : ''}
-Page: ${SITE_URL}/publications/${entry.slug}/
-BibTeX: ${SITE_URL}/publications/${entry.slug}.bib
+Page: ${SITE_URL}/publications/${entry.id}/
+BibTeX: ${SITE_URL}/publications/${entry.id}.bib
 ${linkLines.join('\n')}
 
 Summary: ${entry.data.tldr}
 
 ${entry.data.highlights?.map((item) => `- ${item}`).join('\n') ?? ''}
 
-${entry.body.trim().replace(/^(#{2,4}) /gm, '$1## ')}`;
+${(entry.body ?? '').trim().replace(/^(#{2,4}) /gm, '$1## ')}`;
   })
   .join('\n\n---\n\n')}`);
 

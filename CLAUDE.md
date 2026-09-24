@@ -13,11 +13,11 @@ npm run preview          # Serve production build locally
 
 ## Architecture Overview
 
-This is an Astro 5 static site for a personal academic portfolio deployed to GitHub Pages.
+This is an Astro 7 static site for a personal academic portfolio deployed to GitHub Pages. It needs Node 22.12 or newer; CI uses Node 24.
 
 ### Content Collections System
 
-The site uses Astro's typed content collections defined in `src/content/config.ts`:
+The site uses Astro's typed content collections (Content Layer API), defined in `src/content.config.ts` with `glob()` loaders over `src/content/<collection>/`:
 
 - **`pages/`** - MDX files for About and Experience sections with structured frontmatter for timeline items
 - **`publications/`** - Research papers with rich metadata (authors, venue, year, DOI, links to PDF/arXiv/code/data)
@@ -29,6 +29,13 @@ collection lives in `src/data/editorial.ts` (homepage editorial content) and
 `src/data/site.ts` (site metadata, FAQ, recruiter facts).
 
 All frontmatter is validated against Zod schemas at build time. When adding content, match the existing schema structure.
+
+Content Layer conventions (Astro 6+):
+
+- An entry's `id` is its file name without the extension, so `/publications/<id>/` URLs come from `entry.id` (there is no `entry.slug`).
+- Render with `render(entry)` imported from `astro:content` (not `entry.render()`).
+- Import `z` from `astro/zod` (Zod 4). `entry.body` is typed as optional.
+- `getCollection()` order is not guaranteed. Sort explicitly wherever order reaches the output.
 
 ### Routing & Pages
 
@@ -45,7 +52,7 @@ All frontmatter is validated against Zod schemas at build time. When adding cont
 - **`components/editorial/ShortVersion.astro`** - Recruiter panels under the hero: 1.1 the short version (status, roles, locations, work authorization, education, contact) and 1.2 skills with evidence links (`skillGroups` in `src/data/editorial.ts`)
 - **`components/editorial/SelectedWork.astro`** - Case studies (`caseStudies`, `moreWork` in `src/data/editorial.ts`) with problem, what was built, stack, status and links; figures FIG.1–3 from `WorkFigure.astro`
 - **`components/editorial/MeadowScene.astro`** - Generative meadow background (WebGL with 2D and static CSS fallbacks; logic in `src/lib/meadow*.ts`). Its horizon is the threshold line; if the horizon moves, update `--hero-hz` in `EditorialHero.astro`
-- **`components/editorial/WorkFigure.astro`** - Line-art figures for the case studies (paired outcomes, the 2026 backbone re-test with real numbers, image swap)
+- **`components/editorial/WorkFigure.astro`** - Line-art figures for the case studies (paired outcomes, the reject-option threshold, image swap; all conceptual, no data)
 - **`components/editorial/AbstainDemo.astro`** - Live selective-prediction demo (FIG.4; `index` and `fig` props); logic in `src/lib/abstain.ts` and `src/lib/abstain-plot.ts`, data in `src/data/abstain-demo.json`
 - **`components/editorial/ContactRail.astro`** - Contact section with portrait (FIG.5), availability, profiles, and contact facts
 - **`PublicationCard.astro`** - Publication card for the archive page
@@ -82,11 +89,18 @@ Files in `public/` are served as-is:
 
 Pushing to `main` triggers `.github/workflows/deploy.yml`:
 
-1. `npm ci` installs dependencies
-2. `npm run build` generates static `dist/`
-3. `actions/upload-pages-artifact` and `actions/deploy-pages` publish to GitHub Pages
+1. `npm ci` installs dependencies (Node 24)
+2. `npx astro check` type-checks; it must report 0 errors
+3. `npm audit --audit-level=critical` gates the deploy on critical advisories
+4. `npm run build` generates static `dist/`
+5. `actions/upload-pages-artifact` and `actions/deploy-pages` publish to GitHub Pages
 
-The site is configured for `https://nmotlagh.github.io` in `astro.config.mjs`.
+The site is configured for `https://nmotlagh.github.io` in `astro.config.mjs`. That file also pins two settings so Astro 7 renders the same output as Astro 5:
+
+- `compressHTML: true`. The Astro 7 default (`'jsx'`) strips the spaces between inline elements.
+- Vite `cssMinify: 'esbuild'` with the older `cssTarget` list. This lowers the modern CSS syntax that the new compiler writes into scoped styles (for example `@media (width>=…)`) so older Safari can still read it.
+
+Astro 7's compiler keeps line breaks inside a multi-line `<>…</>` fragment as a space. Keep inline fragments such as the comma-separated author lists on one line.
 
 ## Code Style
 

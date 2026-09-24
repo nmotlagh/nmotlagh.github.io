@@ -48,7 +48,7 @@ export const GET: APIRoute = async () => {
       label: 'Machine learning researcher and engineer',
       email: person.email,
       url: `${SITE_URL}/`,
-      summary: `${plain(about?.body.trim().split('\n\n')[0] ?? '')} ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
+      summary: `${plain(about?.body?.trim().split('\n\n')[0] ?? '')} ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
       location: { city: 'Columbus', region: 'Ohio', countryCode: 'US' },
       profiles: [
         { network: 'GitHub', username: 'nmotlagh', url: links.github },
@@ -91,7 +91,7 @@ export const GET: APIRoute = async () => {
       name: entry.data.title,
       publisher: entry.data.venue,
       releaseDate: String(entry.data.year),
-      url: `${SITE_URL}/publications/${entry.slug}/`,
+      url: `${SITE_URL}/publications/${entry.id}/`,
       summary:
         entry.data.citation?.type === 'unpublished'
           ? `Unpublished manuscript. ${entry.data.tldr}`

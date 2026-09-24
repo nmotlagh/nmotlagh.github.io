@@ -4,7 +4,7 @@ Personal research and engineering website built with Astro, MDX, and typed conte
 
 ## Development and validation
 
-Use Node 20 and the checked-in lockfile:
+Use Node 24 (Astro 7 needs 22.12 or newer) and the checked-in lockfile:
 
 ```bash
 npm ci

@@ -113,7 +113,7 @@ export const faq: { question: string; answer: string }[] = [
   },
   {
     question: 'What has he built?',
-    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with LoRA-trained policies that choose to answer or revise (unpublished; arXiv version in preparation). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-tested it on four frozen vision backbones (per-class thresholds overfit on modern logits) and ported it to TypeScript for the live demo on his site.',
+    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with LoRA-trained policies that choose to answer or revise (unpublished; arXiv version in preparation). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-ran it on four frozen vision backbones and ported it to TypeScript for the live demo on his site.',
   },
   {
     question: 'What is his education?',

@@ -6,7 +6,7 @@ import { toBibtex } from '../../utils/bibtex';
 
 export async function getStaticPaths() {
   const publications = await getCollection('publications', ({ data }) => !data.draft);
-  return publications.map((pub) => ({ params: { slug: pub.slug }, props: { pub } }));
+  return publications.map((pub) => ({ params: { slug: pub.id }, props: { pub } }));
 }
 
 /** Markdown mirror of a paper page — the same content without the page chrome. */
@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ props }) => {
 
 **Authors:** ${data.authors.join(', ')}
 **Venue:** ${data.venue} (${data.year})${data.award ? `\n**Award:** ${data.award}` : ''}
-**Canonical page:** <${SITE_URL}/publications/${pub.slug}/>
+**Canonical page:** <${SITE_URL}/publications/${pub.id}/>
 
 > ${data.tldr}
 
@@ -42,7 +42,7 @@ ${
 }
 ## Summary
 
-${pub.body.trim()}
+${(pub.body ?? '').trim()}
 
 ## BibTeX
 

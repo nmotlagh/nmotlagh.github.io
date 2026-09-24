@@ -4,33 +4,30 @@
  * accent, drawn in a 240 × 150 box so every figure shares a scale.
  *
  * - outcomes:  the paired-outcome grid (conceptual, no data).
- * - backbones: the 2026 re-test, real numbers from the modern-backbones README
- *              (δ = 0.05, per-class minus global select accuracy, in points).
+ * - threshold: predictions as dot columns by confidence, cut by the reject
+ *              threshold (conceptual, no data).
  * - imagery:   swap the image, measure the change (conceptual, no data).
  */
 interface Props {
-  kind: 'outcomes' | 'backbones' | 'imagery';
+  kind: 'outcomes' | 'threshold' | 'imagery';
   id: string;
 }
 const { kind, id }: Props = Astro.props;
 const titleId = `${id}-fig-title`;
 
-// Re-test gaps at δ = 0.05 (github.com/nmotlagh/learning-idk, modern-backbones README).
-const gaps = [
-  { name: 'DINOv2 B/14', inSample: 0.62, test: -0.19 },
-  { name: 'DINOv2 S/14', inSample: 0.89, test: -0.38 },
-  { name: 'SigLIP 2 B/16', inSample: 0.7, test: -0.43 },
-  { name: 'DINOv3 S/16', inSample: 0.83, test: -0.3 },
-];
-const zeroX = 150;
-const unit = 70; // px per accuracy point
-const gx = (v: number) => zeroX + v * unit;
-const rowY = (i: number) => 40 + i * 20;
-const signed = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
+// Threshold figure: an illustrative confidence histogram (skewed toward high
+// confidence) drawn as dot columns and cut by the threshold. Shape only; not data.
+const columnHeights = [1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 11, 8];
+const cut = 6; // columns before this index fall below the threshold
+const colX = (i: number) => 22 + i * 14.4;
+const dots = columnHeights.flatMap((h, i) =>
+  Array.from({ length: h }, (_, j) => ({ x: colX(i), y: 124 - j * 7.4, below: i < cut })),
+);
+const tauX = (colX(cut - 1) + colX(cut)) / 2;
 
 const captions: Record<Props['kind'], string> = {
   outcomes: 'Net accuracy change = repaired − harmed',
-  backbones: 'Per-class minus one global threshold, test vs. in-sample',
+  threshold: 'Declined guesses are no better than a coin flip',
   imagery: 'Swap the image, measure the change',
 };
 ---
@@ -65,43 +62,30 @@ const captions: Record<Props['kind'], string> = {
     </svg>
   )}
 
-  {kind === 'backbones' && (
+  {kind === 'threshold' && (
     <svg viewBox="0 0 240 150" role="img" aria-labelledby={titleId}>
       <title id={titleId}>
-        {`Per-class minus global-threshold select accuracy, in points, at delta 0.05. ${gaps
-          .map((g) => `${g.name}: in-sample ${signed(g.inSample)}, test ${signed(g.test)}.`)
-          .join(' ')} Every backbone gains in-sample and loses on test.`}
+        Dot columns of predictions by confidence, cut by a vertical threshold: hollow dots on the left
+        are declined, filled dots on the right are answered.
       </title>
       <g class="fig-ink">
-        <path class="fig-axis" d={`M${gx(-1)} 114.5H${gx(1)}`} />
-        <path class="fig-axis" d={`M${gx(-1)} 111v7M${zeroX} 111v7M${gx(1)} 111v7`} />
-        <path class="fig-dashed" d={`M${zeroX} 28V112`} />
-        {gaps.map((g, i) => (
-          <path class="fig-line" d={`M${gx(g.test)} ${rowY(i)}H${gx(g.inSample)}`} />
-        ))}
-        {gaps.map((g, i) => (
-          <circle class="fig-hollow fig-hollow--strong" cx={gx(g.inSample)} cy={rowY(i)} r="2.8">
-            <title>{`${g.name}, in-sample: ${signed(g.inSample)} points`}</title>
-          </circle>
-        ))}
+        {dots.map((d) =>
+          d.below ? (
+            <circle class="fig-hollow" cx={d.x} cy={d.y} r="2.3" />
+          ) : (
+            <circle class="fig-solid" cx={d.x} cy={d.y} r="2.4" />
+          ),
+        )}
+        <path class="fig-axis" d="M12 134.5H228" />
+        <path class="fig-axis" d="M12 131v7M228 131v7" />
       </g>
-      {gaps.map((g, i) => (
-        <circle class="fig-accent-fill" cx={gx(g.test)} cy={rowY(i)} r="2.8">
-          <title>{`${g.name}, test: ${signed(g.test)} points`}</title>
-        </circle>
-      ))}
-      {gaps.map((g, i) => (
-        <text class="fig-text fig-text--strong" x="72" y={rowY(i) + 2.3} text-anchor="end">{g.name}</text>
-      ))}
-      <text class="fig-text" x={gx(-1)} y="126" text-anchor="middle">−1</text>
-      <text class="fig-text" x={zeroX} y="126" text-anchor="middle">0</text>
-      <text class="fig-text" x={gx(1)} y="126" text-anchor="middle">+1</text>
-      <text class="fig-text" x={gx(-1)} y="139">← PER-CLASS WORSE</text>
-      <text class="fig-text" x={gx(1)} y="139" text-anchor="end">BETTER →</text>
-      <circle class="fig-accent-fill" cx="84" cy="10" r="2.8" />
-      <text class="fig-text fig-text--strong" x="90" y="12.3">TEST</text>
-      <circle class="fig-hollow fig-hollow--strong" cx="126" cy="10" r="2.8" />
-      <text class="fig-text fig-text--strong" x="132" y="12.3">IN-SAMPLE</text>
+      <path class="fig-accent" d={`M${tauX} 22V140`} />
+      <text class="fig-accent-text" x={tauX + 5} y="30">τ</text>
+      <text class="fig-text" x="12" y="148">0</text>
+      <text class="fig-text" x="228" y="148" text-anchor="end">1</text>
+      <text class="fig-text" x={tauX - 6} y="30" text-anchor="end">DECLINE</text>
+      <text class="fig-text" x="228" y="30" text-anchor="end">ANSWER</text>
+      <text class="fig-text" x="120" y="148" text-anchor="middle">CONFIDENCE</text>
     </svg>
   )}
 
@@ -143,13 +127,7 @@ const captions: Record<Props['kind'], string> = {
   )}
 
   <figcaption>
-    {kind === 'backbones' ? (
-      <>
-        {captions[kind]}, <span class="work-fig__sym">δ</span>&nbsp;=&nbsp;0.05
-      </>
-    ) : (
-      captions[kind]
-    )}
+    {captions[kind]}
   </figcaption>
 </figure>
 
@@ -210,6 +188,10 @@ const captions: Record<Props['kind'], string> = {
 
   .fig-line {
     stroke: var(--color-text-muted);
+  }
+
+  .fig-solid {
+    fill: var(--color-text);
   }
 
   .fig-hollow--strong {

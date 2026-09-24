@@ -5,7 +5,7 @@ import { toBibtex } from '../../utils/bibtex';
 
 export async function getStaticPaths() {
   const publications = await getCollection('publications', ({ data }) => !data.draft);
-  return publications.map((pub) => ({ params: { slug: pub.slug }, props: { pub } }));
+  return publications.map((pub) => ({ params: { slug: pub.id }, props: { pub } }));
 }
 
 export const GET: APIRoute = async ({ props }) => {

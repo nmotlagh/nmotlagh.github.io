@@ -21,7 +21,7 @@ const isCurrentManuscript = (entry: CollectionEntry<'publications'>) =>
   entry.data.citation?.type === 'unpublished';
 const currentManuscripts = publications.filter(isCurrentManuscript);
 const peerReviewedPublications = publications.filter((entry) => !isCurrentManuscript(entry));
-const artifactEntries = await getCollection('artifacts');
+const artifactEntries = (await getCollection('artifacts')).sort((a, b) => a.id.localeCompare(b.id));
 const artifactMap = new Map<string, CollectionEntry<'artifacts'>[]>();
 artifactEntries.forEach((artifact) => {
   artifact.data.tiesTo.forEach((slug) => {
@@ -50,7 +50,7 @@ const structuredData = graph([
       itemListElement: [...peerReviewedPublications, ...currentManuscripts].map((entry, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: publicationUrl(entry.slug),
+        url: publicationUrl(entry.id),
         name: entry.data.title,
       })),
     },
@@ -90,7 +90,7 @@ const structuredData = graph([
         </div>
         <div class="publication-grid grid grid--2 archive-page__grid">
           {peerReviewedPublications.map((pub) => (
-            <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+            <PublicationCard entry={pub} artifacts={artifactMap.get(pub.id)} />
           ))}
         </div>
       </section>
@@ -103,7 +103,7 @@ const structuredData = graph([
           </div>
           <div class="publication-grid grid grid--2 archive-page__grid">
             {currentManuscripts.map((pub) => (
-              <PublicationCard entry={pub} artifacts={artifactMap.get(pub.slug)} />
+              <PublicationCard entry={pub} artifacts={artifactMap.get(pub.id)} />
             ))}
           </div>
         </section>

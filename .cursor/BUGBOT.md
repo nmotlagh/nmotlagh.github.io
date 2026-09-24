@@ -4,7 +4,7 @@ Review for broken pages, accessibility, and content-schema mistakes. This is a p
 
 ## Flag as bugs
 
-- Build, type-check, or content-collection schema failures (`src/content/config.ts`)
+- Build, type-check, or content-collection schema failures (`src/content.config.ts`)
 - Broken routes, missing legacy redirects (`/about`, `/experience`, `/publications`), or dropped `site` config
 - Accessibility regressions: missing focus rings, `outline: none` without replacement, unlabeled icon buttons, navigation that is not a real link
 - Contrast or theme-token breakage that would fail in light or dark mode

@@ -25,7 +25,7 @@ export function toBibtex(entry: CollectionEntry<'publications'>): string {
   const { data } = entry;
   const citation = data.citation;
   const type = citation?.type ?? 'misc';
-  const key = citation?.key ?? entry.slug.replace(/-/g, '');
+  const key = citation?.key ?? entry.id.replace(/-/g, '');
 
   const fields: [string, string | undefined][] = [
     ['title', `{${latexQuotes(escapeBib(data.title))}}`],

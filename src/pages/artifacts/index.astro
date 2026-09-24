@@ -9,7 +9,7 @@ const artifacts = (await getCollection('artifacts')).sort((a, b) =>
   a.data.name.localeCompare(b.data.name),
 );
 const publications = await getCollection('publications', ({ data }) => !data.draft);
-const publicationLookup = new Map(publications.map((pub) => [pub.slug, pub.data.title]));
+const publicationLookup = new Map(publications.map((pub) => [pub.id, pub.data.title]));
 const experience = await getEntry('pages', 'experience');
 
 const structuredData = graph([

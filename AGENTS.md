@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 - `src/pages/` defines route entries, including nested routes and dynamic pages.
 - `src/layouts/` and `src/components/` hold shared UI building blocks.
-- `src/content/` stores content collections: `pages/`, `publications/`, `news/`, and `artifacts/`; schemas live in `src/content/config.ts`.
+- `src/content/` stores content collections: `pages/`, `publications/`, `news/`, and `artifacts/`; schemas live in `src/content.config.ts`.
 - `src/styles/` contains global theme styles; `src/assets/` holds images and SVGs.
 - `public/` ships static files as-is (for example, `resume.pdf`, `favicon.svg`).
 - `.github/workflows/deploy.yml` runs the GitHub Pages build and deploy.
@@ -18,7 +18,7 @@
 - Use 2-space indentation and follow the existing formatting in `.astro`, `.ts`, and `.css` files.
 - Component and layout files are PascalCase (for example, `Hero.astro`, `BaseLayout.astro`).
 - Content filenames are kebab-case slugs (for example, `learning-when-to-say-i-dont-know.mdx`).
-- Keep frontmatter aligned with collection schemas in `src/content/config.ts`.
+- Keep frontmatter aligned with collection schemas in `src/content.config.ts`.
 
 ## Testing Guidelines
 - No automated test suite is configured.
@@ -191,7 +191,7 @@ Cloud Agents run on CPU Ubuntu VMs. They can install Node, build the static
 site, and preview it; they must not treat a Cloud VM as the live GitHub Pages
 host.
 
-- Use Node 20. Install with `npm ci`.
+- Use Node 24 (Astro 7 needs 22.12 or newer). Install with `npm ci`.
 - Verify with `npx astro check` and `npm run build`. Spot-check with
   `npm run preview` or `npm run dev` (port 4321) when the change is visual.
 - Keep `public/resume.pdf` and personal contact details out of logs and PR

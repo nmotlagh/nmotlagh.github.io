@@ -35,7 +35,7 @@ export interface CaseStudy {
   /** Anchor id on the homepage; skill evidence links point here. */
   id: string;
   /** Line-art figure drawn by WorkFigure.astro. */
-  figure: 'outcomes' | 'backbones' | 'imagery';
+  figure: 'outcomes' | 'threshold' | 'imagery';
   /** Short context shown in the figure's corner tag. */
   context: string;
   title: string;
@@ -77,7 +77,7 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     id: 'work-reject-option',
-    figure: 'backbones',
+    figure: 'threshold',
     context: 'ISVC 2022 · MVA 2025 · 2026',
     title: 'Reject-option classification, from Best Paper to live demo',
     problem:
@@ -91,10 +91,9 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        label: 'The re-test · 2026',
+        label: 'The 2026 re-run',
         items: [
           'Linear probes on <strong>4</strong> frozen backbones (DINOv2 ViT-S/14 and ViT-B/14, DINOv3 ViT-S/16, SigLIP 2 ViT-B/16), logits from a local RTX 4090, and a fast NumPy B-CDF matched to the reference by 37 parity tests.',
-          'Per-class thresholds overfit: <strong>+0.37 to +0.89</strong> points over one global threshold in-sample, <strong>−0.15 to −0.93</strong> on test. A single pooled threshold keeps rejected test examples near a coin flip (48–54% correct). Takeaway: choose the grouping on held-out data.',
         ],
       },
       {
@@ -107,10 +106,10 @@ export const caseStudies: CaseStudy[] = [
     stack: ['Python', 'PyTorch', 'timm', 'NumPy', 'uv', 'TypeScript'],
     statusTag: 'Best Paper · Code public',
     status:
-      'Method peer-reviewed: Springer Best Paper Award at ISVC 2022, journal extension in Machine Vision and Applications (2025). The 2026 re-test is public code, not peer-reviewed.',
+      'Method peer-reviewed: Springer Best Paper Award at ISVC 2022, journal extension in Machine Vision and Applications (2025). The 2026 re-run is public code, not peer-reviewed.',
     links: [
       { label: 'Code', href: 'https://github.com/osu-cvl/learning-idk' },
-      { label: '2026 re-test code', href: 'https://github.com/nmotlagh/learning-idk/tree/modern-backbones/examples/modern-backbones' },
+      { label: '2026 re-run code', href: 'https://github.com/nmotlagh/learning-idk/tree/modern-backbones/examples/modern-backbones' },
       { label: 'Live demo', href: '#demo' },
     ],
   },
@@ -154,10 +153,10 @@ export const moreWork: SmallWork[] = [
     title: 'Temporal satellite imagery collection',
     context: 'ICCV 2021 Workshop · Code public',
     summary:
-      'An OpenStreetMap-guided Python pipeline that extracts candidate construction-site regions and downloads imagery over time. Released with a sample dataset.',
-    stack: ['Python', 'OpenStreetMap'],
+      'An OpenStreetMap-guided Python pipeline that extracts candidate construction-site regions and downloads imagery over time. Rebuilt in 2026 as one package with swappable history and imagery backends and a 410-test suite.',
+    stack: ['Python', 'OpenStreetMap', 'STAC'],
     links: [
-      { label: 'Code', href: 'https://github.com/osu-cvl/Construction-Site-Satellite-Imagery-Collection' },
+      { label: 'Code', href: 'https://github.com/nmotlagh/Construction-Site-Satellite-Imagery-Collection' },
       { label: 'Details', href: `${base}publications/framework-for-semi-automatic-collection/` },
     ],
   },
@@ -199,7 +198,7 @@ export const skillGroups: SkillGroup[] = [
   {
     label: 'Evaluation',
     items: ['Paired outcomes', 'Seeds + paired t-tests', 'Bootstrap intervals', 'LLM-as-judge', 'Selective prediction', 'Calibration (ECE, Brier)'],
-    proof: '3 seeds with paired t-tests and 10,000-replicate bootstraps; in-sample vs. held-out threshold gaps.',
+    proof: '3 seeds with paired t-tests and 10,000-replicate bootstraps; a reimplementation checked against its reference by 37 parity tests.',
     evidence: [
       { label: 'RAG revision', href: '#work-recoverability' },
       { label: 'Reject option', href: '#work-reject-option' },
@@ -210,7 +209,7 @@ export const skillGroups: SkillGroup[] = [
     items: ['ViTs', 'Linear probes on DINOv2, DINOv3, SigLIP 2', 'Self-supervised pretraining'],
     proof: 'Probes on four frozen ViT backbones; self-supervised vision models at AFRL in 2024.',
     evidence: [
-      { label: 'Backbone re-test', href: '#work-reject-option' },
+      { label: 'Backbone re-run', href: '#work-reject-option' },
       { label: 'AFRL 2024', href: `${base}experience/` },
     ],
   },

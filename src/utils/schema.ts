@@ -106,10 +106,10 @@ export function publicationNode(entry: CollectionEntry<'publications'>): Json {
 
   return compact({
     '@type': isUnpublished ? 'CreativeWork' : 'ScholarlyArticle',
-    '@id': `${publicationUrl(entry.slug)}#article`,
+    '@id': `${publicationUrl(entry.id)}#article`,
     name: data.title,
     headline: data.title,
-    url: publicationUrl(entry.slug),
+    url: publicationUrl(entry.id),
     abstract: data.tldr,
     datePublished: isUnpublished ? undefined : (data.datePublished ?? String(data.year)),
     creativeWorkStatus: isUnpublished ? 'Unpublished' : undefined,

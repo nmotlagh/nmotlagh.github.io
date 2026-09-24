@@ -27,7 +27,7 @@ export const GET: APIRoute = async () => {
   const education = experience?.data.education ?? [];
 
   const paperLine = (entry: (typeof publications)[number]) =>
-    `- [${entry.data.title}](${SITE_URL}/publications/${entry.slug}/): ${entry.data.venue}, ${entry.data.year}. ${entry.data.tldr}`;
+    `- [${entry.data.title}](${SITE_URL}/publications/${entry.id}/): ${entry.data.venue}, ${entry.data.year}. ${entry.data.tldr}`;
 
   const body = `# ${person.name}
 

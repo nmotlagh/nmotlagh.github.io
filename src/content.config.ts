@@ -1,10 +1,21 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const hrefSchema = z.string().refine((value) => value.startsWith('/') || /^https?:\/\//.test(value), {
-  message: 'Expected an absolute URL or a root-relative path.',
+  error: 'Expected an absolute URL or a root-relative path.',
 });
 
+// Entry ids come from the file names (kebab-case), matching the legacy slugs,
+// so every URL built from `entry.id` is unchanged. Files starting with `_` are
+// skipped, as they were under the legacy collections API.
+const markdownEntries = (collection: string) =>
+  glob({ pattern: '**/[^_]*.{md,mdx}', base: `./src/content/${collection}` });
+const jsonEntries = (collection: string) =>
+  glob({ pattern: '**/[^_]*.json', base: `./src/content/${collection}` });
+
 const pages = defineCollection({
+  loader: markdownEntries('pages'),
   schema: z.object({
     title: z.string(),
     updated: z.string().optional(),
@@ -47,6 +58,7 @@ const pages = defineCollection({
 });
 
 const publications = defineCollection({
+  loader: markdownEntries('publications'),
   schema: z.object({
     title: z.string(),
     venue: z.string(),
@@ -59,12 +71,12 @@ const publications = defineCollection({
     metric: z.string().optional(),
     doi: z.string().optional(),
     datePublished: z.string().optional(),
-    pdf: z.string().url().optional(),
-    arxiv: z.string().url().optional(),
-    code: z.string().url().optional(),
-    data: z.string().url().optional(),
-    slides: z.string().url().optional(),
-    external: z.string().url().optional(),
+    pdf: z.url().optional(),
+    arxiv: z.url().optional(),
+    code: z.url().optional(),
+    data: z.url().optional(),
+    slides: z.url().optional(),
+    external: z.url().optional(),
     image: z
       .object({
         src: z.string(),
@@ -91,7 +103,7 @@ const publications = defineCollection({
 });
 
 const news = defineCollection({
-  type: 'data',
+  loader: jsonEntries('news'),
   schema: z.object({
     title: z.string(),
     date: z.string(), // ISO 8601
@@ -101,10 +113,10 @@ const news = defineCollection({
 });
 
 const artifacts = defineCollection({
-  type: 'data',
+  loader: jsonEntries('artifacts'),
   schema: z.object({
     name: z.string(),
-    repo: z.string().url(),
+    repo: z.url(),
     summary: z.string(),
     stack: z.array(z.string()).optional(),
     reproduce: z.array(z.string()),
