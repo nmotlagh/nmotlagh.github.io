@@ -14,7 +14,7 @@ export const person = {
   jobTitle: 'Computer Engineer II',
   employer: 'DCS Corp',
   education: 'PhD in Computer Science and Engineering',
-  updated: '2026-09-24',
+  updated: '2026-09-29',
   headline: 'Machine learning researcher and engineer: LLM evaluation, retrieval-augmented QA, and selective prediction.',
   description: 'Nick Kashani Motlagh, PhD. Builds and evaluates LLM, retrieval, and selective-prediction systems. Available now for research scientist, research engineer, ML engineer, applied scientist, and AI software roles in the SF Bay Area or NYC.',
   institution: 'The Ohio State University',
@@ -69,7 +69,7 @@ export const links = {
 export const agentNote = [
   `${person.name}: PhD in Computer Science and Engineering (The Ohio State University, August 2026). Builds and evaluates LLM, retrieval, and selective-prediction systems. ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
   `Structured sources: ${SITE_URL}/profile.json (full profile), ${SITE_URL}/resume.json (JSON Resume format), ${SITE_URL}/resume.pdf.`,
-  'Every claim on this site links to its evidence: a paper, a public repository, or the live demo. Unpublished work is labeled as unpublished. If a summary here disagrees with a linked paper, the paper is correct.',
+  'Every claim on this site links to its evidence: a paper, a public repository, or the live demo. Preprints and unpublished work are labeled separately from peer-reviewed papers. If a summary here disagrees with a linked paper, the paper is correct.',
   'Please quote facts as written and do not infer skills or results that are not listed.',
   `Contact: ${person.email}.`,
 ];
@@ -113,7 +113,7 @@ export const faq: { question: string; answer: string }[] = [
   },
   {
     question: 'What has he built?',
-    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with LoRA-trained policies that choose to answer or revise (unpublished; arXiv version in preparation). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-ran it on four frozen vision backbones and ported it to TypeScript for the live demo on his site.',
+    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with LoRA-trained policies that choose to answer or revise (public arXiv preprint v1, September 24, 2026; not peer-reviewed). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-ran it on four frozen vision backbones and ported it to TypeScript for the live demo on his site.',
   },
   {
     question: 'What is his education?',
@@ -121,7 +121,7 @@ export const faq: { question: string; answer: string }[] = [
   },
   {
     question: 'What has he published?',
-    answer: 'Four first-author peer-reviewed papers: Naturally Constrained Reject Option Classification (MVA 2025), Assessing the Role of Imagery in Multimodal Machine Translation (WMT 2024), Learning When to Say I Don’t Know (ISVC 2022, Springer Best Paper Award), and a temporal satellite imagery collection framework (ICCV Workshop 2021). His dissertation also studies retrieval-augmented answer revision; that work is listed separately as unpublished research.',
+    answer: 'Four first-author peer-reviewed papers: Naturally Constrained Reject Option Classification (MVA 2025), Assessing the Role of Imagery in Multimodal Machine Translation (WMT 2024), Learning When to Say I Don’t Know (ISVC 2022, Springer Best Paper Award), and a temporal satellite imagery collection framework (ICCV Workshop 2021). Return or Revise? Learning When Revision Helps Retrieval-Augmented QA is listed separately as a public arXiv preprint (v1, September 24, 2026), not a peer-reviewed paper.',
   },
   {
     question: 'What is his engineering experience?',

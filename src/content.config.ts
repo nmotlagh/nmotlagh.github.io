@@ -67,6 +67,7 @@ const publications = defineCollection({
     tldr: z.string().max(200),
     draft: z.boolean().optional().default(false),
     highlight: z.boolean().optional().default(false),
+    preprint: z.boolean().optional().default(false),
     award: z.string().optional(),
     metric: z.string().optional(),
     doi: z.string().optional(),
@@ -88,7 +89,7 @@ const publications = defineCollection({
     /** Everything needed to emit a correct BibTeX entry. */
     citation: z
       .object({
-        type: z.enum(['inproceedings', 'article', 'unpublished']),
+        type: z.enum(['inproceedings', 'article', 'unpublished', 'misc']),
         key: z.string(),
         booktitle: z.string().optional(),
         journal: z.string().optional(),

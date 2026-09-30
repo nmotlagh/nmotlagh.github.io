@@ -27,7 +27,7 @@ Inspect the production preview on mobile and desktop, in light and dark themes. 
 - `src/data/site.ts`: shared identity, role interests, location preferences, profile links, and FAQ. Update the review date when reviewing this copy.
 - `src/data/editorial.ts`: homepage introduction, concise research summaries, and toolkit.
 - `src/content/pages/`: biography, experience, education, and service.
-- `src/content/publications/`: paper metadata and detail pages. Unpublished work uses `citation.type: unpublished` and is kept separate from peer-reviewed publications.
+- `src/content/publications/`: paper metadata and detail pages. Preprints use `preprint: true` and `citation.type: misc`; unpublished work uses `citation.type: unpublished`. Both are kept separate from peer-reviewed publications.
 - `src/content/artifacts/`: public code and data links.
 - `src/content/news/`: dated historical updates, available through the news archive and RSS.
 - `src/layouts/BaseLayout.astro`: navigation, footer, and shared metadata.
@@ -45,7 +45,7 @@ The profile JSON, JSON-LD, text summaries, publication Markdown, BibTeX, RSS, an
 node --input-type=module -e 'import sharp from "sharp"; await sharp("src/assets/social-card.svg").png().toFile("public/og-card.png");'
 ```
 
-Keep public research descriptions tied to published evidence. Describe unpublished work as unpublished; add preprint links and detailed results when an appropriate public source is available. Application plans, interview details, private audits, and employer-specific research details do not belong in this repository.
+Keep public research descriptions tied to published evidence. Label preprints as not peer-reviewed and link their public source; describe unpublished work as unpublished. Add detailed results when an appropriate public source is available. Application plans, interview details, private audits, and employer-specific research details do not belong in this repository.
 
 ## Deployment
 

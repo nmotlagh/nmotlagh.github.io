@@ -26,7 +26,7 @@ const experienceItems = experience?.data.items ?? [];
 
 const publicationEntries = await getCollection("publications", ({ data }) => !data.draft);
 const publications = publicationEntries
-  .filter((entry) => entry.data.citation?.type !== "unpublished")
+  .filter((entry) => !entry.data.preprint && entry.data.citation?.type !== "unpublished")
   .sort((a, b) => b.data.year - a.data.year);
 // The award paper gets the lime block; the rest list beside it, newest first.
 const awardPaper = publications.find((entry) => entry.data.award);

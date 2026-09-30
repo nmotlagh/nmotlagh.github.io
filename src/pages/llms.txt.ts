@@ -10,12 +10,12 @@ import { parseDateValue } from '../utils/dates';
  * same content collections that render the HTML, so the two cannot diverge.
  */
 export const GET: APIRoute = async () => {
-  // Peer-reviewed first, then unpublished manuscripts, so an agent reading
+  // Peer-reviewed first, then preprints and unpublished manuscripts, so an agent reading
   // top-down sees the work that has cleared review before the work that has not.
   const publications = (await getCollection('publications', ({ data }) => !data.draft)).sort(
     (a, b) =>
-      Number(a.data.citation?.type === 'unpublished') -
-        Number(b.data.citation?.type === 'unpublished') || b.data.year - a.data.year,
+      Number(a.data.preprint || a.data.citation?.type === 'unpublished') -
+        Number(b.data.preprint || b.data.citation?.type === 'unpublished') || b.data.year - a.data.year,
   );
   const artifacts = (await getCollection('artifacts')).sort((a, b) =>
     a.data.name.localeCompare(b.data.name),
@@ -31,7 +31,7 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${person.name}
 
-> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one unpublished manuscript. ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}.
+> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one public arXiv preprint (not peer-reviewed). ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}.
 
 Profile reviewed ${person.updated}. Page generated ${new Date().toISOString().slice(0, 10)}. Dated updates retain their original dates.
 

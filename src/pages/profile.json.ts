@@ -79,7 +79,9 @@ export const GET: APIRoute = async () => {
       authors: entry.data.authors,
       venue: entry.data.venue,
       year: entry.data.year,
-      status: entry.data.citation?.type === 'unpublished' ? 'unpublished' : 'peer-reviewed',
+      status: entry.data.preprint
+        ? 'preprint'
+        : entry.data.citation?.type === 'unpublished' ? 'unpublished' : 'peer-reviewed',
       award: entry.data.award,
       doi: entry.data.doi,
       url: `${SITE_URL}/publications/${entry.id}/`,

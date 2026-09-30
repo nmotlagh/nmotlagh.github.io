@@ -92,8 +92,9 @@ export const GET: APIRoute = async () => {
       publisher: entry.data.venue,
       releaseDate: String(entry.data.year),
       url: `${SITE_URL}/publications/${entry.id}/`,
-      summary:
-        entry.data.citation?.type === 'unpublished'
+      summary: entry.data.preprint
+        ? `Preprint (not peer-reviewed). ${entry.data.tldr}`
+        : entry.data.citation?.type === 'unpublished'
           ? `Unpublished manuscript. ${entry.data.tldr}`
           : entry.data.tldr,
     })),

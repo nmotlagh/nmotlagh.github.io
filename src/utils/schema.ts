@@ -112,7 +112,7 @@ export function publicationNode(entry: CollectionEntry<'publications'>): Json {
     url: publicationUrl(entry.id),
     abstract: data.tldr,
     datePublished: isUnpublished ? undefined : (data.datePublished ?? String(data.year)),
-    creativeWorkStatus: isUnpublished ? 'Unpublished' : undefined,
+    creativeWorkStatus: data.preprint ? 'Preprint' : isUnpublished ? 'Unpublished' : undefined,
     inLanguage: 'en',
     keywords: data.tags?.join(', '),
     pagination: data.citation?.pages?.replace('--', '-'),
@@ -127,7 +127,7 @@ export function publicationNode(entry: CollectionEntry<'publications'>): Json {
       ? { '@type': 'PropertyValue', propertyID: 'DOI', value: data.doi }
       : undefined,
     sameAs: sameAs.length > 0 ? sameAs : undefined,
-    publisher: isUnpublished
+    publisher: isUnpublished || data.preprint
       ? undefined
       : { '@type': 'Organization', name: data.citation?.publisher ?? data.venue },
     author: data.authors.map((name) =>

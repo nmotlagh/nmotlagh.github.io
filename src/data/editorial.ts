@@ -70,10 +70,13 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     stack: ['PyTorch', 'HF Transformers', 'LoRA', 'vLLM', 'FAISS', 'Slurm'],
-    statusTag: 'Unpublished',
+    statusTag: 'Preprint',
     status:
-      'Unpublished. Revised after ACL Rolling Review; arXiv version in preparation. Code and artifacts will not be released.',
-    links: [{ label: 'Case study', href: `${base}publications/adaptive-qa-abstention/` }],
+      'Public arXiv preprint: Return or Revise?, v1 posted September 24, 2026; not peer-reviewed. Code and artifacts will not be released.',
+    links: [
+      { label: 'Preprint', href: 'https://arxiv.org/abs/2609.30087' },
+      { label: 'Case study', href: `${base}publications/adaptive-qa-abstention/` },
+    ],
   },
   {
     id: 'work-reject-option',
@@ -87,7 +90,7 @@ export const caseStudies: CaseStudy[] = [
         label: 'The method · 2022',
         items: [
           'Per-class softmax thresholds learned from validation data with a binomial-CDF test: keep declining only while the declined predictions are no better than a coin flip.',
-          'On CIFAR-100, selective accuracy rises from <strong>88.3%</strong> to <strong>97.8%</strong> at 77.3% coverage. The journal extension covers 4 vision, 3 text, and 8 synthetic datasets.',
+          'On CIFAR-100, selective accuracy rises from <strong>88.3%</strong> to <strong>97.8%</strong> at 77.3% coverage. The journal extension evaluates benchmark image and text datasets and twelve synthetic variants (four 2-D datasets, each with three variants).',
         ],
       },
       {
@@ -123,9 +126,9 @@ export const caseStudies: CaseStudy[] = [
       {
         label: 'What I built',
         items: [
-          'ImageCoMMuTE: contrastive metrics that hold a candidate translation fixed and swap in matched or mismatched images, separating visual understanding from the final translation decision.',
+          'ImageCoMMuTE: contrastive metrics that hold a candidate translation fixed and swap in matched or mismatched images, testing image–translation consistency.',
           'Evaluated three English-to-French multimodal model families, plus gated variants.',
-          'The best system (VGAMT) reads the image correctly <strong>81%</strong> of the time, but that changes its translation preference only <strong>63%</strong> of the time.',
+          'VGAMT scores <strong>81% IC</strong> and <strong>63% TC</strong> on contrastive image/translation diagnostics. Against mixed imagery, preference flips are <strong>13% favorable</strong> and <strong>0% unfavorable</strong>; these scores do not measure generated-translation accuracy.',
         ],
       },
     ],

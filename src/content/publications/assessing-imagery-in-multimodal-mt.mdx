@@ -8,9 +8,9 @@ authors:
   - "J. Gwinnup"
   - "G. Erdmann"
   - "T. Anderson"
-tldr: "The best multimodal translation system reads the image correctly 81% of the time, but that only changes its translation 63% of the time. 'Images don't help' was partly a measurement artifact."
+tldr: "VGAMT scores 81% ImageCoMMuTE and 63% TextCoMMuTE on contrastive diagnostics, with 13% favorable and 0% unfavorable preference flips versus a mixed-image baseline."
 highlight: true
-metric: "VGAMT: 81% image-conditioned evidence use vs. 63% final translation preference."
+metric: "VGAMT: 81% IC and 63% TC; 13% favorable and 0% unfavorable preference flips versus mixed imagery."
 datePublished: "2024-11-15"
 doi: "10.18653/v1/2024.wmt-1.130"
 pdf: "https://aclanthology.org/2024.wmt-1.130.pdf"
@@ -32,3 +32,5 @@ highlights:
 ---
 
 Published at WMT 2024, this work designs imagery-sensitive contrastive metrics for multimodal machine translation and evaluates three English-to-French model families. The experiments hold a candidate translation fixed while varying matched and mismatched visual context, testing whether the image moves model uncertainty in the intended direction. These score-based diagnostics do not by themselves establish generated-translation quality or causal evidence use.
+
+On the original CoMMuTE set, VGAMT scores **81% ImageCoMMuTE (IC)**: a fixed candidate translation has lower perplexity with its matching image than with the mismatched image. It scores **63% TextCoMMuTE (TC)**: the correct candidate has lower perplexity than the alternative under a fixed image. Relative to the ambiguous mixed-image baseline, the favorable translation-preference-flip rate (IPR) is **13%**, and the unfavorable rate (INR) is **0%** ([Tables 1–2](https://aclanthology.org/2024.wmt-1.130.pdf#page=6)). The 63% TC score is not a preference-flip rate or generated-translation accuracy.
