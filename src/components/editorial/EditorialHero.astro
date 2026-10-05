@@ -62,7 +62,7 @@ const commandParts = terminal.command.split(/(?<=[a-z]\/)/);
         <span><span class="hero__status">{person.availability}</span><span class="hero__slash" aria-hidden="true"> · </span><span class="sr-only">for </span>{person.seekingShort.map((role, i) => <Fragment>{i > 0 && <span class="sr-only">,</span>}{i > 0 && <span class="hero__slash" aria-hidden="true"> / </span>}<span class="hero__role">{role}</span></Fragment>)}</span>
       </p>
       <p class="hero__credentials">
-        <span>{person.targetLocationsShort.join(' / ')}<span class="sr-only">.</span><span class="hero__slash" aria-hidden="true"> · </span>{person.citizenship}</span>
+        <span>{person.relocation}<span class="sr-only">.</span><span class="hero__slash" aria-hidden="true"> · </span>{person.citizenship}</span>
       </p>
     </div>
   </div>

@@ -102,11 +102,11 @@ export const caseStudies: CaseStudy[] = [
       {
         label: 'The demo',
         items: [
-          'Ported the rule to TypeScript and checked it against the Python reference. It runs this site’s live demo: 1,000 test images, a draggable threshold, and δ controls.',
+          'The site’s live demo applies the rule to 1,000 test images, with a draggable threshold and δ controls.',
         ],
       },
     ],
-    stack: ['Python', 'PyTorch', 'timm', 'NumPy', 'uv', 'TypeScript'],
+    stack: ['Python', 'PyTorch', 'timm', 'NumPy', 'uv'],
     statusTag: 'Best Paper · Code public',
     status:
       'Method peer-reviewed: Springer Best Paper Award at ISVC 2022, journal extension in Machine Vision and Applications (2025). The 2026 re-run is public code, not peer-reviewed.',
@@ -218,8 +218,8 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     label: 'Engineering',
-    items: ['Python', 'PyTorch', 'NumPy', 'Slurm', 'Singularity', 'uv', 'Git', 'Linux HPC', 'TypeScript'],
-    proof: 'Ported the B-CDF rule from Python to TypeScript for the live demo; Slurm GPU jobs for the RAG study.',
+    items: ['Python', 'PyTorch', 'NumPy', 'Slurm', 'Singularity', 'uv', 'Git', 'Linux HPC'],
+    proof: 'Python training and evaluation code; Slurm GPU jobs for the RAG study.',
     evidence: [
       { label: 'Live demo', href: '#demo' },
       { label: 'RAG revision', href: '#work-recoverability' },

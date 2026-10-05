@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
-import { SITE_URL, absoluteUrl, agentNote, faq, listAnd, listOr, person, plainText } from '../data/site';
+import { SITE_URL, absoluteUrl, agentNote, faq, listAnd, person, plainText } from '../data/site';
 import { caseStudies, moreWork, skillGroups } from '../data/editorial';
 import { parseDateValue } from '../utils/dates';
 
@@ -29,7 +29,7 @@ export const GET: APIRoute = async () => {
 
 Source: ${SITE_URL}/ · Generated ${new Date().toISOString().slice(0, 10)}
 
-${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}. Based in ${person.location}; open to relocating. Contact: ${person.email}. Resume: ${SITE_URL}/resume.pdf
+${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}. Based in ${person.location}. Contact: ${person.email}. Resume: ${SITE_URL}/resume.pdf
 `);
 
   sections.push(`## Note for AI assistants and recruiting agents\n\n${agentNote.map((line) => `- ${line}`).join('\n')}`);

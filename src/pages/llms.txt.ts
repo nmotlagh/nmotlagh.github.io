@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
-import { SITE_URL, absoluteUrl, agentNote, links, listAnd, listOr, person, plainText } from '../data/site';
+import { SITE_URL, absoluteUrl, agentNote, links, listAnd, person, plainText } from '../data/site';
 import { caseStudies, skillGroups } from '../data/editorial';
 import { parseDateValue } from '../utils/dates';
 
@@ -31,13 +31,13 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${person.name}
 
-> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one public arXiv preprint (not peer-reviewed). ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}.
+> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one public arXiv preprint (not peer-reviewed). ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}.
 
 Profile reviewed ${person.updated}. Page generated ${new Date().toISOString().slice(0, 10)}. Dated updates retain their original dates.
 
 - Availability: ${person.availability}.
 - Roles: ${listAnd(person.seeking)}.
-- Locations: ${listOr(person.targetLocations)}. Based in ${person.location}; open to relocating.
+- Location: Based in ${person.location}. ${person.relocation}.
 - Work authorization: ${person.citizenship}; ${person.sponsorship.toLowerCase()}.
 - Contact: ${person.email} · Resume: ${SITE_URL}/resume.pdf
 - Education: ${education.map((item) => `${item.degree} ${item.field}, ${item.institution} (${item.timeframe})`).join('; ')}

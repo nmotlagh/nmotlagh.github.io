@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
-import { SITE_URL, absoluteUrl, links, listAnd, listOr, person, plainText } from '../data/site';
+import { SITE_URL, absoluteUrl, links, listAnd, person, plainText } from '../data/site';
 import { caseStudies, moreWork, skillGroups } from '../data/editorial';
 
 /**
@@ -48,7 +48,7 @@ export const GET: APIRoute = async () => {
       label: 'Machine learning researcher and engineer',
       email: person.email,
       url: `${SITE_URL}/`,
-      summary: `${plain(about?.body?.trim().split('\n\n')[0] ?? '')} ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
+      summary: `${plain(about?.body?.trim().split('\n\n')[0] ?? '')} ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
       location: { city: 'Columbus', region: 'Ohio', countryCode: 'US' },
       profiles: [
         { network: 'GitHub', username: 'nmotlagh', url: links.github },

@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
-import { links, listOr, person } from '../data/site';
+import { links, person } from '../data/site';
 import '../styles/theme.css';
 import '../styles/editorial.css';
 
@@ -319,10 +319,10 @@ const machineLinks = [
             </div>
           </div>
 
-          <h2 class="sr-only">{person.availability} for roles in the {listOr(person.targetLocations)}.</h2>
+          <h2 class="sr-only">{person.availability}. {person.relocation}.</h2>
           <p class="site-footer__display" aria-hidden="true">
             <span>{person.availability}.</span>
-            <span>{person.targetLocationsShort.join(' or ')}.</span>
+            <span>{person.relocation}.</span>
           </p>
 
           <div class="site-footer__actions">

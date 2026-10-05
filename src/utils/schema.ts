@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import { SITE_URL, faq, knowsAbout, links, listAnd, listOr, person } from '../data/site';
+import { SITE_URL, faq, knowsAbout, links, listAnd, person } from '../data/site';
 
 /**
  * Structured data is emitted as a single connected @graph rather than a pile of
@@ -40,7 +40,7 @@ export function personNode(educationEntries: EducationEntry[] = []): Json {
     familyName: person.familyName,
     url: `${SITE_URL}/`,
     jobTitle: person.jobTitle,
-    description: `${person.headline} ${person.availability} for ${listAnd(person.seeking)} roles in the ${listOr(person.targetLocations)}.`,
+    description: `${person.headline} ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}.`,
     email: links.email,
     image: `${SITE_URL}/og-card.png`,
     nationality: { '@type': 'Country', name: 'United States' },
@@ -79,8 +79,7 @@ export function personNode(educationEntries: EducationEntry[] = []): Json {
     seeks: {
       '@type': 'Demand',
       name: `${person.seeking.join(', ')} roles`,
-      description: `${person.availability}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}. Open to relocating.`,
-      areaServed: person.targetLocations.map((name) => ({ '@type': 'Place', name })),
+      description: `${person.availability}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}. ${person.relocation}.`,
     },
     sameAs: [links.github, links.linkedin, links.scholar, links.orcid],
   });
