@@ -1,6 +1,6 @@
 ---
 title: "Experience"
-updated: "2026-09-24"
+updated: "2026-10-05"
 intro: "Research, teaching, and internships in selective prediction, calibration, multimodal evaluation, and LLM reliability."
 education:
   - degree: "Ph.D."
@@ -11,7 +11,7 @@ education:
     completed: "2026-08"
     notes:
       - "Degree conferred August 2026. Dissertation: <em>Answering Under Uncertainty: Abstention, Ambiguity, and Recoverability</em>, defended July 8, 2026."
-      - "GPA 3.702. Advised by Prof. Jim Davis. Minors in Mathematics and High-Performance Computing."
+      - "GPA 3.70. Advised by Prof. Jim Davis. Minors in Mathematics and High-Performance Computing."
   - degree: "M.S."
     field: "Computer Science and Engineering"
     institution: "The Ohio State University"
@@ -19,7 +19,7 @@ education:
     timeframe: "Aug 2021 — May 2025"
     completed: "2025-05"
     notes:
-      - "GPA 3.702. Advised by Prof. Jim Davis."
+      - "GPA 3.70. Advised by Prof. Jim Davis."
   - degree: "B.S. with Honors"
     field: "Computer Science and Engineering"
     institution: "The Ohio State University"
@@ -44,18 +44,16 @@ items:
     location: "AFRL-sponsored · Dayton, OH"
     timeframe: "May 2025 — Present"
     bullets:
-      # Government-funded work: keep this at resume level (no results, datasets, or program details).
-      - "Build <strong>evidence-grounded QA systems</strong>: small open models answer from retrieved documents, cite the passage they used, and abstain when the evidence doesn’t support an answer. Uses synthetic training data from a teacher model, LoRA fine-tuning, and paired base-versus-adapted evaluation on held-out questions."
-      - "Build <strong>paired-outcome evaluation pipelines</strong> for retrieval-augmented QA that measure, on 25,870 held-out questions, when revision repairs a wrong answer and when it harms a right one."
-      - "Train and evaluate <strong>LoRA fine-tuned models</strong> for answer, refine, and abstain decisions with PyTorch, Hugging Face, and Slurm, comparing policy variants on coverage, utility, and out-of-distribution behavior."
+      # Keep current work at the generalized scope of the reviewed resume.
+      - "Develop synthetic question-answer datasets from domain-specific documents and train QA models."
+      - "Own the full pipeline from data generation through training and evaluation, using Slurm in high-performance computing environments."
   - role: "Graduate Research Associate — Computer Vision Lab"
     location: "Ohio State University · Columbus, OH"
     timeframe: "Aug 2021 — Aug 2026"
     bullets:
-      - "Built <strong>selective-prediction systems</strong> and reproducible experiments for vision, multimodal, and language tasks, advised by Prof. Jim Davis."
-      - "Developed per-class <strong>reject-option classification</strong> and released public research code. Springer Best Paper Award at ISVC 2022; extended in Machine Vision and Applications, 2025."
-      - "Designed <strong>ImageCoMMuTE</strong> evaluation metrics to separate visual evidence use from final translation decisions (WMT 2024)."
-      - "Published first-author papers on selective prediction, multimodal evaluation, and satellite imagery collection."
+      - "Developed per-class <strong>abstention</strong> methods without preset rejection costs or accuracy/coverage targets (ISVC 2022; MVA 2025): 97.4% selective accuracy at 79.7% coverage on ImageNet validation."
+      - "Designed <strong>ImageCoMMuTE</strong> (WMT 2024), a metric for translation models facing ambiguity; compared confidence in fixed translations under matched and mismatched images across three English-to-French model families."
+      - "Implemented paired-outcome evaluation pipelines to measure <strong>recoverability</strong> in retrieval-augmented QA; fine-tuned return-or-revise policies and evaluated 25,870 held-out questions (Return or Revise?, preprint). Work spanned OSU and DCS; completed at DCS."
   - role: "Graduate Research Intern — AFRL"
     location: "Dayton, OH"
     timeframe: "Summers 2022–2024"
@@ -63,11 +61,11 @@ items:
       - "Summer 2024: Built and evaluated <strong>self-supervised vision models</strong> using distributed, containerized training workflows."
       - "Summer 2023: Developed <strong>Reject Option Beam Search</strong> for machine translation at large beam widths."
       - "Summer 2022: Built the end-to-end training procedure for Naturally Constrained Reject Option Classification."
-  - role: "Graduate Teaching Associate — Machine Learning & NLP"
+  - role: "Graduate Teaching Associate and Course Grader — Ohio State University"
     location: "Ohio State University · Columbus, OH"
-    timeframe: "Aug 2023 — Dec 2025"
+    timeframe: "2023–2026"
     bullets:
-      - "Taught and supported machine learning and NLP courses through grading, office hours, and lab materials."
+      - "Led Excel labs (Spring 2026); held office hours and graded for Machine Learning and Foundations of NLP (2023–2025)."
   - role: "Undergraduate Research Intern — AFRL"
     location: "Dayton, OH"
     timeframe: "Summers 2020–2021"

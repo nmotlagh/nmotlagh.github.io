@@ -60,7 +60,7 @@ export const GET: APIRoute = async () => {
     work: (experience?.data.items ?? []).map((item) => {
       const [role, org] = item.role.split(/\s+—\s+/);
       // Teaching roles name the course after the dash; the employer is in the location.
-      const teaching = /Teaching Associate/.test(role) && org !== undefined;
+      const teaching = /Teaching Associate/.test(role) && org !== undefined && org !== 'Ohio State University';
       return {
         name: teaching ? (item.location ?? '').split(' · ')[0] : (org ?? item.location),
         position: teaching ? `${role}, ${org}` : role,

@@ -25,7 +25,7 @@ citation:
 highlights:
   - "Evaluates direct and revised answers for the same 25,870 held-out questions (NQ-Open, TriviaQA, PopQA)."
   - "Separates preserved, repaired, harmed, and unrecovered outcomes."
-  - "Studies LoRA-trained policies that choose whether to answer, revise, or abstain."
+  - "Evaluates fine-tuned return-or-revise policies that choose whether to keep the draft or revise it."
   - "3 training seeds with paired run-level t-tests; thresholds frozen on dev before test."
 ---
 
@@ -33,14 +33,14 @@ A retrieval-augmented QA system can improve an incorrect answer, but it can also
 
 This dissertation research evaluates both branches for the same question: a direct answer and a revision using retrieved evidence. The paired outcomes distinguish answers that are **preserved**, **repaired**, **harmed**, or **unrecovered**. With binary correctness, the net change in accuracy is repair minus harm.
 
-The central distinction is between **confidence** in an initial answer and **recoverability** under a particular revision process. The work studies how these signals inform a choice between answering, refining, and abstaining.
+The central distinction is between **confidence** in an initial answer and **recoverability** under a particular revision process. The work studies how these signals inform a choice between returning the draft and revising it.
 
 ## Setup
 
 - **Data:** 25,870 held-out questions from NQ-Open, TriviaQA, and PopQA.
 - **Retrieval:** three setups over Wikipedia: DPR dense retrieval, BM25, and BM25 reranked with MonoT5.
 - **Models:** Llama 3.1 8B Instruct writes the drafts and the revisions. Llama 3.3 70B Instruct is the automated semantic judge. gpt-oss-20b and OLMo 3 7B are secondary generator families.
-- **Policies:** LoRA-trained scorers choose between answering and revising, and can also abstain in the three-action menu.
+- **Policies:** LoRA-trained scorers estimate repair, harm, and tie outcomes to choose whether to return the draft or revise it. The optional third action is a draft-free retrieval-augmented answer, not abstention.
 
 ## Rigor
 
@@ -56,4 +56,4 @@ PyTorch, Hugging Face Transformers, vLLM, FAISS, and GPU jobs on Slurm.
 
 The manuscript is available as [Return or Revise?](https://arxiv.org/abs/2609.30087), a public arXiv preprint posted as **v1 on September 24, 2026**. Code and artifacts will not be released.
 
-My contribution includes the evaluation pipeline, model training, and experiments comparing decision policies. This overview describes the public preprint, which has not been peer-reviewed.
+My contribution includes the evaluation pipeline, model training, and experiments comparing decision policies. Work spanned OSU and DCS; completed at DCS. This overview describes the public preprint, which has not been peer-reviewed.

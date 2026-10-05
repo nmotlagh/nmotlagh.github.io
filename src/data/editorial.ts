@@ -13,9 +13,9 @@ export const homeEditorial = {
   hero: {
     eyebrow: 'Machine learning · Research & engineering',
     title: person.name,
-    ledeHtml: 'I build LLM and retrieval systems that <em>know when not to answer.</em>',
+    ledeHtml: 'I develop machine learning methods for <em>computer vision and natural language processing.</em>',
     supporting:
-      'PhD, Ohio State (2026). I built LoRA-trained policies that decide when a RAG system should revise its answer, evaluated on 25,870 questions, and a reject-option method that won a Springer Best Paper Award.',
+      'PhD, Ohio State (2026). Four first-author peer-reviewed papers and a Springer Best Paper Award. My dissertation connects abstention, ambiguity, and recoverability.',
     /** Terminal line: the real repository for the award-winning paper. */
     terminal: { command: 'git clone https://github.com/osu-cvl/learning-idk', href: 'https://github.com/osu-cvl/learning-idk' },
   },
@@ -64,7 +64,7 @@ export const caseStudies: CaseStudy[] = [
         items: [
           'A paired-outcome evaluation on <strong>25,870</strong> held-out questions from NQ-Open, TriviaQA, and PopQA. Each answer is scored as preserved, repaired, harmed, or unrecovered.',
           'Three retrieval setups over Wikipedia: DPR dense retrieval, BM25, and BM25→MonoT5 reranking. Llama 3.1 8B Instruct drafts and revises, Llama 3.3 70B Instruct judges, and gpt-oss-20b and OLMo 3 7B are secondary generators.',
-          'LoRA-trained scorers that choose answer or revise, plus abstain in a three-action menu.',
+          'Fine-tuned return-or-revise policies using LoRA; scorers estimate repair, harm, and tie outcomes.',
           '<strong>3</strong> training seeds with paired run-level t-tests, and <strong>10,000</strong>-replicate bootstrap intervals for baselines. Thresholds are picked on dev and frozen before test.',
         ],
       },
@@ -72,7 +72,7 @@ export const caseStudies: CaseStudy[] = [
     stack: ['PyTorch', 'HF Transformers', 'LoRA', 'vLLM', 'FAISS', 'Slurm'],
     statusTag: 'Preprint',
     status:
-      'Public arXiv preprint: Return or Revise?, v1 posted September 24, 2026; not peer-reviewed. Code and artifacts will not be released.',
+      'Public arXiv preprint: Return or Revise?, v1 posted September 24, 2026; not peer-reviewed. Work spanned OSU and DCS; completed at DCS. Code and artifacts will not be released.',
     links: [
       { label: 'Preprint', href: 'https://arxiv.org/abs/2609.30087' },
       { label: 'Case study', href: `${base}publications/adaptive-qa-abstention/` },
@@ -90,7 +90,7 @@ export const caseStudies: CaseStudy[] = [
         label: 'The method · 2022',
         items: [
           'Per-class softmax thresholds learned from validation data with a binomial-CDF test: keep declining only while the declined predictions are no better than a coin flip.',
-          'On CIFAR-100, selective accuracy rises from <strong>88.3%</strong> to <strong>97.8%</strong> at 77.3% coverage. The journal extension evaluates benchmark image and text datasets and twelve synthetic variants (four 2-D datasets, each with three variants).',
+          'On ImageNet validation, the method achieves <strong>97.4%</strong> selective accuracy at <strong>79.7%</strong> coverage. On CIFAR-100, selective accuracy rises from 88.3% to 97.8% at 77.3% coverage. The journal extension evaluates benchmark image and text datasets and twelve synthetic variants (four 2-D datasets, each with three variants).',
         ],
       },
       {
@@ -184,9 +184,9 @@ export interface SkillGroup {
 export const skillGroups: SkillGroup[] = [
   {
     label: 'LLMs & post-training',
-    // Teacher-model data comes from the DCS/AFRL role; keep it at resume level.
-    items: ['LoRA / PEFT', 'Teacher-model synthetic data', 'vLLM', 'HF Transformers'],
-    proof: 'LoRA-trained scorers that choose answer, revise, or abstain; evidence-grounded QA models trained on teacher-generated data at DCS.',
+    // Keep current DCS work at the generalized scope of the reviewed resume.
+    items: ['LoRA / PEFT', 'Synthetic QA datasets', 'vLLM', 'HF Transformers'],
+    proof: 'Fine-tuned return-or-revise policies for the public preprint. At DCS, develop synthetic question-answer datasets from domain-specific documents and train QA models.',
     evidence: [
       { label: 'RAG revision', href: '#work-recoverability' },
       { label: 'DCS role', href: '#experience' },
@@ -219,10 +219,7 @@ export const skillGroups: SkillGroup[] = [
   {
     label: 'Engineering',
     items: ['Python', 'PyTorch', 'NumPy', 'Slurm', 'Singularity', 'uv', 'Git', 'Linux HPC'],
-    proof: 'Python training and evaluation code; Slurm GPU jobs for the RAG study.',
-    evidence: [
-      { label: 'Live demo', href: '#demo' },
-      { label: 'RAG revision', href: '#work-recoverability' },
-    ],
+    proof: 'Own the full pipeline from data generation through training and evaluation at DCS, using Slurm in high-performance computing environments.',
+    evidence: [{ label: 'DCS role', href: '#experience' }],
   },
 ];

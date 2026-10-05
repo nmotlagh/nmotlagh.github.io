@@ -31,7 +31,7 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${person.name}
 
-> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on machine learning reliability under uncertainty: when a model should answer, weigh evidence, revise its answer, or abstain. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one public arXiv preprint (not peer-reviewed). ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}.
+> ${person.jobTitle} at ${person.employer}. ${person.education}, ${person.institution} (${person.lab}, advised by ${person.advisor}). Research on abstention, ambiguity, and recoverability in computer vision and natural language processing. Four peer-reviewed first-author papers including a Springer Best Paper Award, plus one public arXiv preprint (not peer-reviewed). ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}.
 
 Profile reviewed ${person.updated}. Page generated ${new Date().toISOString().slice(0, 10)}. Dated updates retain their original dates.
 

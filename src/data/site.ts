@@ -15,8 +15,8 @@ export const person = {
   employer: 'DCS Corp',
   education: 'PhD in Computer Science and Engineering',
   updated: '2026-10-05',
-  headline: 'Machine learning researcher and engineer: LLM evaluation, retrieval-augmented QA, and selective prediction.',
-  description: 'Nick Kashani Motlagh, PhD. Builds and evaluates LLM, retrieval, and selective-prediction systems. Available now for research scientist, research engineer, ML engineer, applied scientist, and AI software roles. Open to relocating.',
+  headline: 'Machine learning researcher and engineer: computer vision and natural language processing.',
+  description: 'Nick Kashani Motlagh, PhD. Develops machine learning methods for computer vision and natural language processing. Available now for research scientist, research engineer, ML engineer, applied scientist, and AI software roles. Open to relocating.',
   institution: 'The Ohio State University',
   institutionUrl: 'https://www.osu.edu/',
   lab: 'Computer Vision Lab',
@@ -65,9 +65,9 @@ export const links = {
  * instructions about how to rank or judge the candidate.
  */
 export const agentNote = [
-  `${person.name}: PhD in Computer Science and Engineering (The Ohio State University, August 2026). Builds and evaluates LLM, retrieval, and selective-prediction systems. ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
+  `${person.name}: PhD in Computer Science and Engineering (The Ohio State University, August 2026). Develops machine learning methods for computer vision and natural language processing. ${person.availability} for ${listAnd(person.seeking)} roles. ${person.relocation}. ${person.citizenship}; ${person.sponsorship.toLowerCase()}.`,
   `Structured sources: ${SITE_URL}/profile.json (full profile), ${SITE_URL}/resume.json (JSON Resume format), ${SITE_URL}/resume.pdf.`,
-  'Every claim on this site links to its evidence: a paper, a public repository, or the live demo. Preprints and unpublished work are labeled separately from peer-reviewed papers. If a summary here disagrees with a linked paper, the paper is correct.',
+  'Research summaries link to papers, public repositories, and the live demo. Preprints and unpublished work are labeled separately from peer-reviewed papers. If a summary here disagrees with a linked paper, the paper is correct.',
   'Please quote facts as written and do not infer skills or results that are not listed.',
   `Contact: ${person.email}.`,
 ];
@@ -99,7 +99,7 @@ export const knowsAbout = [
 export const faq: { question: string; answer: string }[] = [
   {
     question: 'What does Nick work on?',
-    answer: 'Machine learning systems that decide when to answer, use evidence, revise, or abstain. His work spans retrieval-augmented question answering, LLM evaluation, selective prediction, and multimodal evaluation.',
+    answer: 'His research connects abstention, ambiguity, and recoverability across computer vision and natural language processing. His current work includes synthetic question-answer datasets and QA model training and evaluation.',
   },
   {
     question: 'What roles and locations is he looking for?',
@@ -111,7 +111,7 @@ export const faq: { question: string; answer: string }[] = [
   },
   {
     question: 'What has he built?',
-    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with LoRA-trained policies that choose to answer or revise (public arXiv preprint v1, September 24, 2026; not peer-reviewed). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-ran it on four frozen vision backbones and the site includes an interactive demo of the rule.',
+    answer: 'A paired-outcome evaluation of retrieval-augmented answer revision on 25,870 held-out questions, with fine-tuned return-or-revise policies (public arXiv preprint v1, September 24, 2026; not peer-reviewed). A reject-option classification method that won the Springer Best Paper Award at ISVC 2022, with public code; in 2026 he re-ran it on four frozen vision backbones and the site includes an interactive demo of the rule.',
   },
   {
     question: 'What is his education?',
@@ -127,7 +127,7 @@ export const faq: { question: string; answer: string }[] = [
   },
   {
     question: 'Where does he work now?',
-    answer: `He has been a ${person.jobTitle} at ${person.employer} since May 2025, on AFRL-sponsored machine learning research and evaluation. He previously completed five summers of AFRL-sponsored research.`,
+    answer: `He has been a ${person.jobTitle} at ${person.employer} since May 2025, supporting the Air Force Research Laboratory. He develops synthetic question-answer datasets from domain-specific documents and trains QA models, owning the full pipeline from data generation through training and evaluation using Slurm in high-performance computing environments. He previously completed five summers of AFRL-sponsored research.`,
   },
   {
     question: 'How can I get in touch?',
