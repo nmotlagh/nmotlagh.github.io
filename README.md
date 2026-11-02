@@ -37,7 +37,7 @@ The profile JSON, JSON-LD, text summaries, publication Markdown, BibTeX, RSS, an
 
 ## Public assets
 
-`public/resume.pdf` is the selected public one-page resume. Application variants are maintained separately in the private job-search workspace. The September 2026 website refresh retained the current public variant, updated the DCS title, moved current employment first, and removed unverified audit/result claims. It did not change the private application variants. Review those sources before replacing the public PDF; an older generated resume can reintroduce stale copy.
+`public/resume.pdf` is generated, not edited here. Its only source is `resume.tex` in the private [nmotlagh/resume](https://github.com/nmotlagh/resume) repo, whose CI builds it and pushes it to this path (commits titled `sync resume from nmotlagh/resume@…`). Tailored application variants live in that repo's `variants/`. To change the public resume, edit `resume.tex` there; a hand-edited PDF here will be overwritten on the next build.
 
 `src/assets/social-card.svg` is the editable source for the social preview. After changing it, regenerate the static PNG with the Sharp installation supplied by Astro:
 
